@@ -23,39 +23,27 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @NotBlank
-    @Size(min = 0, max = 50)
+
     private String username;
 
-    @NotNull
-    @NotBlank
-    @Size(min = 0, max = 50)
+
     private String firstName;
 
-    @NotNull
-    @NotBlank
-    @Size(min = 0, max = 50)
+
     private String lastName;
 
-    @NotNull
-    @NotBlank
+
     private String password;
 
-    @NotNull
-    @NotBlank
-    @Size(min = 0, max = 50)
+
     private String email;
 
     private Boolean isAcceptedTerms = false;
 
-    @NotNull
-    @NotBlank
+
     private Date dateOfBirth;
 
-    @NotNull
-    @NotBlank
-    @Size(min = 0, max = 15)
+
     private String phoneNumber;
 
     private Boolean isEnabled = true;

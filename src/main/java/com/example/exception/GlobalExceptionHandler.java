@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         return list;
     }
 
-    private <T> ApiError<T> ApiErrorGenerator(T errors){
+    public static  <T> ApiError<T> ApiErrorGenerator(T errors){
         ApiError<T> resultError = new ApiError<>();
         resultError.setId(UUID.randomUUID());
         resultError.setDate(new Date());
