@@ -24,22 +24,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         if (user == null) throw new UsernameNotFoundException(username);
 
-        return org.springframework.security.core.userdetails.User.builder().username(user.getUsername()).password(user.getPassword()).roles(user.getRoles().stream().map(Role::getName).toArray(String[]::new)).accountLocked(user.getAccountIsLocked()).disabled(user.getIsEnabled()).build();
+        return org.springframework.security.core.userdetails.User.builder().username(user.getUsername()).password(user.getPassword()).roles(user.getRoles().stream().map(Role::getName).toArray(String[]::new)).accountLocked(user.getAccountIsLocked()).disabled(!(user.getIsEnabled())).build();
     }
 
-    public UserDetails loadUserByEmail(String email) throws EmailNotFoundException {
-        User user = userRepository.findByEmail(email);
+    public UserDetails loadUserByUserInformations(String username, String email, String phoneNumber) {
+        User user = userRepository.findUserByInformations(username, email, phoneNumber);
 
-        if (user == null) throw new EmailNotFoundException(email);
-
-        return org.springframework.security.core.userdetails.User.builder().username(user.getUsername()).password(user.getPassword()).roles(user.getRoles().stream().map(Role::getName).toArray(String[]::new)).accountLocked(user.getAccountIsLocked()).disabled(user.getIsEnabled()).build();
-    }
-
-    public UserDetails loadUserByPhoneNumber(String phoneNumber) throws PhoneNumberNotFoundException {
-        User user = userRepository.findByEmail(phoneNumber);
-
-        if (user == null) throw new PhoneNumberNotFoundException(phoneNumber);
-
-        return org.springframework.security.core.userdetails.User.builder().username(user.getUsername()).password(user.getPassword()).roles(user.getRoles().stream().map(Role::getName).toArray(String[]::new)).accountLocked(user.getAccountIsLocked()).disabled(user.getIsEnabled()).build();
+        return org.springframework.security.core.userdetails.User.builder().username(user.getUsername()).password(user.getPassword()).roles(user.getRoles().stream().map(Role::getName).toArray(String[]::new)).accountLocked(user.getAccountIsLocked()).disabled(!(user.getIsEnabled())).build();
     }
 }
