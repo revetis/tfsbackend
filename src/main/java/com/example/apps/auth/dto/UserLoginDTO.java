@@ -1,6 +1,5 @@
 package com.example.apps.auth.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequestDTO {
-    String accesToken;
+public class UserLoginDTO {
 
-    String refreshToken;
+    private String token;
+
 }
