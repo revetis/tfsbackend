@@ -13,8 +13,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        // Interceptor'ı tüm API yolları için kaydet (* veya /api/** gibi spesifik
-        // yollar kullanabilirsiniz)
+
         registry.addInterceptor(rateLimitInterceptor).addPathPatterns("/**");
     }
 }
