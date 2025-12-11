@@ -13,14 +13,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.settings.ApplicationProperties;
+import com.example.settings.maindto.ApiErrorTemplate;
+import com.example.settings.maindto.ApiTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,16 +33,22 @@ public class JWTFilter extends OncePerRequestFilter {
     private final String SECRET_KEY_STR;
     private final SecretKey SECRET_KEY;
 
+    private final ObjectMapper objectMapper;
+
     @Autowired
-    public JWTFilter(ApplicationProperties appProperties) {
+    public JWTFilter(ApplicationProperties appProperties, ObjectMapper objectMapper) {
         this.SECRET_KEY_STR = appProperties.getSECRET_KEY();
         this.SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_STR.getBytes());
+        this.objectMapper = objectMapper.findAndRegisterModules();
     }
+
+    @Autowired
+    private JWTTokenBlacklistService jwtTokenBlacklistService;
 
     @Override
     @SuppressWarnings("unchecked")
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+            throws ServletException, IOException, MalformedJwtException {
 
         String authHeader = request.getHeader("Authorization");
 
@@ -50,15 +57,23 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7);
+        String accessToken = authHeader.substring(7);
+
+        if (jwtTokenBlacklistService.isAccessTokenBlacklisted(accessToken)) {
+            throw new JwtException("Token is blacklisted");
+        }
 
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(SECRET_KEY)
                     .build()
-                    .parseClaimsJws(token)
+                    .parseClaimsJws(accessToken)
                     .getBody();
+            String tokenType = claims.get("type", String.class);
 
+            if (!"access".equals(tokenType)) {
+                throw new JwtException("Invalid token type for this endpoint");
+            }
             String username = claims.getSubject();
             List<String> roles = (List<String>) claims.get("roles", List.class);
 
@@ -71,13 +86,33 @@ public class JWTFilter extends OncePerRequestFilter {
 
             SecurityContextHolder.getContext().setAuthentication(auth);
 
-        } catch (ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | SignatureException
-                | IllegalArgumentException e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(e.getClass().getSimpleName());
-            return;
-        }
+            filterChain.doFilter(request, response);
 
-        filterChain.doFilter(request, response);
+        } catch (JwtException e) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            var errorResponse = ApiTemplate.apiTemplateGenerator(
+                    false,
+                    401,
+                    request.getRequestURI(),
+                    ApiErrorTemplate.apiErrorTemplateGenerator(false, 401, request.getRequestURI(), e.getMessage()),
+                    null);
+
+            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        } catch (IllegalArgumentException e) {
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+
+            var errorResponse = ApiTemplate.apiTemplateGenerator(
+                    false,
+                    401,
+                    request.getRequestURI(),
+                    ApiErrorTemplate.apiErrorTemplateGenerator(false, 401, request.getRequestURI(), e.getMessage()),
+                    null);
+
+            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        }
     }
 }

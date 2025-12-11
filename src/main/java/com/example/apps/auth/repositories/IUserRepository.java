@@ -11,4 +11,10 @@ import com.example.apps.auth.entities.User;
 public interface IUserRepository extends JpaRepository<User, Long> {
     Optional<User> findByUsername(String username);
 
+    Optional<User> findByUsernameOrEmail(String username, String email);
+
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByPhoneNumber(String phoneNumber);
+
 }

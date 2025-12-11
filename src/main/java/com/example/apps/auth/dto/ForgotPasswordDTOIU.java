@@ -1,5 +1,6 @@
 package com.example.apps.auth.dto;
 
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,9 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserLoginDTO {
+public class ForgotPasswordDTOIU {
 
-    private String refreshToken;
-    private String accessToken;
+    @Email(message = "Invalid email format")
+    String email;
 
 }

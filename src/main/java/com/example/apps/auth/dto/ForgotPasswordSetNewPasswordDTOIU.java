@@ -7,9 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserLoginDTO {
-
-    private String refreshToken;
-    private String accessToken;
-
+public class ForgotPasswordSetNewPasswordDTOIU {
+    String password;
+    String passwordRetry;
 }

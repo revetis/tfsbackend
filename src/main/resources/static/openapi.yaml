@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: TFS API
+  version: 1.0.0
+paths:
+  /hello:
+    get:
+      summary: Hello endpoint
+      responses:
+        '200':
+          description: OK
