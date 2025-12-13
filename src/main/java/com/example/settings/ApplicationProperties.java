@@ -14,4 +14,13 @@ public class ApplicationProperties {
 
     private String SECRET_KEY;
 
+    private String N8N_API_KEY;
+
+    private String NAME;
+
+    private String URL;
+
+    private String N8N_BASE_URL;
+
+    private String FRONTEND_URL;
 }

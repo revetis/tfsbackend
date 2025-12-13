@@ -3,7 +3,7 @@ package com.example.apps.auth.services.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.apps.auth.security.JWTGenerator;
+import com.example.apps.auth.securities.JWTGenerator;
 import com.example.apps.auth.services.ITokenService;
 
 @Service

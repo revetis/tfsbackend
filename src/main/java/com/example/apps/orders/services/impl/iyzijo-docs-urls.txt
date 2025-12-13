@@ -1,0 +1,98 @@
+[GitHub](https://github.com/iyzico)
+[Feedback Form](https://efa1ggzr8nz.typeform.com/to/PkvYug0w)
+[API Reference - Beta](https://docs.iyzico.com/on-hazirliklar/api-reference-beta)
+- [Başlangıç](https://docs.iyzico.com/)
+- [Ön Hazırlıklar](https://docs.iyzico.com/on-hazirliklar)
+- Ödeme Metotları[API](https://docs.iyzico.com/odeme-metotlari/api)[Ödeme Formu (CheckoutForm)](https://docs.iyzico.com/odeme-metotlari/odeme-formu)[iyzico ile Öde (PWI)](https://docs.iyzico.com/odeme-metotlari/iyzico-ile-ode)[Tokenize Cüzdan Ödemesi](https://docs.iyzico.com/odeme-metotlari/tokenize-cuzdan-odemesi)[Ön Provizyon](https://docs.iyzico.com/odeme-metotlari/on-provizyon)
+- [API](https://docs.iyzico.com/odeme-metotlari/api)
+- [Ödeme Formu (CheckoutForm)](https://docs.iyzico.com/odeme-metotlari/odeme-formu)
+- [iyzico ile Öde (PWI)](https://docs.iyzico.com/odeme-metotlari/iyzico-ile-ode)
+- [Tokenize Cüzdan Ödemesi](https://docs.iyzico.com/odeme-metotlari/tokenize-cuzdan-odemesi)
+- [Ön Provizyon](https://docs.iyzico.com/odeme-metotlari/on-provizyon)
+- Ürünler[Online Ödeme](https://docs.iyzico.com/urunler/online-odeme)[Pazaryeri](https://docs.iyzico.com/urunler/pazaryeri)[Abonelik](https://docs.iyzico.com/urunler/abonelik)[Korumalı Havale/EFT](https://docs.iyzico.com/urunler/korumali-havale-eft)[iyzico Link](https://docs.iyzico.com/urunler/iyzico-link)[Alışveriş Kredisi](https://docs.iyzico.com/urunler/alisveris-kredisi)[Mass Payout](https://docs.iyzico.com/urunler/mass-payout)
+- [Online Ödeme](https://docs.iyzico.com/urunler/online-odeme)
+- [Pazaryeri](https://docs.iyzico.com/urunler/pazaryeri)
+- [Abonelik](https://docs.iyzico.com/urunler/abonelik)
+- [Korumalı Havale/EFT](https://docs.iyzico.com/urunler/korumali-havale-eft)
+- [iyzico Link](https://docs.iyzico.com/urunler/iyzico-link)
+- [Alışveriş Kredisi](https://docs.iyzico.com/urunler/alisveris-kredisi)
+- [Mass Payout](https://docs.iyzico.com/urunler/mass-payout)
+- [Ek Servisler](https://docs.iyzico.com/ek-servisler)
+- [Platformlar](https://docs.iyzico.com/platformlar)
+- [Ek Bilgiler](https://docs.iyzico.com/ek-bilgiler)
+[Başlangıç](https://docs.iyzico.com/)
+[Ön Hazırlıklar](https://docs.iyzico.com/on-hazirliklar)
+- [API](https://docs.iyzico.com/odeme-metotlari/api)
+- [Ödeme Formu (CheckoutForm)](https://docs.iyzico.com/odeme-metotlari/odeme-formu)
+- [iyzico ile Öde (PWI)](https://docs.iyzico.com/odeme-metotlari/iyzico-ile-ode)
+- [Tokenize Cüzdan Ödemesi](https://docs.iyzico.com/odeme-metotlari/tokenize-cuzdan-odemesi)
+- [Ön Provizyon](https://docs.iyzico.com/odeme-metotlari/on-provizyon)
+[API](https://docs.iyzico.com/odeme-metotlari/api)
+[Ödeme Formu (CheckoutForm)](https://docs.iyzico.com/odeme-metotlari/odeme-formu)
+[iyzico ile Öde (PWI)](https://docs.iyzico.com/odeme-metotlari/iyzico-ile-ode)
+[Tokenize Cüzdan Ödemesi](https://docs.iyzico.com/odeme-metotlari/tokenize-cuzdan-odemesi)
+[Ön Provizyon](https://docs.iyzico.com/odeme-metotlari/on-provizyon)
+- [Online Ödeme](https://docs.iyzico.com/urunler/online-odeme)
+- [Pazaryeri](https://docs.iyzico.com/urunler/pazaryeri)
+- [Abonelik](https://docs.iyzico.com/urunler/abonelik)
+- [Korumalı Havale/EFT](https://docs.iyzico.com/urunler/korumali-havale-eft)
+- [iyzico Link](https://docs.iyzico.com/urunler/iyzico-link)
+- [Alışveriş Kredisi](https://docs.iyzico.com/urunler/alisveris-kredisi)
+- [Mass Payout](https://docs.iyzico.com/urunler/mass-payout)
+[Online Ödeme](https://docs.iyzico.com/urunler/online-odeme)
+[Pazaryeri](https://docs.iyzico.com/urunler/pazaryeri)
+[Abonelik](https://docs.iyzico.com/urunler/abonelik)
+[Korumalı Havale/EFT](https://docs.iyzico.com/urunler/korumali-havale-eft)
+[iyzico Link](https://docs.iyzico.com/urunler/iyzico-link)
+[Alışveriş Kredisi](https://docs.iyzico.com/urunler/alisveris-kredisi)
+[Mass Payout](https://docs.iyzico.com/urunler/mass-payout)
+[Ek Servisler](https://docs.iyzico.com/ek-servisler)
+[Platformlar](https://docs.iyzico.com/platformlar)
+[Ek Bilgiler](https://docs.iyzico.com/ek-bilgiler)
+[Powered by GitBook](https://www.gitbook.com/?utm_source=content&utm_medium=trademark&utm_campaign=kTpM8Bc8GIRKlQDusDr3)
+
+# Başlangıç
+
+[Pazaryeri](https://docs.iyzico.com/urunler/pazaryeri) kullanıcılarımız, Gelir Vergisi Kanunu ve Kurumlar Vergisi Kanunu kapsamında yapılan stopaj oranı değişikliklerini uygulamak için, [Pazaryerlerinde Stopaj Uygulaması](https://docs.iyzico.com/urunler/pazaryeri/pazaryeri-entegrasyonu/pazaryerlerinde-stopaj-uygulamasi) sayfasında hazırlanan dokümandan yararlanabilirler.
+Geliştirici Portalımızı keşfederken size sıcak bir karşılama sunmak bizim için bir zevktir!
+iyzico olarak kendimizi çevrimiçi ödemeleri demokratikleştirmeye adadığımız misyonumuza hizmet edebilmek amacıyla iyzico Geliştirici Portalını kurduk. Bu portal kusursuz bir entegrasyon deneyimi için özenle hazırlandı.
+Taahhüdümüz, müşterilerinize sorunsuz bir ödeme süreci sunarken, iyzico ile entegrasyonunuzun verimli ve sorunsuz olmasını sağlamaktır. İşte Geliştirici Portalımızdan bekleyebilecekleriniz;
+[Ön Hazırlıklar](https://docs.iyzico.com/on-hazirliklar)
+[Ürünler](https://docs.iyzico.com/urunler/online-odeme)
+[Ödeme Metotları](https://docs.iyzico.com/odeme-metotlari/api)
+[Ek Servisler](https://docs.iyzico.com/ek-servisler)
+[Platformlar](https://docs.iyzico.com/platformlar)
+[Ek Bilgiler](https://docs.iyzico.com/ek-bilgiler)
+İster bir e-ticaret platformu, ister bir mobil uygulama veya bir abonelik hizmeti geliştiriyor olun, iyzico'nun Geliştirici Portalı, çevrimiçi ödemeleri zahmetsizce işinize dahil etmek için bir ağ geçidi görevi görür.
+Bize katıldığınız için teşekkür ederiz ve sizi her adımda desteklemek için sabırsızlanıyoruz.
+Last updated 2 days ago
+
+#### Company
+- [About](https://www.iyzico.com/en)
+- [Career](https://www.iyzico.com/en/about-us/career)
+- [Social](https://www.iyzico.com/en/about-us/social-responsibilty)
+- [Youtube](https://www.youtube.com/channel/UCk4iPbGOno3mTSWEvQ1Rk5Q/featured)
+[About](https://www.iyzico.com/en)
+[Career](https://www.iyzico.com/en/about-us/career)
+[Social](https://www.iyzico.com/en/about-us/social-responsibilty)
+[Youtube](https://www.youtube.com/channel/UCk4iPbGOno3mTSWEvQ1Rk5Q/featured)
+
+#### Community
+- [Github](https://github.com/iyzico)
+- [Medium](https://iyzico.engineering/)
+[Github](https://github.com/iyzico)
+[Medium](https://iyzico.engineering/)
+
+#### Integration
+- [Brand Guide](https://www.iyzico.com/en/about-us/iyzico-brand-guide)
+- [Solution Partners](https://www.iyzico.com/en/partner-solutions)
+- [Open Source](https://www.iyzico.com/en/open-source)
+[Brand Guide](https://www.iyzico.com/en/about-us/iyzico-brand-guide)
+[Solution Partners](https://www.iyzico.com/en/partner-solutions)
+[Open Source](https://www.iyzico.com/en/open-source)
+
+#### Contact
+- [Contact Us](https://www.iyzico.com/en/support/contact-us)
+- [Support Center](https://www.iyzico.com/en/support/help-center)
+[Contact Us](https://www.iyzico.com/en/support/contact-us)
+[Support Center](https://www.iyzico.com/en/support/help-center)

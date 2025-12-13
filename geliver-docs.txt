@@ -1,0 +1,4475 @@
+Genel Bakış
+Geliver API, lojistik süreçlerinizi kolaylaştırmak için ideal bir çözüm sunar. Kargo fiyatlarını sorgulayabilir, anlık gönderi takibi yapabilir, etiket oluşturabilir ve çeşitli kargo firmalarının hizmet seçeneklerini hızlıca alabilirsiniz.
+
+Dinamik fiyatlandırma ve yapay zeka algoritmalarımız sayesinde, her gönderi için en uygun fiyatı bulabilirsiniz. En iyi kargo seçeneklerini anında bulabilir ve hangi kargo firmasını seçeceğinizi kolayca belirleyebilirsiniz. Ayrıca, birden fazla kargo firmasıyla entegre çalışarak taşıma ağınızı genişletebilirsiniz.
+
+Kargo takip işlemlerinizi API üzerinden kolayca yönetebilirsiniz. Gönderilerinizin anlık durumunu sorgulayabilir, takip bilgilerini e-ticaret platformlarınıza entegre edebilirsiniz. Shopify, WooCommerce, OpenCart gibi popüler e-ticaret platformlarıyla kolay entegrasyon sağlamaktadır. Sipariş bilgilerini otomatik olarak alabilir ve kargo süreçlerinizi hızlıca yönetebilirsiniz.
+
+Geliver API, webhooklar ve kendi anlaşmalarınızı da destekler. Webhook kullanarak gönderi durumu değişikliklerinden anında haberdar olabilir, sisteminizde otomatik olarak güncellemeler yapabilirsiniz. Kendi anlaşmalarınız ile kargo fiyatlarını optimize edebilir ve Geliver’in anlaşmaları ile sunduğu özel fiyatlardan faydalanabilirsiniz.
+
+Lojistik işlerinizi verimli ve hızlı bir şekilde çözmek için Geliver API'yi kullanabilirsiniz.
+
+Öneri
+Geliştirici dostu dökümantasyon ve müşteri destek sistemimiz ile entegrasyon sürecini kolayca gerçekleştirebilirsiniz. Herhangi bir sorunda Geliver Destek Merkezi veya E-Posta üzerinden iletişime geçebilirsiniz.
+
+📄️ Adresler
+Gönderici ve alıcı adresleri ekleyin, düzenleyin ve silin.
+
+📄️ Kargo Şablonları
+Kargolarınız için şablonlar hazırlayarak gönderim sürecinizi kolaylaştırın.
+
+📄️ Bakiye ve Fiyatlar
+Bakiyenizi ve kargoların anlık fiyat bilgisini öğrenin.
+
+📄️ Gönderiler
+Gönderiler oluşturun, etiket satın alın, iptal edin veya çoğaltın.
+
+📄️ Webhooklar
+Webhook kullanarak taşıma bilgileriniz güncellendiğinde anında haberdar olun.
+
+📄️ Özel Kargo Anlaşmaları
+Kendi kargo anlaşmanızı ekleyin ve kendi fiyatlarınızla Geliver üzerinden gönderim yapın.
+
+Authentication
+Geliver API ile çalışmak için panelimiz üzerinden oluşturacağınız Bearer token'lar ile yetkilendirme sağlamanız gerekmektedir. Bu token'larını aşağıdaki görsellerde belirttiğimiz şekilde edinebilirsiniz.
+
+Authentication (kullanıcı belirtme) ve authorization (yetkilendirme), her istekteki Authorization header’ından alınır. Buraya paneldeki API Tokenları bölümünden alacağınız token’ı önünde Bearer yazacak şekilde ekleyin.
+
+Geliver paneli üzerinden API Token oluşturup REST API’ımız ile yapacağınız işlemlerinizde kullanabilirsiniz. Bunu yapabilmek için sol taraftaki menünün alt kısmında yer alan Ayarlar sayfasından API Tokenları bölümüne gitmelisiniz.
+Api tutorial image 2. Ayarlar içerisinden API Tokenları sayfasına gidin.
+
+Api tutorial image 3. API Tokenları sayfasını açtıktan sonra sayfada bulunan Yeni API Token Ekle butonlarını kullanarak API Token oluşturma ekranına gidiyoruz.
+
+Api tutorial image 4. Karşımıza gelen ekranda API Token’ımıza bir isim veriyoruz. İsimlendirmeyi kendi isteğinize göre yapabilirsiniz. Eğer sadece entegrasyonu yapacağınız sistemden bu token'ın erişilebilir olmasını istiyorsanız IP kısıtını aktif edebilirsiniz. Böyle bir kısıta ihtiyacınız yoksa devre dışı bırakabilirsiniz. Oluştur butonuna basarak devam ediyoruz.
+
+Api tutorial image 5. API Token’ımız oluşturulmuştur. Güvenlik amacıyla bu Token sadece bu ekranda görüntülenip, daha sonra gösterilmeyecektir. Bu Token’ı güvenli bir yerde saklamanız gerekmektedir. Kodu yanında yer alan kopyalama butonu aracılığıyla kopyalayıp, işlemlerinizde kullanabilirsiniz.
+
+Api tutorial image
+
+Sonraki
+
+
+Gönderici adresi oluşturma
+Geliver aracılığıyla kargo gönderimi yaparken bir gönderici adresi seçmeniz gerekmektedir. Gönderi isteklerinde göreceğinize senderAddressID alanında gönderimi yapacağınız adresin ID'si yer almalıdır. Eğer bu alanı göndermezseniz sistem üzerinde varsayılan olarak seçili adresiniz kullanılacaktır.
+
+Gönderici adresi oluşturma isteği
+cURL
+curl --location --globoff 'https://api.geliver.io/api/v1/addresses' \
+--header 'Authorization: Bearer {{bearerToken}}' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+	"name": "İsim Soyisim / Şirket Adı",
+	"email": "mailadresi@gmail.com",
+	"phone": "+905051234567",
+	"address1": "Address Test Json 2-1",
+	"address2": "Address Test Json 2-2",
+	"countryCode": "TR",
+	"cityName": "Istanbul",
+	"cityCode": "34",
+	"districtName": "Esenyurt",
+	"districtID": 107605,
+	"zip": "34020",
+	"isRecipientAddress": false,
+	"shortName": "isimsoyisim"
+}'
+
+İstek içerisindeki alanların açıklamaları
+name
+🔸
+string
+zorunlu
+Gönderici adı veya Şirket adı
+
+email
+🔸
+string
+zorunlu
+E-posta adresi
+
+phone
+🔸
+string
+Telefon numarası
+
+address1
+🔸
+string
+zorunlu
+Adres satırı 1
+
+address2
+🔸
+string
+Adres satırı 2
+
+cityName
+🔸
+string
+zorunlu
+Şehir adı
+
+cityCode
+🔸
+string
+zorunlu
+Şehir Plaka Kodu
+
+districtName
+🔸
+string
+zorunlu
+İlçe adı
+
+districtID
+🔸
+string
+zorunlu
+İlçe ID - Adresler > İlçeleri Listeleme kısmından isteğe ulaşabilirsiniz.
+
+zip
+🔸
+string
+zorunlu
+Posta kodu
+
+shortName
+🔸
+string
+zorunlu
+Kısa isim / Bu adreslerinizin Geliver panelinde birbirinden ayırt edilebilmesi için kullanılabilir
+
+Gönderici adresi oluşturma isteğine gelen yanıt
+200 OK
+{
+"result":true,
+"data":
+	{
+	"id":"1dc8bd3f-d050-44a8-a6e7-029b619eaeec",
+	"createdAt":"2025-03-07T17:10:31.123257243Z",
+	"updatedAt":"2025-03-07T17:10:31.123257243Z",
+	"shortName":"","name":"İsim soyisim",
+	"email":"isimsoyisim@gmail.com",
+	"phone":"+905051234567",
+	"address1":"Address Test Json 2-1",
+	"address2":"Address Test Json 2-2",
+	"cityCode":"34",
+	"cityName":"Istanbul",
+	"city":null,
+	"state":"",
+	"zip":"34020",
+	"districtID":107605,
+	"districtName":"Esenyurt",
+	"district":null,
+	"streetID":null,
+	"streetName":"",
+	"countryCode":"TR",
+	"countryName":"Türkiye",
+	"source":null,
+	"isDefaultSenderAddress":false,
+	"isDefaultReturnAddress":false,
+	"isRecipientAddress":true,
+	"isInvoiceAddress":false,
+	"isActive":true
+	}
+}
+
+
+Yanıt içerisindeki alanların açıklamaları
+id
+🔸
+string
+Oluşturulan gönderici adresinin benzersiz ID'si.
+
+createdAt
+🔸
+string
+Gönderici adresinin oluşturulma zamanı (ISO 8601 formatında).
+
+updatedAt
+🔸
+string
+Gönderici adresinin son güncelleme zamanı (ISO 8601 formatında).
+
+shortName
+🔸
+string
+Adres için kısa tanımlayıcı isim.
+
+name
+🔸
+string
+Gönderici adı veya şirket adı.
+
+email
+🔸
+string
+Gönderici email adresi.
+
+phone
+🔸
+string
+Gönderici telefon numarası.
+
+address1
+🔸
+string
+Adresin ilk satır bilgisi.
+
+address2
+🔸
+string
+Adresin ikinci satır bilgisi.
+
+cityCode
+🔸
+string
+Şehir plaka kodu.
+
+cityName
+🔸
+string
+Şehir adı.
+
+state
+🔸
+string
+Bölge veya eyalet bilgisi (varsa).
+
+zip
+🔸
+string
+Posta kodu.
+
+districtID
+🔸
+number
+İlçe ID, 'Adresler > İlçeleri Listeleme' bölümünden elde edilebilir.
+
+districtName
+🔸
+string
+İlçe adı.
+
+streetName
+🔸
+string
+Sokak/mahalle adı.
+
+countryCode
+🔸
+string
+Ülke kodu.
+
+countryName
+🔸
+string
+Ülke adı.
+
+isDefaultSenderAddress
+🔸
+boolean
+Varsayılan gönderici adresi olup olmadığını belirtir.
+
+isDefaultReturnAddress
+🔸
+boolean
+Varsayılan iade adresi olup olmadığını belirtir.
+
+isRecipientAddress
+🔸
+boolean
+Alıcı adresi olarak kullanılıp kullanılmadığını belirtir.
+
+isInvoiceAddress
+🔸
+boolean
+Fatura adresi olup olmadığını belirtir.
+
+isActive
+🔸
+boolean
+Adresin aktif olup olmadığını belirtir.
+
+Önceki
+Alıcı adresi oluşturma
+Alıcı adresi oluşturmak için, alıcının bilgilerini aşağıdaki cURL isteğinde belirttiğimiz gibi doldurup, belirtilen endpoint'e istek atmanız yeterlidir.
+
+Alıcı adresi oluşturma isteği
+cURL
+curl --location --globoff 'https://api.geliver.io/api/v1/addresses' \
+--header 'Authorization: Bearer {{bearerToken}}' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+	"name": "İsim Soyisim/Şirket Adı",
+	"email": "mailadresi@gmail.com",
+	"phone": "+905051234567",
+	"address1": "Address Test Json 2-1",
+	"address2": "Address Test Json 2-2",
+	"countryCode": "TR",
+	"cityName": "Istanbul",
+	"cityCode": "34",
+	"districtName": "Esenyurt",
+	"districtID": 107605,
+	"zip": "34020",
+	"isRecipientAddress": true,
+	"shortName": "isimsoyisim"
+}'
+
+İstek içerisindeki alanların açıklamaları
+name
+🔸
+string
+zorunlu
+Gönderici adı / Şirket adı
+
+email
+🔸
+string
+zorunlu
+E-posta adresi
+
+phone
+🔸
+string
+Telefon numarası
+
+address1
+🔸
+string
+zorunlu
+Adres satırı 1
+
+address2
+🔸
+string
+Adres satırı 2
+
+cityName
+🔸
+string
+zorunlu
+Şehir adı
+
+cityCode
+🔸
+string
+zorunlu
+Şehir Plaka Kodu
+
+districtName
+🔸
+string
+zorunlu
+İlçe adı
+
+districtID
+🔸
+string
+zorunlu
+İlçe ID - Adresler > İlçeleri Listeleme kısmından isteğe ulaşabilirsiniz.
+
+zip
+🔸
+string
+zorunlu
+Posta kodu
+
+shortName
+🔸
+string
+zorunlu
+Kısa isim
+
+Alıcı adresi oluşturma isteğine gelen yanıt
+200 OK
+{
+"result":true,
+"data":
+	{
+	"id":"175e52f3-3988-4207-8acd-a4fd2b997ede",
+	"createdAt":"2025-03-07T17:10:07.882420904Z",
+	"updatedAt":"2025-03-07T17:10:07.882420904Z",
+	"shortName":"isimsoyisim","name":"İsim soyisim",
+	"email":"isimsoyisim@gmail.com",
+	"phone":"+905051234567",
+	"address1":"Address Test Json 2-1",
+	"address2":"Address Test Json 2-2",
+	"cityCode":"34",
+	"cityName":"Istanbul",
+	"city":null,
+	"state":"",
+	"zip":"34020",
+	"districtID":107605,
+	"districtName":"Esenyurt",
+	"district":null,
+	"streetID":null,
+	"streetName":"",
+	"countryCode":"TR",
+	"countryName":"Türkiye",
+	"source":null,
+	"isDefaultSenderAddress":false,
+	"isDefaultReturnAddress":false,
+	"isRecipientAddress":true,
+	"isInvoiceAddress":false,
+	"isActive":true
+	}
+}
+
+
+Yanıt içerisindeki alanların açıklamaları
+id
+🔸
+string
+Oluşturulan gönderici adresinin benzersiz ID'si.
+
+createdAt
+🔸
+string
+Gönderici adresinin oluşturulma zamanı (ISO 8601 formatında).
+
+updatedAt
+🔸
+string
+Gönderici adresinin son güncelleme zamanı (ISO 8601 formatında).
+
+shortName
+🔸
+string
+Adres için kısa tanımlayıcı isim.
+
+name
+🔸
+string
+Gönderici adı veya şirket adı.
+
+email
+🔸
+string
+Gönderici email adresi.
+
+phone
+🔸
+string
+Gönderici telefon numarası.
+
+address1
+🔸
+string
+Adresin ilk satır bilgisi.
+
+address2
+🔸
+string
+Adresin ikinci satır bilgisi.
+
+cityCode
+🔸
+string
+Şehir plaka kodu.
+
+cityName
+🔸
+string
+Şehir adı.
+
+city
+🔸
+object
+Detaylı şehir bilgisi; mevcut değilse null.
+
+state
+🔸
+string
+Bölge veya eyalet bilgisi (varsa).
+
+zip
+🔸
+string
+Posta kodu.
+
+districtID
+🔸
+number
+İlçe ID, 'Adresler > İlçeleri Listeleme' bölümünden elde edilebilir.
+
+districtName
+🔸
+string
+İlçe adı.
+
+streetName
+🔸
+string
+Sokak/mahalle adı.
+
+countryCode
+🔸
+string
+Ülke kodu.
+
+countryName
+🔸
+string
+Ülke adı.
+
+isDefaultSenderAddress
+🔸
+boolean
+Varsayılan gönderici adresi olup olmadığını belirtir.
+
+isDefaultReturnAddress
+🔸
+boolean
+Varsayılan iade adresi olup olmadığını belirtir.
+
+isRecipientAddress
+🔸
+boolean
+Alıcı adresi olarak kullanılıp kullanılmadığını belirtir.
+
+isInvoiceAddress
+🔸
+boolean
+Fatura adresi olup olmadığını belirtir.
+
+isActive
+🔸
+boolean
+Adresin aktif olup olmadığını belirtir.
+
+Hata Kodları
+Hata Kodu	Açıklama
+E1129	Alıcı adresi boş
+E1130	Alıcı şehri boş
+E1131	Alıcı ülkesi boş
+E1132	Alıcı ilçesi boş
+E1133	Alıcı ismi boş
+E1134	Alıcı telefon numarası boş
+E1136	Alıcı e-posta adresi boş
+
+Tüm adresleri listeleme
+Geliver sisteminde kayıtlı olan tüm adreslerinizi bu istek ile listeleyebilirsiniz.
+
+Tüm adresleri listeleme isteği
+cURL
+curl --location --globoff 'https://api.geliver.io/api/v1/addresses?isRecipientAddress=false&limit=10&page=1' \
+--header 'Authorization: Bearer {{bearerToken}}'
+
+isRecipientAddress
+🔸
+bool
+zorunlu
+Alıcı adresi olup olmadığını kontrol eder.
+
+limit
+🔸
+int
+zorunlu
+İstekte sayfa başına kaç adres istendiğinin limitidir.
+
+page
+🔸
+int
+zorunlu
+Kaç sayfalık yanıt istediğini belirtir.
+
+Tüm adresleri listeleme isteğine gelen yanıt
+200 OK
+{
+"result":true,
+"additionalMessage":"Success",
+"limit":10,
+"page":1,
+"sort":"created_at desc",
+"totalRows":2,
+"totalPages":1,
+"data":[
+    {
+        "id":"3efcb969-4a79-45f0-b640-cb7297dfe156",
+        "createdAt":"2023-08-15T12:22:27.359167+03:00",
+        "updatedAt":"2023-08-15T12:22:27.359167+03:00",
+        "shortName":"Yeni Test Adres","name":"test",
+        "email":"@gmail.com","phone":"+9053123456",
+        "address1":" Mh. . Sk. No:  Kat: 3 Daire: 8",
+        "address2":"",
+        "cityCode":"01",
+        "cityName":"Adana",
+        "city":null,
+        "state":"",
+        "zip":"45145",
+        "districtID":107120,
+        "districtName":"Aladağ",
+        "district":{
+            "name":"Gerede",
+            "districtID":107665,
+            "cityCode":"14",
+            "regionCode":null,
+            "countryCode":"TR"
+            },
+        "streetID":null,
+        "streetName":"",
+        "countryCode":"TR",
+        "countryName":"Türkiye",
+        "source":null,
+        "isDefaultSenderAddress":false,
+        "isDefaultReturnAddress":false,
+        "isRecipientAddress":false,
+        "isInvoiceAddress":false,
+        "isActive":true
+    },
+    {
+        "id":"89cf6b59-acd9-475a-961e-31586d69fc80",
+        "createdAt":"2023-04-19T19:17:36.870357+03:00",
+        "updatedAt":"2023-07-26T16:44:24.824542+03:00",
+        "shortName":"Ana adres","name":"Test",
+        "email":"test@gmail.com",
+        "phone":"+9055555555555",
+        "address1":" Mh. . Sk. No: 1 Yunusemre/Manisa",
+        "address2":"","cityCode":"14",
+        "cityName":"Bolu",
+        "city":null,
+        "state":"",
+        "zip":"45125",
+        "districtID":107665,
+        "districtName":"Gerede",
+        "district":{
+            "name":"Gerede",
+            "districtID":107665,
+            "cityCode":"14",
+            "regionCode":null,
+            "countryCode":"TR"
+            },
+        "streetID":null,
+        "streetName":"",
+        "countryCode":"TR",
+        "countryName":"Türkiye",
+        "source":null,
+        "isDefaultSenderAddress":true,
+        "isDefaultReturnAddress":true,
+        "isRecipientAddress":false,
+        "isInvoiceAddress":false,
+        "isActive":true
+        }
+    ]
+}
+
+result
+🔸
+boolean
+zorunlu
+İşlemin başarılı olup olmadığını belirten sonuç.
+
+additionalMessage
+🔸
+string
+zorunlu
+İşlem sonrası ek mesaj bilgisi.
+
+limit
+🔸
+number
+zorunlu
+Sorgu sonucunda dönen sayfa limiti.
+
+page
+🔸
+number
+zorunlu
+Mevcut sayfa numarası.
+
+sort
+🔸
+string
+zorunlu
+Veri listesinin sıralama düzeni.
+
+totalRows
+🔸
+number
+zorunlu
+Toplam kayıt (satır) sayısı.
+
+totalPages
+🔸
+number
+zorunlu
+Toplam sayfa sayısı.
+
+data
+🔸
+array
+zorunlu
+Adres nesnelerinin bulunduğu dizi.
+
+id
+🔸
+string
+zorunlu
+Adresin benzersiz ID'si.
+
+createdAt
+🔸
+string
+zorunlu
+Adresin oluşturulma zamanı (ISO 8601 formatında).
+
+updatedAt
+🔸
+string
+zorunlu
+Adresin son güncelleme zamanı (ISO 8601 formatında).
+
+shortName
+🔸
+string
+zorunlu
+Adres için kısa tanımlayıcı isim.
+
+name
+🔸
+string
+zorunlu
+Gönderici veya şirket adı.
+
+email
+🔸
+string
+zorunlu
+Gönderici e-posta adresi.
+
+phone
+🔸
+string
+Gönderici telefon numarası.
+
+address1
+🔸
+string
+zorunlu
+Adresin birinci satır bilgisi.
+
+address2
+🔸
+string
+Adresin ikinci satır bilgisi.
+
+cityCode
+🔸
+string
+zorunlu
+Şehir plaka kodu.
+
+cityName
+🔸
+string
+zorunlu
+Şehir adı.
+
+city
+🔸
+object
+Detaylı şehir bilgisi; mevcut değilse null.
+
+state
+🔸
+string
+Bölge veya eyalet bilgisi (varsa).
+
+zip
+🔸
+string
+zorunlu
+Posta kodu.
+
+districtID
+🔸
+number
+zorunlu
+İlçe ID; 'Adresler > İlçeleri Listeleme'den elde edilebilir.
+
+districtName
+🔸
+string
+zorunlu
+İlçe adı.
+
+district
+🔸
+object
+İlçeye ilişkin detaylı bilgileri içerir.
+
+name
+🔸
+string
+zorunlu
+İlçenin adı.
+
+districtID
+🔸
+number
+zorunlu
+İlçe ID'si.
+
+cityCode
+🔸
+string
+zorunlu
+İlçenin bağlı olduğu şehrin plaka kodu.
+
+regionCode
+🔸
+string
+Bölge kodu; mevcut değilse null.
+
+countryCode
+🔸
+string
+zorunlu
+İlçenin bağlı olduğu ülkenin kodu.
+
+streetID
+🔸
+number
+Sokak veya mahalle ID'si; mevcut değilse null.
+
+streetName
+🔸
+string
+Sokak veya mahalle adı.
+
+countryCode
+🔸
+string
+zorunlu
+Ülke kodu.
+
+countryName
+🔸
+string
+zorunlu
+Ülke adı.
+
+source
+🔸
+object
+Kaynak bilgisi; mevcut değilse null.
+
+isDefaultSenderAddress
+🔸
+boolean
+zorunlu
+Varsayılan gönderici adresi olup olmadığını belirtir.
+
+isDefaultReturnAddress
+🔸
+boolean
+zorunlu
+Varsayılan iade adresi olup olmadığını belirtir.
+
+isRecipientAddress
+🔸
+boolean
+zorunlu
+Alıcı adresi olarak kullanılıp kullanılmadığını belirtir.
+
+isInvoiceAddress
+🔸
+boolean
+zorunlu
+Fatura adresi olup olmadığını belirtir.
+
+isActive
+🔸
+boolean
+zorunlu
+Adresin aktif olup olmadığını belirtir.
+
+
+Tek bir adresi listeleme
+Tek bir adresi listelemek istiyorsanız, adresin ID'si ile sorgulama yapmalısınız. Tüm adresleri listelerken attığınız istekten ve adres oluştururken atılan istekten gelen yanıtlarda veya Geliver panelinde Adresler menüsünde adreslerin ID bilgilerine erişim sağlayabilirsiniz.
+
+Tek bir adresi listeleme isteği
+cURL
+curl --location --globoff 'https://api.geliver.io/api/v1/addresses/addressID' \
+--header 'Authorization: Bearer {{bearerToken}}'
+
+Tek bir adresi listeleme isteğine gelen yanıt
+200 OK
+{
+"result": true,
+"additionalMessage": "Success",
+"data": {
+    "id": "d7e3a680-4926-478a-82ea-89e9a23d2f36",
+    "createdAt": "2025-03-07T14:00:00.000000+03:00",
+    "updatedAt": "2025-03-07T14:00:00.000000+03:00",
+    "shortName": "Test Adres",
+    "name": "İsim Soyisim",
+    "email": "isim.soyisim@mail.com",
+    "phone": "+905321234567",
+    "address1": "Başakşehir Mh. 1234. Sk. No: 22 Kat: 2 Daire: 5",
+    "address2": "",
+    "cityCode": "34",
+    "cityName": "İstanbul",
+    "city": null,
+    "state": "",
+    "zip": "34488",
+    "districtID": 100202,
+    "districtName": "Başakşehir",
+    "district": {
+    "name": "Başakşehir",
+    "districtID": 100202,
+    "cityCode": "34",
+    "regionCode": null,
+    "countryCode": "TR"
+    },
+    "streetID": null,
+    "streetName": "",
+    "countryCode": "TR",
+    "countryName": "Türkiye",
+    "source": null,
+    "isDefaultSenderAddress": false,
+    "isDefaultReturnAddress": false,
+    "isRecipientAddress": false,
+    "isInvoiceAddress": false,
+    "isActive": true
+}
+}
+
+Yanıt içerisindeki alanların açıklamaları
+id
+🔸
+string
+Oluşturulan adresin benzersiz ID'si.
+
+createdAt
+🔸
+string
+Adresin oluşturulma zamanı (ISO 8601 formatında).
+
+updatedAt
+🔸
+string
+Adresin son güncelleme zamanı (ISO 8601 formatında).
+
+shortName
+🔸
+string
+Adres için kısa tanımlayıcı isim.
+
+name
+🔸
+string
+Gönderici adı veya şirket adı.
+
+email
+🔸
+string
+Gönderici e-posta adresi.
+
+phone
+🔸
+string
+Gönderici telefon numarası.
+
+address1
+🔸
+string
+Adresin birinci satır bilgisi.
+
+address2
+🔸
+string
+Adresin ikinci satır bilgisi.
+
+cityCode
+🔸
+string
+Şehir plaka kodu.
+
+cityName
+🔸
+string
+Şehir adı.
+
+city
+🔸
+object
+Detaylı şehir bilgisi; mevcut değilse null.
+
+state
+🔸
+string
+Bölge veya eyalet bilgisi (varsa).
+
+zip
+🔸
+string
+Posta kodu.
+
+districtID
+🔸
+number
+İlçe ID, 'Adresler > İlçeleri Listeleme' bölümünden elde edilebilir.
+
+districtName
+🔸
+string
+İlçe adı.
+
+district
+🔸
+object
+İlçeye ilişkin detaylı bilgileri içerir.
+
+name
+🔸
+string
+İlçe adı.
+
+districtID
+🔸
+number
+İlçe ID'si.
+
+cityCode
+🔸
+string
+İlçenin bağlı olduğu şehrin plaka kodu.
+
+regionCode
+🔸
+string
+Bölge kodu; mevcut değilse null.
+
+countryCode
+🔸
+string
+Ülke kodu.
+
+streetID
+🔸
+number
+Sokak veya mahalle ID'si; mevcut değilse null.
+
+streetName
+🔸
+string
+Sokak veya mahalle adı.
+
+countryCode
+🔸
+string
+Ülke kodu.
+
+countryName
+🔸
+string
+Ülke adı.
+
+source
+🔸
+object
+Kaynak bilgisi; mevcut değilse null.
+
+isDefaultSenderAddress
+🔸
+boolean
+Varsayılan gönderici adresi olup olmadığını belirtir.
+
+isDefaultReturnAddress
+🔸
+boolean
+Varsayılan iade adresi olup olmadığını belirtir.
+
+isRecipientAddress
+🔸
+boolean
+Alıcı adresi olarak kullanılıp kullanılmadığını belirtir.
+
+isInvoiceAddress
+🔸
+boolean
+Fatura adresi olup olmadığını belirtir.
+
+isActive
+🔸
+boolean
+Adresin aktif olup olmadığını belirtir.
+
+Adres silme
+Geliver sisteminde kayıt olan adresleri silmek için aşağıdaki isteği kullanabilirsiniz. Adresi silmek için ID bilgisine ihtiyacınız vardır. Tüm adresleri listelerken attığınız istekten ve adres oluştururken atılan istekten gelen yanıtlarda veya Geliver panelinde Adresler menüsünde adreslerin ID bilgilerine erişim sağlayabilirsiniz.
+
+Adres silme isteği
+cURL
+curl --location --globoff --request DELETE 'https://api.geliver.io/api/v1/addresses/addressID' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {{bearerToken}}'
+
+Adres silme isteğine gelen yanıt
+200 OK
+{
+"result": true,
+"data": {
+    "id": "1dc8bd3f-d050-44a8-a6e7-029b619eaeec",
+    "createdAt": "2025-03-07T20:10:31.123257+03:00",
+    "updatedAt": "2025-03-07T20:10:31.123257+03:00",
+    "shortName": "",
+    "name": "İsim soyisim",
+    "email": "isimsoyisim@gmail.com",
+    "phone": "+905051234567",
+    "address1": "Address Test Json 2-1",
+    "address2": "Address Test Json 2-2",
+    "cityCode": "34",
+    "cityName": "Istanbul",
+    "city": null,
+    "state": "",
+    "zip": "34020",
+    "districtID": 107605,
+    "districtName": "Esenyurt",
+    "district": null,
+    "streetID": null,
+    "streetName": "",
+    "countryCode": "TR",
+    "countryName": "Türkiye",
+    "source": null,
+    "isDefaultSenderAddress": false,
+    "isDefaultReturnAddress": false,
+    "isRecipientAddress": true,
+    "isInvoiceAddress": false,
+    "isActive": false
+}
+}
+
+Şehirleri listeleme
+Geliver API ile çalışırken şehir ve ilçelerin sorunsuz çalışması için, şehir ve ilçe listeleme isteklerimizi kullanmalı ve adreslerinizde buradaki ilçe ve şehir ID'lerini eklemelisiniz.
+
+Şehirleri listeleme isteği
+cURL
+curl --location --globoff 'https://api.geliver.io/api/v1/cities?countryCode=TR'
+
+Şehirleri listeleme isteğine gelen yanıt
+200 OK
+
+{
+"result": true,
+"additionalMessage": "Success",
+"data": [
+    {
+    "name": "Istanbul",
+    "areaCode": "",
+    "cityCode": "34",
+    "countryCode": "TR"
+    },
+    {
+    "name": "Ankara",
+    "areaCode": "",
+    "cityCode": "06",
+    "countryCode": "TR"
+    },
+    {
+    "name": "İzmir",
+    "areaCode": "",
+    "cityCode": "35",
+    "countryCode": "TR"
+    },
+    {
+    "name": "Bursa",
+    "areaCode": "",
+    "cityCode": "16",
+    "countryCode": "TR"
+    },
+    {
+    "name": "Antalya",
+    "areaCode": "",
+    "cityCode": "07",
+    "countryCode": "TR"
+    }
+]
+}
+
+Yanıt içerisindeki alanların açıklamaları
+name
+🔸
+string
+Şehrin adı.
+
+areaCode
+🔸
+string
+Şehrin alan kodu; mevcut değilse boş string.
+
+cityCode
+🔸
+string
+Şehir plaka kodu.
+
+countryCode
+🔸
+string
+Ülke kodu.
+
+İlçeleri listeleme
+Geliver API ile çalışırken şehir ve ilçelerin sorunsuz çalışması için, şehir ve ilçe listeleme isteklerimizi kullanmalı ve adreslerinizde buradaki ilçe ve şehir ID'lerini eklemelisiniz.
+
+İlçeleri listeleme isteği
+cURL
+curl --location --globoff 'https://api.geliver.io/api/v1/districts?countryCode=TR&cityCode=34'
+
+cityCode
+🔸
+int
+zorunlu
+İlçelerini listelemek istediğiniz şehrin plaka kodu
+
+İlçeleri listeleme isteğine gelen yanıt
+200 OK
+
+{
+"result": true,
+"additionalMessage": "Success",
+"data": [
+    {
+    "name": "Adalar",
+    "districtID": 107062,
+    "cityCode": "34",
+    "regionCode": null,
+    "countryCode": "TR"
+    },
+    {
+    "name": "Arnavutköy",
+    "districtID": 107188,
+    "cityCode": "34",
+    "regionCode": null,
+    "countryCode": "TR"
+    },
+    {
+    "name": "Ataşehir",
+    "districtID": 107207,
+    "cityCode": "34",
+    "regionCode": null,
+    "countryCode": "TR"
+    },
+    {
+    "name": "Avcılar",
+    "districtID": 107213,
+    "cityCode": "34",
+    "regionCode": null,
+    "countryCode": "TR"
+    },
+    {
+    "name": "Bağcılar",
+    "districtID": 107308,
+    "cityCode": "34",
+    "regionCode": null,
+    "countryCode": "TR"
+    }
+]
+}
+
+#### Yanıt içerisindeki alanların açıklamaları
+
+name
+🔸
+string
+İlçenin adı.
+
+districtID
+🔸
+number
+İlçenin benzersiz ID'si.
+
+cityCode
+🔸
+string
+İlçenin bağlı olduğu şehrin plaka kodu.
+
+regionCode
+🔸
+string
+Bölge kodu; mevcut değilse null değeri alır.
+
+countryCode
+🔸
+string
+İlçenin bağlı olduğu ülkenin kodu.
+
+Gönderi oluşturup ve teklifleri alma
+Geliver API kullanarak, Geliver anlaşmalı kargo firmalarından etiket satın alarak, kapıda ödemeli gönderi oluşturarak ve kendi anlaşmalarınızı kullanarak gönderim yapabilirsiniz. Bunun için kargo gönderisi oluşturmanız gerekmektedir. Bu gönderilerin oluşturulması için farklı istekler kullanmanız gerekmektedir.
+
+Gönderi oluşturup teklifleri alma isteği
+Bilgi
+Aşağıdaki cURL test gönderisi oluşturmak amacıyla test alanı true olacak şekilde verilmiştir. Canlı ortamda gönderi oluşturmak isterseniz test alanının false'a çekilmesi gerekmektedir.
+
+cURL
+
+curl --request POST \
+--url https://api.geliver.io/api/v1/shipments \
+--header 'Authorization: Bearer {{bearerToken}}' \
+--header 'Content-Type: application/json' \
+--data '{
+  "test": true,
+  "senderAddressID": "b6029b1b-cc61-4263-95c3-2bd17614c9d6",
+  "returnAddressID": "b6029b1b-cc61-4263-95c3-2bd17614c9d6",
+  "length": "10",
+  "height": "10",
+  "width": "10",
+  "distanceUnit": "cm",
+  "weight": "1",
+  "massUnit": "kg",
+  "items":
+  [
+    {"title":"test product", "quantity":1}
+  ],
+  "recipientAddress":{
+    "name": "Test Company Name",
+    "email": "Test Email",
+    "phone": "+905051234567",
+    "address1": "Celal Bayar Üniversitesi Teknokenti Daire 102",
+    "countryCode": "TR",
+    "cityCode": "45",
+    "districtName": "Yunusemre"
+  },
+    "productPaymentOnDelivery":false,
+    "order": {
+        "sourceCode": "API",
+        "sourceIdentifier": "https://magazaadresiniz.com",
+        "orderNumber": "ABC12333322",
+        "totalAmount": 150,
+        "totalAmountCurrency": "TL"
+    }
+}'
+
+test
+🔸
+string
+Geliştirme sırasında test gönderisi oluştururken true değerini verirseniz ücretsiz olan test tekliflerini getirir. Test edebilmeniz için bu test gönderilerinde gönderi bilgilerini her çektiğinizde (app’ten veya api’den) gönderi dağıtım durumu alıcıya ulaşana kadar her seferde güncellenir. Canlıya çıktığınızda false’a çekmeyi unutmayın.
+
+senderAddressID
+🔸
+string
+Gönderici adres ID’si. Arayüzdeki adresler bölümünden veya /addresses endpointinden adreslerinizi düzenleyebilirsiniz.
+
+recipientAddressID
+🔸
+string
+Gönderici adres ID’si. Arayüzdeki adresler bölümünden veya /addresses endpointinden adreslerinizi düzenleyebilirsiniz. Boş ise senderAddressID kullanılır.
+
+parcelTemplateID
+🔸
+string
+Kargo boyutları için hazır şablon kullanabilirsiniz. Bu alanı kullanırsanız aşağıdaki length, height, width, distanceUnit boyutları ignore edilir. Weight ve massUnit yine geçerli olur.
+
+length
+🔸
+string
+zorunlu
+Kargo gönderisi uzunluğu. Varsayılan olarak cm cinsinden. Uzunluk ölçüsünü distanceUnit alanıyla değiştirebilirsiniz.
+
+height
+🔸
+string
+zorunlu
+Kargo gönderisi yüksekliği. Varsayılan olarak cm cinsinden. Uzunluk ölçüsünü distanceUnit alanıyla değiştirebilirsiniz.
+
+width
+🔸
+string
+zorunlu
+Kargo gönderisi genişliği. Varsayılan olarak cm cinsinden. Uzunluk ölçüsünü distanceUnit alanıyla değiştirebilirsiniz.
+
+distanceUnit
+🔸
+string
+zorunlu
+Kargo gönderisi uzunluk cinsi. Varsayılan olarak “cm” değerindedir.
+
+weight
+🔸
+string
+zorunlu
+Kargo gönderisi ağırlığı. Varsayılan olarak kg cinsinden. Uzunluk ölçüsünü massUnit alanıyla değiştirebilirsiniz.
+
+massUnit
+🔸
+string
+zorunlu
+Kargo gönderisi ağırlık cinsi. Varsayılan olarak “kg” değerindedir.
+
+items
+🔸
+array
+zorunlu
+Paketin içindeki ürün bilgileri
+
+title
+🔸
+string
+zorunlu
+Paketin içindeki ürünlerin ismi
+
+quantity
+🔸
+int
+zorunlu
+Paketin içindeki ürünlerin sayısı
+
+name
+🔸
+string
+zorunlu
+Gönderici adı / Şirket adı
+
+email
+🔸
+string
+zorunlu
+E-posta adresi
+
+phone
+🔸
+string
+Telefon numarası
+
+address1
+🔸
+string
+zorunlu
+Adres satırı 1
+
+countryCode
+🔸
+string
+zorunlu
+Ülke kodu
+
+cityCode
+🔸
+string
+zorunlu
+Şehir Plaka Kodu
+
+districtName
+🔸
+string
+zorunlu
+İlçe adı. Eğer districtID kullanılmadıysa zorunlu. Adresler > İlçeleri listeleme kısmından ilçelere ve ID bilgilerine ulaşabilirsiniz.
+
+productPaymentOnDelivery
+🔸
+bool
+zorunlu
+Kapıda ödemeli kargo tekliflerini alabilmeyi sağlar. Kapıda ödemeli kargo teklifleri almak istemiyorsanız bu fieldı false bırakabilir veya isteğinizden kaldırabilirsiniz.
+
+sourceCode
+🔸
+string
+zorunlu
+API üzerinden yapılan istekler için sabit “API” olarak gönderilir.
+
+sourceIdentifier
+🔸
+string
+zorunlu
+Gönderinin hangi web site veya uygulama tarafından oluşturulduğunu belirten alandır. Bu alanı daha sonra takip bilgisini alırken gönderi kaynağını eşlemek için kullanabilirsiniz.
+
+orderNumber
+🔸
+string
+zorunlu
+Takip bilgisi alınırken gönderinin oluşturulduğu kaynaktaki ilgili kayıt (sipariş) ile eşlemek için kullanılan string alandır.
+
+totalAmount
+🔸
+int
+zorunlu
+Gönderideki ürünün toplam fiyatını ifade eden integer alandır. Kapıda ödemede alıcıdan alınacak tutar buradan belirtilir. Kapıda ödemeli gönderiler dışında opsiyoneldir.
+
+totalAmountCurrency
+🔸
+string
+zorunlu
+Gönderideki ürünün fiyatının para birimini ifade eden string alandır. Kapıda ödemeli gönderiler dışında opsiyoneldir.
+
+Gönderi oluşturup teklifleri alma isteğine gelen yanıt
+json
+{
+"result": true,
+"additionalMessage": "Success",
+"data": {
+"id": "4aaaf0b4-d071-4edc-a941-cea2f6a78453",
+"createdAt": "2025-03-08T14:59:36.460431984Z",
+"updatedAt": "2025-03-08T14:59:36.460431984Z",
+"test": true,
+"amount": "0",
+"currency": "TL",
+"amountLocal": "0",
+"currencyLocal": "TL",
+"amountVat": "0",
+"amountLocalVat": "0",
+"amountTax": "0",
+"amountLocalTax": "0",
+"totalAmount": "0",
+"totalAmountLocal": "0",
+"amountOld": "0",
+"amountLocalOld": "0",
+"discountRate": "0",
+"bonusBalance": "0",
+"length": "10",
+"width": "10",
+"height": "10",
+"desi": "1",
+"oldDesi": "0",
+"distanceUnit": "cm",
+"weight": "1",
+"oldWeight": "0",
+"massUnit": "kg",
+"useWeightOfItems": false,
+"useDimensionsOfItems": false,
+"trackingStatus": {
+  "id": "2cce95d1-94c9-412a-8208-b703b8a29b99",
+  "createdAt": "2025-03-08T14:59:36.463503109Z",
+  "updatedAt": "2025-03-08T14:59:36.463503109Z",
+  "trackingStatusCode": "PRE_TRANSIT",
+  "trackingSubStatusCode": "information_received",
+  "statusDetails": "",
+  "statusDate": "2025-03-08T14:59:36.463215679Z",
+  "locationName": "",
+  "locationLat": null,
+  "locationLng": null,
+  "hash": "fa6c0693196f824aeb4e7160be102306373f257b44d4f0758313ac4302dffe6f"
+},
+"labelFileType": "PROVIDER_PDF",
+"hidePackageContentOnTag": false,
+"shipmentDate": null,
+"invoiceGenerated": false,
+"refundInvoiceID": null,
+"productPaymentOnDelivery": false,
+"orderID": "246d3aa4-4559-4a40-9299-239068663e3d",
+"order": {
+  "id": "246d3aa4-4559-4a40-9299-239068663e3d",
+  "createdAt": "2025-03-08T14:59:36.457913248Z",
+  "updatedAt": "2025-03-08T14:59:36.457913248Z",
+  "itemIDs": null,
+  "buyerShippingCost": "0",
+  "buyerShipmentMethod": "",
+  "totalAmount": "150",
+  "totalTax": "0",
+  "totalAmountCurrency": "TL",
+  "sourceCode": "API",
+  "sourceIdentifier": "https://magazaadresiniz.com",
+  "orderNumber": "ABC12333322",
+  "orderCode": "",
+  "notes": "",
+  "organizationID": null
+},
+"senderAddressID": "19cf6b59-acd9-475a-961e-31586d69fc80",
+"senderAddress": {
+  "id": "19cf6b59-acd9-475a-961e-31586d69fc80",
+  "createdAt": "2023-04-19T19:17:36.870357+03:00",
+  "updatedAt": "2023-07-26T16:44:24.824542+03:00",
+  "shortName": "Ana adres",
+  "name": "test",
+  "email": "test@gmail.com",
+  "phone": "+90555555555",
+  "address1": "Cumhuriyet Mh. 5951. Sk. No: 17 Kat: 3 Daire: 8 Yunusemre/Manisa",
+  "address2": "",
+  "cityCode": "14",
+  "cityName": "Bolu",
+  "city": null,
+  "state": "",
+  "zip": "45125",
+  "districtID": 107665,
+  "districtName": "Gerede",
+  "district": null,
+  "streetID": null,
+  "streetName": "",
+  "countryCode": "TR",
+  "countryName": "Türkiye",
+  "source": null,
+  "isDefaultSenderAddress": true,
+  "isDefaultReturnAddress": true,
+  "isRecipientAddress": false,
+  "isInvoiceAddress": false,
+  "isActive": true
+},
+"recipientAddressID": "19e8b663-ce2b-4169-9c99-d68d7604866e",
+"recipientAddress": {
+  "id": "19e8b663-ce2b-4169-9c99-d68d7604866e",
+  "createdAt": "2025-03-08T14:59:36.453831898Z",
+  "updatedAt": "2025-03-08T14:59:36.453831898Z",
+  "shortName": "",
+  "name": "Test Company Name",
+  "email": "Test Email",
+  "phone": "+905051234567",
+  "address1": "Celal Bayar Üniversitesi Teknokenti Daire 102",
+  "address2": "",
+  "cityCode": "45",
+  "cityName": "Manisa",
+  "city": null,
+  "state": "",
+  "zip": "45000",
+  "districtID": 108740,
+  "districtName": "Yunusemre",
+  "district": null,
+  "streetID": null,
+  "streetName": "",
+  "countryCode": "TR",
+  "countryName": "Türkiye",
+  "source": null,
+  "isDefaultSenderAddress": false,
+  "isDefaultReturnAddress": false,
+  "isRecipientAddress": true,
+  "isInvoiceAddress": false,
+  "isActive": true
+},
+"createReturnLabel": false,
+"statusCode": "GOT_OFFERS",
+"offers": {
+  "createdAt": "2025-03-08T14:59:36.471644998Z",
+  "updatedAt": "2025-03-08T14:59:36.471644998Z",
+  "length": "10",
+  "width": "10",
+  "height": "10",
+  "weight": "1",
+  "cheapest": {
+    "id": "16bc98bb-3d1f-4bc1-8acd-14d2422301e6",
+    "createdAt": "2025-03-08T14:59:36.476579071Z",
+    "updatedAt": "2025-03-08T14:59:36.476579071Z",
+    "amount": "0",
+    "currency": "TL",
+    "amountLocal": "0",
+    "currencyLocal": "TL",
+    "amountVat": "0",
+    "amountLocalVat": "0",
+    "amountTax": "0",
+    "amountLocalTax": "0",
+    "totalAmount": "0",
+    "totalAmountLocal": "0",
+    "amountOld": "0",
+    "amountLocalOld": "0",
+    "discountRate": "0",
+    "bonusBalance": "0",
+    "providerCode": "GELIVER",
+    "providerServiceCode": "GELIVER_STANDART",
+    "averageEstimatedTimeHumanReadible": "01 gün 00 saat",
+    "durationTerms": "",
+    "rating": 0,
+    "isAccepted": false,
+    "isGlobal": true,
+    "isC2C": true,
+    "integrationType": "C2C",
+    "isMainOffer": false,
+    "isProviderAccountOffer": false,
+    "providerAccountOwnerType": "",
+    "providerAccountName": null
+  },
+  "fastest": {
+    "id": "16bc98bb-3d1f-4bc1-8acd-14d2422301e6",
+    "createdAt": "2025-03-08T14:59:36.476579071Z",
+    "updatedAt": "2025-03-08T14:59:36.476579071Z",
+    "amount": "0",
+    "currency": "TL",
+    "amountLocal": "0",
+    "currencyLocal": "TL",
+    "amountVat": "0",
+    "amountLocalVat": "0",
+    "amountTax": "0",
+    "amountLocalTax": "0",
+    "totalAmount": "0",
+    "totalAmountLocal": "0",
+    "amountOld": "0",
+    "amountLocalOld": "0",
+    "discountRate": "0",
+    "bonusBalance": "0",
+    "providerCode": "GELIVER",
+    "providerServiceCode": "GELIVER_STANDART",
+    "averageEstimatedTimeHumanReadible": "01 gün 00 saat",
+    "durationTerms": "",
+    "rating": 0,
+    "isAccepted": false,
+    "isGlobal": true,
+    "isC2C": true,
+    "integrationType": "C2C",
+    "isMainOffer": false,
+    "isProviderAccountOffer": false,
+    "providerAccountOwnerType": "",
+    "providerAccountName": null
+  },
+  "list": [
+    {
+      "id": "16bc98bb-3d1f-4bc1-8acd-14d2422301e6",
+      "createdAt": "2025-03-08T14:59:36.476579071Z",
+      "updatedAt": "2025-03-08T14:59:36.476579071Z",
+      "amount": "0",
+      "currency": "TL",
+      "amountLocal": "0",
+      "currencyLocal": "TL",
+      "amountVat": "0",
+      "amountLocalVat": "0",
+      "amountTax": "0",
+      "amountLocalTax": "0",
+      "totalAmount": "0",
+      "totalAmountLocal": "0",
+      "amountOld": "0",
+      "amountLocalOld": "0",
+      "discountRate": "0",
+      "bonusBalance": "0",
+      "providerCode": "GELIVER",
+      "providerServiceCode": "GELIVER_STANDART",
+      "averageEstimatedTimeHumanReadible": "01 gün 00 saat",
+      "durationTerms": "",
+      "rating": 0,
+      "isAccepted": false,
+      "isGlobal": true,
+      "isC2C": true,
+      "integrationType": "C2C",
+      "isMainOffer": false,
+      "isProviderAccountOffer": false,
+      "providerAccountOwnerType": "",
+      "providerAccountName": null
+    },
+    {
+      "id": "1f26245c-db36-4bce-ac57-6f443847ec4f",
+      "createdAt": "2025-03-08T14:59:36.48203158Z",
+      "updatedAt": "2025-03-08T14:59:36.48203158Z",
+      "amount": "1.25",
+      "currency": "TL",
+      "amountLocal": "1.25",
+      "currencyLocal": "TL",
+      "amountVat": "0.25",
+      "amountLocalVat": "0.25",
+      "amountTax": "0",
+      "amountLocalTax": "0",
+      "totalAmount": "1.5",
+      "totalAmountLocal": "1.5",
+      "amountOld": "0",
+      "amountLocalOld": "0",
+      "discountRate": "0",
+      "bonusBalance": "0",
+      "providerCode": "PTT",
+      "providerServiceCode": "PTT_STANDART",
+      "providerAccountID": "73344ee2-2ae8-4f2c-84df-219541adcd24",
+      "averageEstimatedTime": 88968000000000,
+      "averageEstimatedTimeHumanReadible": "02 gün 00 saat",
+      "durationTerms": "",
+      "rating": 0,
+      "isAccepted": false,
+      "isGlobal": false,
+      "isC2C": false,
+      "integrationType": "DEFAULT",
+      "isMainOffer": false,
+      "isProviderAccountOffer": true,
+      "providerAccountOwnerType": "CURRENT_ORGANIZATION",
+      "providerAccountName": "FRD"
+    }
+  ],
+  "percentageCompleted": 100,
+  "totalOffersRequested": 2,
+  "totalOffersCompleted": 2,
+  "allowOfferFallback": false
+},
+"acceptedOffer": null,
+"enableAutomation": false,
+"items": [
+  {
+    "id": "16ded0d4-8c11-4854-a7a1-0c84d76d2f85",
+    "createdAt": "2025-03-08T14:59:36.462405077Z",
+    "updatedAt": "2025-03-08T14:59:36.462405077Z",
+    "title": "test product",
+    "variantTitle": "",
+    "quantity": 1,
+    "unitWeight": "0",
+    "totalPrice": "0",
+    "totalPriceLocal": "0",
+    "massUnit": "",
+    "unitPrice": "0",
+    "currency": null,
+    "unitPriceLocal": "0",
+    "currencyLocal": "",
+    "countryOfOrigin": "",
+    "maxShipTime": null,
+    "maxDeliveryTime": null,
+    "sku": ""
+  }
+],
+"organizationShipmentID": 76,
+"providerBranchName": null,
+"providerInvoiceNo": null,
+"providerReceiptNo": null,
+"providerSerialNo": null,
+"hasError": false,
+"lastErrorMessage": null,
+"lastErrorCode": null,
+"cancelDate": "0001-01-01T00:00:00Z",
+"isReturned": false,
+"isReturn": false,
+"isTrackingOnly": false,
+"isRecipientSmsActivated": true,
+"packageAcceptedAt": null,
+"tenantId": null
+}
+}
+
+Üst Düzey (Meta) Bilgiler
+İşlemin genel durumunu belirten temel alanlardır. Burada, işlemin başarılı olup olmadığı, ek mesaj ve ana veri nesnesinin varlığı kontrol edilmektedir.
+
+result
+🔸
+boolean
+zorunlu
+İşlemin başarılı olup olmadığını gösterir.
+
+code
+🔸
+string
+Eğer istek başarısız ise hata kodu burada bulunur.
+
+message
+🔸
+string
+Eğer istek başarısız ise hata mesajı burada bulunur.
+
+additionalMessage
+🔸
+string
+Sadece test ortamı için geçerli olan detaylı hata mesajı.
+
+data
+🔸
+object
+zorunlu
+Oluşturulan gönderinin kaydı.
+
+Teklif Bilgileri
+offers
+🔸
+object
+zorunlu
+Gönderiye yapılan teklifler. Anlık olarak oluşturulmaktadır. Tamamlanan teklif yüzdesini percentageCompleted alanından takip edebilirsiniz.
+
+offers.percentageCompleted
+🔸
+number
+zorunlu
+Tekliflerin tamamlanan yüzdesi. 100 ise tüm teklifler alınmıştır. 100 değilse /shipments/{id} ile tekrar çağrı yapabilirsiniz.
+
+offers.totalOffersCompleted
+🔸
+number
+zorunlu
+Alınan toplam teklif sayısı.
+
+offers.list
+🔸
+array
+zorunlu
+Alınan tüm teklifleri bu alanda fiyatlarıyla görebilirsiniz.
+
+offers.list.id
+🔸
+string
+zorunlu
+Tekliflerin her birinin id’si. İstediğiniz ödemeyi kabul etmek için ödeme adımında id alanına ihtiyacınız olacak.
+
+offers.list.amount
+🔸
+string
+zorunlu
+Tekliflerin her birinin fiyatı (vergiler hariç).
+
+offers.list.amountTax
+🔸
+string
+zorunlu
+Tekliflerin her birinin sadece vergilerinin ücretleri toplamı.
+
+offers.list.amountVat
+🔸
+string
+zorunlu
+Tekliflerin her birinin sadece KDV’sinin ücreti.
+
+offers.list.totalAmount
+🔸
+string
+zorunlu
+Tekliflerin her birinin vergiler dahil toplam ücreti.
+
+offers.list.currency
+🔸
+string
+zorunlu
+Tekliflerin her birinin para birimi kısaltması.
+
+offers.cheapest
+🔸
+object
+zorunlu
+Alınan en ucuz teklif. Bu teklifi kabul etmek için teklifin id alanına ihtiyacınız olacak. Amount ve currency bilgisi tüm tekliflerdeki gibi bulunmakta.
+
+offers.fastest
+🔸
+object
+zorunlu
+Alınan en hızlı teslimat yapabilecek teklif. Bu teklifi kabul etmek için teklifin id alanına ihtiyacınız olacak. Amount ve currency bilgisi tüm tekliflerdeki gibi bulunmakta.
+
+Sipariş (Gönderi) Bilgileri
+Bu kısım, siparişin temel kimlik bilgileri, oluşturulma ve güncelleme zamanları, durum kodu ve toplam tutar gibi kritik bilgileri içerir. Geliştiriciler için siparişin temel durumunu anlamak açısından önemlidir.
+
+id
+🔸
+string
+zorunlu
+Gönderinin benzersiz ID'si.
+
+createdAt
+🔸
+string
+zorunlu
+Gönderinin oluşturulma zamanı.
+
+updatedAt
+🔸
+string
+zorunlu
+Gönderinin güncellenme zamanı.
+
+statusCode
+🔸
+string
+zorunlu
+Gönderi durumu. Alabileceği değerler: CREATED, GOT_OFFERS, OFFER_ACCEPTED, TRACKING_CODE_CREATED, SHIPPED, DELIVERED.
+
+totalAmount
+🔸
+string
+zorunlu
+Gönderinin toplam tutarı.
+
+currency
+🔸
+string
+zorunlu
+Para birimi.
+
+Takip Durum Bilgileri
+Siparişin veya gönderinin takip sürecine ait bilgiler bu bölümde yer almaktadır. Takip durum kodu ve durum tarih bilgisini içerir.
+
+trackingStatus
+🔸
+object
+Gönderinin takip durum bilgileri.
+
+trackingStatusCode
+🔸
+string
+Takip durum kodu.
+
+statusDate
+🔸
+string
+Takip durumunun geçerli tarihi.
+
+labelFileType
+🔸
+string
+Etiket dosya türü. PDF ise Geliver tarafından oluşturulan PDF, PROVIDER_PDF ise kargo firması tarafından oluşturulan PDF dosyasını ifade eder.
+
+hidePackageContentOnTag
+🔸
+boolean
+Etiket üzerinde paket içeriğinin gizlenip gizlenmeyeceğini belirtir.
+
+Sipariş Detayları
+order
+🔸
+object
+Siparişe ait bilgiler.
+
+orderNumber
+🔸
+string
+Sipariş numarası.
+
+totalAmount
+🔸
+string
+Siparişin toplam tutarı.
+
+totalAmountCurrency
+🔸
+string
+Siparişin para birimi.
+
+sourceCode
+🔸
+string
+Siparişin kaynağı (örn: API).
+
+sourceIdentifier
+🔸
+string
+Siparişin oluşturulduğu web site veya uygulama.
+
+Gönderici ve Alıcı Adres Bilgileri
+Gönderici Adres Bilgileri:
+senderAddress
+🔸
+object
+Gönderici adres bilgileri.
+
+id
+🔸
+string
+Gönderici adresinin ID'si.
+
+name
+🔸
+string
+Gönderici adı veya şirket.
+
+address1
+🔸
+string
+Adres satırı 1.
+
+countryCode
+🔸
+string
+Ülke kodu (ISO2).
+
+cityCode
+🔸
+string
+Şehir kodu.
+
+districtName
+🔸
+string
+İlçe adı.
+
+streetName
+🔸
+string
+Cadde adı.
+
+Alıcı Adres Bilgileri:
+recipientAddress
+🔸
+object
+Alıcı adres bilgileri.
+
+id
+🔸
+string
+Alıcı adresinin ID'si.
+
+name
+🔸
+string
+Alıcı adı veya şirket.
+
+address1
+🔸
+string
+Adres satırı 1.
+
+countryCode
+🔸
+string
+Ülke kodu (ISO2).
+
+cityCode
+🔸
+string
+Şehir kodu.
+
+districtName
+🔸
+string
+İlçe adı.
+
+streetName
+🔸
+string
+Cadde adı.
+
+Ürün (Item) Bilgileri – Özet
+Siparişte yer alan ürünlerin temel bilgileri
+
+items
+🔸
+array
+Siparişe ait ürün öğelerinin bulunduğu dizi.
+
+title
+🔸
+string
+Ürün başlığı.
+
+quantity
+🔸
+number
+Ürün adedi.
+
+totalPrice
+🔸
+string
+Ürünün toplam fiyatı.
+
+unitWeight
+🔸
+number
+Ürünün birim ağırlığı.
+
+sku
+🔸
+string
+Ürün stok kodu (SKU).
+
+Hata Kodları
+Hata Kodu	Açıklama
+E1054	Gönderi parse edilemedi. İsteğin yanlış olduğunu belirtir.
+E1055	Bu işlemi yapmaya yetkiniz yok.
+E1053	Organizasyon bulunamadı
+E1068	Gönderici adresi (senderAddressID) bulunamadı. Lütfen addresses endpointi ile adresin varolduğunu kontrol edin
+E1056	Alıcı adresi oluşturulamadı
+E1057	Sipariş oluşturulamadı
+E1058	Gönderi kaydedilemedi
+E1129	Alıcı adresi boş
+E1130	Alıcı şehri boş
+E1131	Alıcı ülkesi boş
+E1132	Alıcı ilçesi boş
+E1133	Alıcı ismi boş
+E1134	Alıcı telefon numarası boş
+E1136	Alıcı e-posta adresi boş
+Tek aşamada etiketi satın alma
+Geliver API kullanarak, Geliver anlaşmalı kargo firmalarından etiket satın alarak, kapıda ödemeli gönderi oluşturarak ve kendi anlaşmalarınızı kullanarak gönderim yapabilirsiniz. Bunun için kargo gönderisi oluşturmanız gerekmektedir. Bu gönderilerin oluşturulması için farklı istekler kullanmanız gerekmektedir.
+
+Tek aşamada etiketi satın alma isteği
+Tek aşamada gönderi oluşturmak için providerServiceCode belirlemeniz gerekmektedir. providerServiceCode'lara Gönderiler menüsü altından ulaşabilirsiniz.
+
+Bilgi
+Aşağıdaki cURL test gönderisi oluşturmak amacıyla test alanı true olacak şekilde verilmiştir. Canlı ortamda gönderi oluşturmak isterseniz test alanının false'a çekilmesi gerekmektedir.
+
+cURL
+curl --location 'https://api.geliver.io/api/v1/transactions' \
+--header 'Authorization: Bearer {{bearerToken}}' \
+--header 'Content-Type: application/json' \
+--data '{
+"providerServiceCode": "GELIVER_STANDART",
+"shipment": {
+    "test": true,
+    "recipientAddress": {
+        "name": "Test Company Name",
+        "phone": "+905051234567",
+        "address1": "Celal Bayar Üniversitesi Teknokenti Daire 102",
+        "countryCode": "TR",
+        "cityCode": "45",
+        "districtName": "Yunusemre"
+    },
+    "length": "10",
+    "height": "10",
+    "width": "10",
+    "distanceUnit": "cm",
+    "weight": "1",
+    "massUnit": "kg",
+    "items":[{"title":"test product", "quantity":1},
+    {"title":"test product", "quantity":1},
+    {"title":"test product", "quantity":1}],
+    "productPaymentOnDelivery": false,
+    "hidePackageContentOnTag": false,
+    "order": {
+        "sourceCode": "API",
+        "sourceIdentifier": "https://magazaadresiniz.com",
+        "orderNumber": "ABC12333322",
+        "totalAmount": 150,
+        "totalAmountCurrency": "TL"
+    }
+}
+}'
+
+providerServiceCode
+🔸
+string
+zorunlu
+Soldaki Gönderiler menüsünden sağlayıcı servis kodlarına erişebilir ve satın alım yapmak istediğiniz kargoyu seçebilirsiniz.
+
+test
+🔸
+string
+Geliştirmelerinizde kullanabileceğiniz test kargomuzu aktifleştirir. Test gönderisi oluşturur. Geliştirmelerinizi tamamladıktan sonra false'a çekmeyi unutmayın.
+
+senderAddressID
+🔸
+string
+Gönderici adresinizin ID'si. Adresler menüsünden gönderici adresi oluşturabilir, varsa listeleyerek ID'sini alabilirsiniz.
+
+recipientAddressID
+🔸
+string
+Alıcı adresinizin ID'si. Adresler menüsünden alıcı adresi oluşturabilir, varsa listeleyerek ID'sini alabilirsiniz. İstek içerisinde adresi aşağıdaki recipientAddress alanından göndermek istiyorsanız bu alanı göndermenize gerek yoktur.
+
+length
+🔸
+string
+zorunlu
+Paketin uzunluk bilgisi
+
+height
+🔸
+string
+zorunlu
+Paketin yükseklik bilgisi
+
+width
+🔸
+string
+zorunlu
+Paketin genişlik bilgisi
+
+distanceUnit
+🔸
+string
+zorunlu
+Uzunluk birimi
+
+weight
+🔸
+string
+zorunlu
+Paketin ağırlığı
+
+massUnit
+🔸
+string
+zorunlu
+Kütle birimi
+
+items
+🔸
+array
+zorunlu
+Paketin içindeki ürün bilgileri
+
+title
+🔸
+string
+zorunlu
+Paketin içindeki ürünlerin ismi
+
+quantity
+🔸
+int
+zorunlu
+Paketin içindeki ürünlerin sayısı
+
+name
+🔸
+string
+zorunlu
+Gönderici adı / Şirket adı
+
+email
+🔸
+string
+zorunlu
+E-posta adresi
+
+phone
+🔸
+string
+Telefon numarası
+
+address1
+🔸
+string
+zorunlu
+Adres satırı 1
+
+countryCode
+🔸
+string
+zorunlu
+Ülke kodu
+
+cityCode
+🔸
+string
+zorunlu
+Şehir Plaka Kodu
+
+districtName
+🔸
+string
+zorunlu
+İlçe adı
+
+productPaymentOnDelivery
+🔸
+bool
+zorunlu
+Kapıda ödemeli gönderi oluşturmak için true olarak gönderebilirsiniz.
+
+sourceCode
+🔸
+string
+zorunlu
+Kaynak Kodu, API olarak gönderebilirsiniz.
+
+sourceIdentifier
+🔸
+string
+zorunlu
+Mağazanızın web site adresi.
+
+orderNumber
+🔸
+string
+zorunlu
+Mağazanızdaki sipariş kodu
+
+totalAmount
+🔸
+int
+zorunlu
+Siparişinizin tutarı, kapıda ödemeli siparişleriniz için tutarı düzgün yolladığınızdan emin olun.
+
+totalAmountCurrency
+🔸
+string
+zorunlu
+Sipariş tutarınızın para birimi
+
+Tek aşamada etiketi satın alma isteğine gelen yanıt
+json
+{
+"result": true,
+"message": "Success",
+"data": {
+"id": "13dce14b-c85d-4407-b248-d6107a90a44b",
+"createdAt": "2025-03-08T03:12:55.750138+03:00",
+"updatedAt": "2025-03-08T00:12:55.820875176Z",
+"amount": "0",
+"currency": "TL",
+"amountLocal": "0",
+"currencyLocal": "TL",
+"amountVat": "0",
+"amountLocalVat": "0",
+"amountTax": "0",
+"amountLocalTax": "0",
+"totalAmount": "0",
+"totalAmountLocal": "0",
+"amountOld": "0",
+"amountLocalOld": "0",
+"discountRate": "0",
+"bonusBalance": "0",
+"offerID": "110c1382-8080-47c2-9d8b-c361aec750ca",
+"shipment": {
+  "id": "1cd609f5-b4a2-45a4-8354-203aa5ee7900",
+  "createdAt": "2025-03-08T03:12:55.708235+03:00",
+  "updatedAt": "2025-03-08T03:12:55.819749+03:00",
+  "test": true,
+  "amount": "0",
+  "currency": "TL",
+  "amountLocal": "0",
+  "amountVat": "0",
+  "amountLocalVat": "0",
+  "amountTax": "0",
+  "amountLocalTax": "0",
+  "totalAmount": "0",
+  "totalAmountLocal": "0",
+  "amountOld": "0",
+  "amountLocalOld": "0",
+  "discountRate": "0",
+  "bonusBalance": "0",
+  "length": "10",
+  "width": "10",
+  "height": "10",
+  "desi": "1",
+  "oldDesi": "0",
+  "distanceUnit": "cm",
+  "weight": "1",
+  "oldWeight": "0",
+  "massUnit": "kg",
+  "useWeightOfItems": false,
+  "useDimensionsOfItems": false,
+  "trackingStatus": null,
+  "barcode": "90522705",
+  "labelFileType": "PROVIDER_PDF",
+  "labelURL": "https://api.geliver.io/labels/1cd609f5-b4a2-45a4-8354-203aa5ee7900.pdf",
+  "responsiveLabelURL": "https://api.geliver.io/api/v1/responsivelabels/1cd609f5-b4a2-45a4-8354-203aa5ee7900/5f41",
+  "hidePackageContentOnTag": false,
+  "shipmentDate": null,
+  "invoiceGenerated": false,
+  "refundInvoiceID": null,
+  "productPaymentOnDelivery": false,
+  "orderID": "18951c1f-d700-420c-a779-8f82594836df",
+  "order": null,
+  "senderAddressID": "19cf6b59-acd9-475a-961e-31586d69fc80",
+  "senderAddress": null,
+  "recipientAddressID": "1aef1a091-023c-41fc-9861-5a7b4a336825",
+  "recipientAddress": null,
+  "createReturnLabel": false,
+  "statusCode": "TRACKING_CODE_CREATED",
+  "offers": null,
+  "acceptedOfferID": "10c1382-8080-47c2-9d8b-c361aec750ca",
+  "acceptedOffer": null,
+  "providerCode": "GELIVER",
+  "providerServiceCode": "GELIVER_STANDART",
+  "enableAutomation": false,
+  "organizationShipmentID": 65,
+  "providerBranchName": null,
+  "providerInvoiceNo": null,
+  "providerReceiptNo": null,
+  "providerSerialNo": null,
+  "hasError": false,
+  "lastErrorMessage": null,
+  "lastErrorCode": null,
+  "cancelDate": "0001-01-01T00:00:00Z",
+  "isReturned": false,
+  "isReturn": false,
+  "isTrackingOnly": false,
+  "isRecipientSmsActivated": true,
+  "packageAcceptedAt": null,
+  "tenantId": null
+},
+"description": "Yeni gönderi ücretlendirilmesi",
+"isRefund": false,
+"isCustomAccountCharge": false,
+"isPayed": true,
+"payedVia": "BALANCE",
+"transactionType": "CREATE_SHIPMENT",
+"invoiceID": "3a3f7bce-dd2e-4b3f-90ca-d52dae189c86",
+"cancelDescription": "",
+"isCanceled": false,
+"oldBalance": "0",
+"newBalance": "0",
+"invoiceOldDebt": "0",
+"invoiceNewDebt": "0"
+}
+}
+
+
+Diğer alanların detaylı açıklamaları Gönderi oluşturma ve istek kısımlarında verilmiştir. Aşağıdaki bilgiler bu yanıta özel olarak eklenmiştir.
+shipment.id
+🔸
+string
+Gönderinin benzersiz ID'si.
+
+shipment.createdAt
+🔸
+string
+Gönderi oluşturulma zamanı.
+
+shipment.updatedAt
+🔸
+string
+Gönderi güncelleme zamanı.
+
+shipment.labelFileType
+🔸
+string
+Etiket dosya türü. PDF ise Geliver tarafından oluşturulan PDF, PROVIDER_PDF ise kargo firması tarafından oluşturulan PDF dosyasını ifade eder.
+
+shipment.barcode
+🔸
+string
+Etiketinizin sipariş kodu / barkod numarası
+
+shipment.labelURL
+🔸
+string
+Etiket dosyasının URL'si.
+
+shipment.statusCode
+🔸
+string
+Gönderinin durum kodu.
+
+shipment.isTrackingOnly
+🔸
+boolean
+Sadece takip edilen bir gönderi olup olmadığı.
+Tek aşamada kapıda ödeme gönderisi etiketi satın alma
+Geliver API kullanarak, Geliver anlaşmalı kargo firmalarından etiket satın alarak, kapıda ödemeli gönderi oluşturarak ve kendi anlaşmalarınızı kullanarak gönderim yapabilirsiniz. Bunun için kargo gönderisi oluşturmanız gerekmektedir. Bu gönderilerin oluşturulması için farklı istekler kullanmanız gerekmektedir.
+
+Tek aşamada kapıda ödemeli gönderi oluşturma isteği
+cURL
+curl --location 'https://api.geliver.io/api/v1/transactions' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {{bearerToken}}' \
+--data '{
+"providerServiceCode": "PTT_KAPIDA_ODEME",
+"shipment": {
+    "test": false,
+    "senderAddressID": "c385546e-f7dd-4912-b925-493c7c66fc22",
+    "returnAddressID": "c385546e-f7dd-4912-b925-493c7c66fc22",
+    "length": "10",
+    "height": "10",
+    "width": "10",
+    "distanceUnit": "cm",
+    "weight": "1",
+    "massUnit": "kg",
+    "items":[{"title":"test product", "quantity":1}],
+    "recipientAddress":{
+        "name": "Test Company Name",
+        "email": "Test Email",
+        "phone": "+905051234567",
+        "address1": "Celal Bayar Üniversitesi Teknokenti Daire 102",
+        "countryCode": "TR",
+        "cityCode": "45",
+        "districtName": "Yunusemre"
+    },
+    "productPaymentOnDelivery":true,
+    "order": {
+        "sourceCode": "API",
+        "sourceIdentifier": "https://magazaadresiniz.com",
+        "orderNumber": "ABC12333322",
+        "totalAmount": 150,
+        "totalAmountCurrency": "TL"
+    }
+}
+}'
+
+providerServiceCode
+🔸
+string
+zorunlu
+Kargo hizmeti türünü belirten servis kodu. Kapıda ödeme için 'PTT_KAPIDA_ODEME' kullanılabilir.
+
+test
+🔸
+bool
+Geliştirme ve test amaçlı gönderiyi aktifleştirmek için kullanılır. Gerçek gönderilerde false olmalıdır.
+
+senderAddressID
+🔸
+string
+zorunlu
+Gönderici adresinin ID'si. Adresler menüsünden adres oluşturabilir ve ID'sini alabilirsiniz.
+
+returnAddressID
+🔸
+string
+zorunlu
+İade adresinin ID'si. Adresler menüsünden iade adresi oluşturabilir ve ID'sini alabilirsiniz.
+
+length
+🔸
+string
+zorunlu
+Paketin uzunluk bilgisi.
+
+height
+🔸
+string
+zorunlu
+Paketin yükseklik bilgisi.
+
+width
+🔸
+string
+zorunlu
+Paketin genişlik bilgisi.
+
+distanceUnit
+🔸
+string
+zorunlu
+Uzunluk birimi. Örneğin, cm veya inch.
+
+weight
+🔸
+string
+zorunlu
+Paketin ağırlığı.
+
+massUnit
+🔸
+string
+zorunlu
+Ağırlık birimi. Örneğin, kg veya g.
+
+items
+🔸
+array
+zorunlu
+Paketin içindeki ürün bilgileri.
+
+items.title
+🔸
+string
+zorunlu
+Ürünün adı.
+
+items.quantity
+🔸
+int
+zorunlu
+Ürünün sayısı.
+
+recipientAddress
+🔸
+object
+zorunlu
+Alıcı adresi bilgileri.
+
+recipientAddress.name
+🔸
+string
+zorunlu
+Alıcının adı.
+
+recipientAddress.email
+🔸
+string
+zorunlu
+Alıcının e-posta adresi.
+
+recipientAddress.phone
+🔸
+string
+Alıcının telefon numarası.
+
+recipientAddress.address1
+🔸
+string
+zorunlu
+Alıcının adres satırı 1.
+
+recipientAddress.countryCode
+🔸
+string
+zorunlu
+Alıcının ülke kodu.
+
+recipientAddress.cityCode
+🔸
+string
+zorunlu
+Alıcının şehir plaka kodu.
+
+recipientAddress.districtName
+🔸
+string
+zorunlu
+Alıcının ilçe adı.
+
+productPaymentOnDelivery
+🔸
+bool
+zorunlu
+Kapıda ödemeli gönderi oluşturmak için true olmalıdır.
+
+order
+🔸
+object
+zorunlu
+Sipariş bilgileri.
+
+order.sourceCode
+🔸
+string
+zorunlu
+Siparişin kaynağı. API olarak gönderebilirsiniz.
+
+order.sourceIdentifier
+🔸
+string
+zorunlu
+Mağazanızın web site adresi.
+
+order.orderNumber
+🔸
+string
+zorunlu
+Mağazanızdaki sipariş kodu.
+
+order.totalAmount
+🔸
+int
+zorunlu
+Siparişin toplam tutarı.
+
+order.totalAmountCurrency
+🔸
+string
+zorunlu
+Siparişin para birimi.
+
+Yanıt diğer gönderi oluşturma isteğiyle aynı olduğundan eklenmemiştir.
+Tek aşamada kendi anlaşmanız ile etiket satın alma
+Geliver API kullanarak, Geliver anlaşmalı kargo firmalarından etiket satın alarak, kapıda ödemeli gönderi oluşturarak ve kendi anlaşmalarınızı kullanarak gönderim yapabilirsiniz. Bunun için kargo gönderisi oluşturmanız gerekmektedir. Bu gönderilerin oluşturulması için farklı istekler kullanmanız gerekmektedir.
+
+Tek aşamada kendi anlaşmanız ile gönderi oluşturma isteği
+cURL
+curl --location 'https://api.geliver.io/api/v1/transactions' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {{bearerToken}}' \
+--data '{
+"providerAccountID": "f80e40d3-be00-4d7b-b043-e66fb8bcf0c7",
+"providerServiceCode": "SURAT_STANDART",
+"shipment": {
+    "test": false,
+    "senderAddressID": "e80018df-882e-4b90-ad67-0d45fa6df452",
+    "returnAddressID": "e80018df-882e-4b90-ad67-0d45fa6df452",
+    "recipientAddress": {
+        "name": "Test Company Name",
+        "phone": "+905051234567",
+        "address1": "Celal Bayar Üniversitesi Teknokenti Daire 102",
+        "countryCode": "TR",
+        "cityCode": "45",
+        "districtName": "Yunusemre"
+    },
+    "length": "10",
+    "height": "10",
+    "width": "10",
+    "distanceUnit": "cm",
+    "weight": "1",
+    "massUnit": "kg",
+    "items":[{"title":"test product", "quantity":1}],
+    "productPaymentOnDelivery": false,
+    "hidePackageContentOnTag": false,
+    "order": {
+        "sourceCode": "API",
+        "sourceIdentifier": "https://magazaadresiniz.com",
+        "orderNumber": "ABC12333322",
+        "totalAmount": 150,
+        "totalAmountCurrency": "TL"
+    }
+}
+}'
+
+
+providerAccountID
+🔸
+string
+zorunlu
+Kendi anlaşmanızı kullanabilmek için sağlayıcı hesabınızın ID'si.
+
+providerServiceCode
+🔸
+string
+zorunlu
+Kargo sağlayıcınızın servis kodu. Bu, kargo hizmeti türünü belirtir.
+
+test
+🔸
+bool
+Geliştirme ve test amaçlı gönderiyi aktifleştirmek için kullanılır. Gerçek gönderilerde false olmalıdır.
+
+senderAddressID
+🔸
+string
+zorunlu
+Gönderici adresinizin ID'si. Adresler menüsünden gönderici adresi oluşturabilir ve ID'sini alabilirsiniz.
+
+returnAddressID
+🔸
+string
+zorunlu
+Gönderinin iade adresinin ID'si. Adresler menüsünden iade adresi oluşturabilir ve ID'sini alabilirsiniz.
+
+recipientAddress
+🔸
+object
+zorunlu
+Alıcı adresi bilgileri.
+
+recipientAddress.name
+🔸
+string
+zorunlu
+Alıcının adı.
+
+recipientAddress.phone
+🔸
+string
+Alıcının telefon numarası.
+
+recipientAddress.address1
+🔸
+string
+zorunlu
+Alıcının adres satırı 1.
+
+recipientAddress.countryCode
+🔸
+string
+zorunlu
+Alıcının ülke kodu.
+
+recipientAddress.cityCode
+🔸
+string
+zorunlu
+Alıcının şehir plaka kodu.
+
+recipientAddress.districtName
+🔸
+string
+zorunlu
+Alıcının ilçe adı.
+
+length
+🔸
+string
+zorunlu
+Paketin uzunluk bilgisi.
+
+height
+🔸
+string
+zorunlu
+Paketin yükseklik bilgisi.
+
+width
+🔸
+string
+zorunlu
+Paketin genişlik bilgisi.
+
+distanceUnit
+🔸
+string
+zorunlu
+Uzunluk birimi. Örneğin, cm veya inch.
+
+weight
+🔸
+string
+zorunlu
+Paketin ağırlığı.
+
+massUnit
+🔸
+string
+zorunlu
+Ağırlık birimi. Örneğin, kg veya g.
+
+items
+🔸
+array
+zorunlu
+Paketin içindeki ürün bilgileri.
+
+items.title
+🔸
+string
+zorunlu
+Ürünün adı.
+
+items.quantity
+🔸
+int
+zorunlu
+Ürünün sayısı.
+
+productPaymentOnDelivery
+🔸
+bool
+zorunlu
+Kapıda ödemeli gönderi oluşturmak için true olarak gönderebilirsiniz.
+
+hidePackageContentOnTag
+🔸
+bool
+Paket içeriğini etiket üzerinde gizlemek için true gönderebilirsiniz.
+
+order
+🔸
+object
+zorunlu
+Sipariş bilgileri.
+
+order.sourceCode
+🔸
+string
+zorunlu
+Siparişin kaynağı. API olarak gönderebilirsiniz.
+
+order.sourceIdentifier
+🔸
+string
+zorunlu
+Mağazanızın web site adresi.
+
+order.orderNumber
+🔸
+string
+zorunlu
+Mağazanızdaki sipariş kodu.
+
+order.merchantCode
+🔸
+string
+zorunlu
+Mağazanızın kodu.
+
+order.totalAmount
+🔸
+int
+zorunlu
+Siparişin toplam tutarı.
+
+order.totalAmountCurrency
+🔸
+string
+zorunlu
+Siparişin para birimi.
+
+Yanıt diğer gönderi oluşturma isteğiyle aynı olduğundan eklenmemiştir.
+Gönderileri Listeleme
+Bu endpoint, organizasyonunuza ait gönderileri listelemek için kullanılır. Çeşitli filtreleme, sayfalama ve sıralama seçenekleri sunar.
+
+Endpoint
+GET https://api.geliver.io/api/v1/shipments
+
+Headers
+Authorization: Bearer {access_token}
+
+{access_token} yerine API anahtarınızı kullanın.
+
+Query Parameters
+Parametre	Tip	Zorunlu	Açıklama
+limit	integer	Hayır	Sayfa başına gösterilecek kayıt sayısı. Belirtilmezse varsayılan değer kullanılır.
+page	integer	Hayır	Sayfa numarası. Sayfalama için kullanılır.
+sortBy	string	Hayır	Sıralama kriteri. null veya boş bırakılabilir.
+filter	string	Hayır	Genel arama filtresi. Gönderi numarası, alıcı bilgileri gibi alanlarda arama yapar.
+startDate	string	Hayır	Başlangıç tarihi (ISO 8601 formatında). Bu tarih ve sonrası oluşturulan gönderiler listelenir.
+endDate	string	Hayır	Bitiş tarihi (ISO 8601 formatında). Bu tarih ve öncesi oluşturulan gönderiler listelenir.
+statusFilter	string	Hayır	Gönderi durumuna göre filtreleme. Kullanılabilir değerler: CREATED, GOT_OFFERS, OFFER_ACCEPTED, TRACKING_CODE_CREATED, LABEL_PRINTED, SHIPPED, DELIVERED, CANCELED, RETURNED, RETURN_SHIPPED, FAILED
+invoiceID	string	Hayır	Fatura ID'sine göre filtreleme.
+merchantCode	string	Hayır	Mağaza/merchant koduna göre filtreleme.
+orderNumber	string	Hayır	Sipariş numarasına göre filtreleme.
+providerServiceCode	string	Hayır	Kargo hizmeti koduna göre filtreleme (örn: MNG_STANDART, YURTICI_STANDART). null olabilir.
+storeIdentifier	string	Hayır	Mağaza tanımlayıcısına göre filtreleme. null olabilir.
+isReturned	boolean	Hayır	İade gönderilerini filtrelemek için. true, false veya null değer alabilir.
+Örnek İstek
+curl --location 'https://api.geliver.io/api/v1/shipments?limit=20&page=1&statusFilter=DELIVERED&startDate=2025-01-01&endDate=2025-10-15' \
+--header 'Authorization: Bearer {access_token}'
+
+
+Tüm Parametrelerle Örnek
+curl --location 'https://api.geliver.io/api/v1/shipments?limit=50&page=1&sortBy=createdAt&filter=test&startDate=2025-01-01&endDate=2025-10-15&statusFilter=SHIPPED&invoiceID=INV-123&merchantCode=STORE001&orderNumber=ORD-456&providerServiceCode=MNG_STANDART&storeIdentifier=STORE-ID-123&isReturned=false' \
+--header 'Authorization: Bearer {access_token}'
+
+
+Yanıt
+Başarılı bir istek aşağıdaki yapıda bir yanıt döner:
+
+{
+  "result": true,
+  "additionalMessage": "Success",
+  "limit": 5,
+  "page": 1,
+  "sort": "organization_shipment_id desc",
+  "totalRows": 420,
+  "totalPages": 84,
+  "data": [
+    {
+      "id": "a24429c5-690c-4bd0-8bf7-22de8fd6288b",
+      "createdAt": "2025-09-23T19:11:28.332945+03:00",
+      "updatedAt": "2025-10-14T19:59:25.060507+03:00",
+      "amount": "45.50",
+      "currency": "TL",
+      "amountLocal": "45.50",
+      "amountVat": "8.19",
+      "amountLocalVat": "8.19",
+      "amountTax": "0",
+      "amountLocalTax": "0",
+      "totalAmount": "53.69",
+      "totalAmountLocal": "53.69",
+      "amountOld": "0",
+      "amountLocalOld": "0",
+      "discountRate": "0",
+      "bonusBalance": "0",
+      "length": "30",
+      "width": "20",
+      "height": "15",
+      "desi": "2.25",
+      "oldDesi": "0",
+      "distanceUnit": "cm",
+      "weight": "2.5",
+      "oldWeight": "0",
+      "massUnit": "kg",
+      "useWeightOfItems": false,
+      "useDimensionsOfItems": false,
+      "trackingStatus": {
+        "id": "906e1f44-28fc-4180-b087-93910af64b19",
+        "createdAt": "2025-10-14T19:59:25.057091+03:00",
+        "updatedAt": "2025-10-14T19:59:25.057091+03:00",
+        "trackingStatusCode": "DELIVERED",
+        "trackingSubStatusCode": "delivered",
+        "statusDetails": "Teslim Edildi",
+        "statusDate": "2025-10-14T14:30:00.000000+03:00",
+        "locationName": "Kadıköy Şube",
+        "locationLat": 40.9929,
+        "locationLng": 29.0265,
+        "hash": "abc123def456"
+      },
+      "labelFileType": "PDF",
+      "hidePackageContentOnTag": false,
+      "shipmentDate": "2025-09-24T10:00:00+03:00",
+      "invoiceGenerated": true,
+      "refundInvoiceID": null,
+      "productPaymentOnDelivery": false,
+      "orderID": "40067592-7f54-4b19-b7f0-be88a8ab325f",
+      "order": {
+        "id": "40067592-7f54-4b19-b7f0-be88a8ab325f",
+        "createdAt": "2025-09-23T19:11:28.324817+03:00",
+        "updatedAt": "2025-09-23T19:11:28.324817+03:00",
+        "itemIDs": null,
+        "buyerShippingCost": "45.50",
+        "buyerShipmentMethod": "MNG_STANDART",
+        "totalAmount": "549.90",
+        "totalTax": "98.98",
+        "sourceCode": "SHOPIFY",
+        "orderNumber": "1234567890",
+        "orderCode": "#1001",
+        "notes": "Hızlı teslimat isteniyor",
+        "organizationID": "9561ced7-d5ba-4129-a09f-f1644be55236"
+      },
+      "senderAddressID": "1f0fb99e-53b0-4e79-a830-4b76f2438357",
+      "senderAddress": {
+        "id": "1f0fb99e-53b0-4e79-a830-4b76f2438357",
+        "createdAt": "2024-10-23T16:02:12.110231+03:00",
+        "updatedAt": "2025-04-26T22:42:45.865124+03:00",
+        "shortName": "Örnek Mağaza Deposu",
+        "name": "Örnek E-Ticaret Ltd. Şti.",
+        "email": "info@ornekmagaza.com",
+        "phone": "+905301234567",
+        "address1": "Atatürk Caddesi No:123 Daire:4",
+        "address2": "Merkez Mahallesi",
+        "cityCode": "34",
+        "cityName": "İstanbul",
+        "city": null,
+        "state": "",
+        "zip": "34000",
+        "districtID": 108947,
+        "districtName": "Kadıköy",
+        "district": null,
+        "streetID": null,
+        "streetName": "Atatürk Caddesi",
+        "countryCode": "TR",
+        "countryName": "Türkiye",
+        "source": null,
+        "isDefaultSenderAddress": true,
+        "isDefaultReturnAddress": true,
+        "isRecipientAddress": false,
+        "isInvoiceAddress": false,
+        "isActive": true
+      },
+      "recipientAddressID": "8081a604-7447-4844-b8d3-e3d93b15a525",
+      "recipientAddress": {
+        "id": "8081a604-7447-4844-b8d3-e3d93b15a525",
+        "createdAt": "2025-08-13T16:46:52.159147+03:00",
+        "updatedAt": "2025-08-13T16:46:52.159147+03:00",
+        "shortName": "Ahmet Yılmaz",
+        "name": "Ahmet Yılmaz",
+        "email": "ahmet.yilmaz@example.com",
+        "phone": "+905321234567",
+        "address1": "Cumhuriyet Mahallesi Barış Sokak No:45 Daire:8",
+        "address2": "",
+        "cityCode": "06",
+        "cityName": "Ankara",
+        "city": null,
+        "state": "",
+        "zip": "06100",
+        "districtID": 108740,
+        "districtName": "Çankaya",
+        "district": null,
+        "streetID": null,
+        "streetName": "Barış Sokak",
+        "countryCode": "TR",
+        "countryName": "Türkiye",
+        "source": null,
+        "isDefaultSenderAddress": false,
+        "isDefaultReturnAddress": false,
+        "isRecipientAddress": true,
+        "isInvoiceAddress": false,
+        "isActive": true
+      },
+      "createReturnLabel": false,
+      "statusCode": "DELIVERED",
+      "offers": null,
+      "acceptedOffer": null,
+      "enableAutomation": true,
+      "items": [
+        {
+          "id": "a3653d8a-45ea-45eb-8e54-3710a4b670d8",
+          "createdAt": "2025-09-23T19:12:19.374543+03:00",
+          "updatedAt": "2025-09-23T19:12:19.374543+03:00",
+          "title": "Kablosuz Bluetooth Kulaklık",
+          "variantTitle": "Siyah - Standart",
+          "quantity": 2,
+          "unitWeight": "0.25",
+          "totalPrice": "549.90",
+          "totalPriceLocal": "549.90",
+          "massUnit": "kg",
+          "unitPrice": "274.95",
+          "currency": "TL",
+          "unitPriceLocal": "274.95",
+          "currencyLocal": "TL",
+          "countryOfOrigin": "TR",
+          "maxShipTime": null,
+          "maxDeliveryTime": null,
+          "sku": "BT-HEADPHONE-BLK-001"
+        }
+      ],
+      "organizationShipmentID": 436,
+      "providerBranchName": "İstanbul Anadolu Merkez Şube",
+      "providerInvoiceNo": "MNG2025001234",
+      "providerReceiptNo": "RCP-987654",
+      "providerSerialNo": "SER-456789",
+      "hasError": false,
+      "lastErrorMessage": null,
+      "lastErrorCode": null,
+      "cancelDate": null,
+      "isReturned": false,
+      "isReturn": false,
+      "isTrackingOnly": false,
+      "isRecipientSmsActivated": true,
+      "packageAcceptedAt": "2025-09-24T11:30:00+03:00",
+      "tenantId": null
+    }
+  ]
+}
+
+Yanıt Alanları
+Genel Bilgiler
+result: İsteğin başarılı olup olmadığı (boolean)
+additionalMessage: Ek mesaj bilgisi
+limit: Sayfa başına gösterilen kayıt sayısı
+page: Mevcut sayfa numarası
+sort: Uygulanan sıralama kriteri
+totalRows: Toplam kayıt sayısı
+totalPages: Toplam sayfa sayısı
+data: Gönderilerin bulunduğu dizi
+Gönderi Temel Bilgileri
+id: Gönderinin benzersiz ID'si (UUID)
+organizationShipmentID: Organizasyon bazında gönderi numarası
+statusCode: Gönderinin mevcut durumu
+createdAt: Oluşturulma tarihi
+updatedAt: Son güncellenme tarihi
+Fiyat ve Miktar Bilgileri
+amount: Tutar
+currency: Para birimi
+amountLocal: Yerel tutar
+amountVat: KDV tutarı
+amountTax: Vergi tutarı
+totalAmount: Toplam tutar
+discountRate: İndirim oranı
+bonusBalance: Bonus bakiyesi
+Paket Bilgileri
+length, width, height: Paket boyutları
+weight: Ağırlık
+massUnit: Ağırlık birimi (kg, g)
+distanceUnit: Boyut birimi (cm, m)
+desi: Desi değeri
+useWeightOfItems: Ürünlerin ağırlığı kullanılsın mı?
+useDimensionsOfItems: Ürünlerin boyutları kullanılsın mı?
+Adres Bilgileri
+senderAddress: Gönderen adres bilgileri
+
+id: Adres ID'si
+shortName: Kısa ad
+name: İsim
+email: E-posta
+phone: Telefon
+address1, address2: Adres satırları
+cityCode, cityName: Şehir kodu ve adı
+districtID, districtName: İlçe ID ve adı
+zip: Posta kodu
+countryCode, countryName: Ülke kodu ve adı
+isDefaultSenderAddress: Varsayılan gönderen adresi mi?
+isDefaultReturnAddress: Varsayılan iade adresi mi?
+recipientAddress: Alıcı adres bilgileri (aynı yapıda)
+
+Sipariş Bilgileri
+orderID: Sipariş ID'si
+order: Sipariş detayları
+sourceCode: Kaynak kodu (GLV, SHOPIFY, vb.)
+orderNumber: Sipariş numarası
+orderCode: Sipariş kodu
+totalAmount: Toplam tutar
+notes: Notlar
+Takip Durumu
+trackingStatus: Güncel takip durumu
+trackingStatusCode: Genel durum kodu (PRE_TRANSIT, TRANSIT, DELIVERED, CANCELED, vb.)
+trackingSubStatusCode: Detaylı durum kodu (package_accepted, delivered, package_canceled, vb.)
+statusDetails: Durum detayları
+statusDate: Durum tarihi
+locationName: Konum adı
+locationLat, locationLng: Konum koordinatları
+Ürün Bilgileri
+items: Gönderideki ürünler listesi
+id: Ürün ID'si
+title: Ürün başlığı
+variantTitle: Varyant başlığı
+quantity: Miktar
+unitWeight: Birim ağırlık
+unitPrice: Birim fiyat
+totalPrice: Toplam fiyat
+sku: Stok kodu
+Kargo Bilgileri
+providerBranchName: Kargo şube adı
+providerInvoiceNo: Kargo fatura numarası
+providerReceiptNo: Kargo makbuz numarası
+providerSerialNo: Kargo seri numarası
+Diğer Bilgiler
+labelFileType: Etiket dosya tipi (PDF, vb.)
+hidePackageContentOnTag: Etiket üzerinde paket içeriği gizlensin mi?
+shipmentDate: Kargoya verilme tarihi
+invoiceGenerated: Fatura oluşturuldu mu?
+productPaymentOnDelivery: Kapıda ödeme var mı?
+createReturnLabel: İade etiketi oluşturulsun mu?
+enableAutomation: Otomasyon aktif mi?
+hasError: Hata var mı?
+lastErrorMessage: Son hata mesajı
+lastErrorCode: Son hata kodu
+cancelDate: İptal tarihi (iptal edildiyse)
+isReturned: İade edildi mi?
+isReturn: İade gönderisi mi?
+isTrackingOnly: Sadece takip için mi?
+isRecipientSmsActivated: Alıcı SMS'i aktif mi?
+packageAcceptedAt: Paketin kargo tarafından teslim alındığı tarih
+tenantId: Kiracı ID'si
+Durum Kodları
+Kod	Açıklama
+CREATED	Gönderi oluşturuldu
+GOT_OFFERS	Teklifler alındı
+OFFER_ACCEPTED	Teklif kabul edildi
+TRACKING_CODE_CREATED	Takip kodu oluşturuldu
+LABEL_PRINTED	Etiket yazdırıldı
+SHIPPED	Kargoya verildi
+DELIVERED	Teslim edildi
+CANCELED	İptal edildi
+RETURNED	İade edildi
+RETURN_SHIPPED	İade kargoya verildi
+FAILED	Başarısız
+Hata Yanıtları
+{
+  "result": false,
+  "errorCode": "ERROR_CODE",
+  "message": "Hata açıklaması"
+}
+
+Notlar
+Yetkilendirme: Normal kullanıcılar sadece kendi organizasyonlarına ait gönderileri görebilir. Admin rolü tüm gönderilere erişebilir.
+Sınırlı Erişim: limitedAccessUser rolüne sahip kullanıcılar sadece kendilerinin oluşturduğu gönderileri görebilir.
+Sayfalama: Büyük veri setleri için limit ve page parametrelerini kullanarak sayfalama yapabilirsiniz.
+Filtreleme: Birden fazla filtre parametresini aynı anda kullanabilirsiniz.
+Tarih Formatı: Tarih parametreleri ISO 8601 formatında olmalıdır (örn: 2025-10-15T10:30:00Z)
+Teklifleri kabul etme
+Gönderi oluşturup teklifleri aldıktan sonra kabul etmek istediğiniz teklifin offerID'sini kullanıp etiket satın alma işleminizi gerçekleştirebilirsiniz.
+
+Teklifleri kabul etme isteği
+cURL
+curl --location --globoff 'https://api.geliver.io/api/v1/transactions' \
+--header 'Authorization: Bearer {{bearerToken}}' \
+--header 'Content-Type: application/json' \
+--data '{
+    "offerID": "3c42cecb-f257-4120-ae0a-84e5981a4bf2"
+}'
+
+offerID
+🔸
+string
+zorunlu
+Aldığınız teklifin ID'si. Bu ID'ler İki aşamada gönderi oluşturma isteğine gönderilen yanıt içerisinde offers altında bulunmaktadır. Farklı kargo firmalarının teklifleri burada yer alır. Satın almak istediğiniz teklifin ID'sini bu istek ile göndererek etiketi satın almış olursunuz.
+
+Teklifleri kabul etme isteğine gelen yanıt
+json
+{
+  "result": true,
+  "message": "Success",
+  "data": {
+    "id": "b87sc5c3-9ddf-4e4c-8a41-b9461f81f895",
+    "createdAt": "2025-05-12T17:14:37.158623+03:00",
+    "updatedAt": "2025-05-12T14:14:37.186479037Z",
+    "amount": "0",
+    "currency": "TL",
+    "amountLocal": "0",
+    "currencyLocal": "TL",
+    "amountVat": "0",
+    "amountLocalVat": "0",
+    "amountTax": "0",
+    "amountLocalTax": "0",
+    "totalAmount": "0",
+    "totalAmountLocal": "0",
+    "amountOld": "0",
+    "amountLocalOld": "0",
+    "discountRate": "0",
+    "bonusBalance": "0",
+    "offerID": "02bs6948-adf1-4e80-9f33-a37d86d4388e",
+    "shipment": {
+      "id": "404sd66d-c0a7-4925-9327-f493dc8c7c55",
+      "createdAt": "2025-05-12T17:12:50.665306+03:00",
+      "updatedAt": "2025-05-12T17:14:37.185667+03:00",
+      "test": true,
+      "amount": "0",
+      "currency": "TL",
+      "amountLocal": "0",
+      "amountVat": "0",
+      "amountLocalVat": "0",
+      "amountTax": "0",
+      "amountLocalTax": "0",
+      "totalAmount": "0",
+      "totalAmountLocal": "0",
+      "amountOld": "0",
+      "amountLocalOld": "0",
+      "discountRate": "0",
+      "bonusBalance": "0",
+      "length": "10",
+      "width": "10",
+      "height": "10",
+      "desi": "1",
+      "oldDesi": "0",
+      "distanceUnit": "cm",
+      "weight": "1",
+      "oldWeight": "0",
+      "massUnit": "kg",
+      "useWeightOfItems": false,
+      "useDimensionsOfItems": false,
+      "trackingStatus": null,
+      "barcode": "64124002705",
+      "labelFileType": "PDF",
+      "labelURL": "https://labels3.geliver.io/labels/4sdsd66d-c0a7-4925-9327-f493dc8c7c55.pdf",
+      "responsiveLabelURL": "https://api.geliver.io/api/v1/responsivelabels/40sds66d-c0a7-4925-9327-f493dc8c7c55/9536",
+      "hidePackageContentOnTag": false,
+      "shipmentDate": null,
+      "invoiceGenerated": false,
+      "refundInvoiceID": null,
+      "productPaymentOnDelivery": false,
+      "orderID": "f734374c-68ad-471c-b579-caf806df5f7c",
+      "order": null,
+      "senderAddressID": "1f01b99e-53b0-4e79-a830-4b76f2438357",
+      "senderAddress": null,
+      "recipientAddressID": "b1180e76-21f3-4b42-bbc4-0794969bf1a4",
+      "recipientAddress": null,
+      "createReturnLabel": false,
+      "statusCode": "TRACKING_CODE_CREATED",
+      "offers": null,
+      "acceptedOfferID": "02b06948-adf1-4e80-9f33-a37d86d4388e",
+      "acceptedOffer": null,
+      "providerCode": "GELIVER",
+      "providerServiceCode": "GELIVER_STANDART",
+      "enableAutomation": false,
+      "organizationShipmentID": 360,
+      "providerBranchName": null,
+      "providerInvoiceNo": null,
+      "providerReceiptNo": null,
+      "providerSerialNo": null,
+      "hasError": false,
+      "lastErrorMessage": null,
+      "lastErrorCode": null,
+      "cancelDate": "0001-01-01T00:00:00Z",
+      "isReturned": false,
+      "isReturn": false,
+      "isTrackingOnly": false,
+      "isRecipientSmsActivated": true,
+      "packageAcceptedAt": null,
+      "tenantId": null
+    },
+    "description": "Yeni gönderi ücretlendirilmesi",
+    "isRefund": false,
+    "isCustomAccountCharge": false,
+    "isPayed": true,
+    "payedVia": "BALANCE",
+    "transactionType": "CREATE_SHIPMENT",
+    "invoiceID": "4c2918cd-9838-4s58-a7eb-2d1f2aa62fa9",
+    "cancelDescription": "",
+    "isCanceled": false,
+    "oldBalance": "2.59",
+    "newBalance": "2.59",
+    "invoiceOldDebt": "0",
+    "invoiceNewDebt": "0"
+  }
+}
+
+
+Diğer alanların detaylı açıklamaları Gönderi oluşturma ve istek kısımlarında verilmiştir. Aşağıdaki bilgiler bu yanıta özel olarak eklenmiştir.
+id
+🔸
+string
+Yeni oluşturulan transaction’un id’si.
+
+amount
+🔸
+string
+Gönderi ücreti.
+
+currency
+🔸
+string
+Gönderi ücretinin döviz cinsi.
+
+amountLocal
+🔸
+string
+Yerel ülkedeki gönderi ücreti.
+
+currencyLocal
+🔸
+string
+Yerel ülkedeki döviz cinsi.
+
+offerID
+🔸
+string
+Kabul edilen teklifin id’si.
+
+shipment.id
+🔸
+string
+Gönderinin benzersiz ID'si.
+
+shipment.createdAt
+🔸
+string
+Gönderi oluşturulma zamanı.
+
+shipment.updatedAt
+🔸
+string
+Gönderi güncelleme zamanı.
+
+shipment.barcode
+🔸
+string
+Geliver tarafından üretilen barkod/sipariş kodu. Bu kod kargo şubesine iletilen etiket numarasıdır. Dinamik veya PDF etikette de yer alır.
+
+shipment.labelFileType
+🔸
+string
+Etiket dosyasının türü. PDF veya ZPL olabilir.
+
+shipment.labelURL
+🔸
+string
+Etiket dosyasının adresi (URL).
+
+shipment.trackingNumber
+🔸
+string
+Kargo firması tarafından üretilen takip numarası. Bazı kargo firmaları bu kodu şubeye teslimde üretir. Takip için periyodik istek veya Webhook kullanılabilir.
+
+shipment.trackingUrl
+🔸
+string
+Kargo takip adresi. Müşterilerinize verebilirsiniz. Takip için periyodik istek veya Webhook kullanılabilir.
+
+shipment.statusCode
+🔸
+string
+Gönderi durumu. Alabileceği değerler: CREATED, GOT_OFFERS, OFFER_ACCEPTED, TRACKING_CODE_CREATED, SHIPPED, DELIVERED.
+
+shipment.isTrackingOnly
+🔸
+boolean
+Sadece takip edilen bir gönderi olup olmadığı.
+
+Hata Kodları
+Hata Kodu	Açıklama
+E1085	Hatalı istek.
+E1055	Yetkiniz yok
+E1064	Teklif bulunamadı
+E1051	Gönderi bulunamadı
+E1065	Bu gönderi için daha önce bir teklif kabul edilmiş
+E1066	Organizasyonun yeterli bakiyesi yok
+E1067	Ürün bilgisi alınamadı
+E1074	Bakiye güncelleme hatası
+E1115	Kredi kartı ödemesi alınamadı
+E1068	Gönderici adresi alınamadı
+E1071	Gönderi barkodu oluşturulamadı
+E1072	Kargo etiketi oluşturulamadı
+E1073	Gönderi güncellenemedi
+E1086	İşlem oluşturulamadı
+Gönderiyi iptal etme
+GÖnderilerinizi iptal etmek için aşağıdaki isteği kullanabilirsiniz.
+
+Gönderiyi iptal etme isteği
+cURL
+curl --location --request DELETE 'https://api.geliver.io/api/v1/shipments/shipmentID' \
+--header 'Authorization: Bearer {{bearerToken}}' '
+
+Gönderi iptal isteğine gelen yanıt
+200 OK
+{
+"result": true,
+"additionalMessage": "Success",
+"data": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "createdAt": "0001-01-01T00:00:00Z",
+    "updatedAt": "0001-01-01T00:00:00Z",
+    "amount": "0",
+    "currency": "",
+    "amountLocal": "0",
+    "amountVat": "0",
+    "amountLocalVat": "0",
+    "amountTax": "0",
+    "amountLocalTax": "0",
+    "totalAmount": "0",
+    "totalAmountLocal": "0",
+    "amountOld": "0",
+    "amountLocalOld": "0",
+    "discountRate": "0",
+    "bonusBalance": "0",
+    "length": "0",
+    "width": "0",
+    "height": "0",
+    "desi": "0",
+    "oldDesi": "0",
+    "distanceUnit": "",
+    "weight": "0",
+    "oldWeight": "0",
+    "massUnit": "",
+    "useWeightOfItems": false,
+    "useDimensionsOfItems": false,
+    "trackingStatus": null,
+    "labelFileType": "",
+    "hidePackageContentOnTag": false,
+    "shipmentDate": null,
+    "invoiceGenerated": false,
+    "refundInvoiceID": null,
+    "productPaymentOnDelivery": false,
+    "orderID": null,
+    "order": null,
+    "senderAddress": null,
+    "recipientAddress": null,
+    "createReturnLabel": false,
+    "statusCode": "",
+    "offers": null,
+    "acceptedOffer": null,
+    "enableAutomation": false,
+    "organizationShipmentID": 0,
+    "providerBranchName": null,
+    "providerInvoiceNo": null,
+    "providerReceiptNo": null,
+    "providerSerialNo": null,
+    "hasError": false,
+    "lastErrorMessage": null,
+    "lastErrorCode": null,
+    "cancelDate": "0001-01-01T00:00:00Z",
+    "isReturned": false,
+    "isReturn": false,
+    "isTrackingOnly": false,
+    "isRecipientSmsActivated": null,
+    "packageAcceptedAt": null,
+    "tenantId": null
+}
+}
+Gönderiyi çoğaltma
+Gönderiyi çoğaltma isteği
+200 OK
+curl --location --request POST 'https://api.geliver.io/api/v1/shipments/:shipmentID' \
+--header 'Authorization: Bearer {{bearerToken}}' '
+
+Yanıt diğer gönderi oluşturma isteğiyle aynı olduğundan eklenmemiştir.
+Belirli bir gönderinin detaylarını listeleme
+Belirli bir gönderinin detaylarını listeleme isteği
+200 OK
+curl --location 'https://api.geliver.io/api/v1/shipments/shipmentID' \
+--header 'Authorization: Bearer {{bearerToken}}' '
+
+Belirli bir gönderinin detaylarını listeleme yanıtı
+200 OK
+{
+"result": true,
+"additionalMessage": "Success",
+"data": {
+    "id":"186af322-c9ad-407c-b798-64d464816cf4",
+    "trackingNumber":"123123123",
+    "trackingUrl": "http://xxx.com/123123123",
+    ...
+    "trackingStatus":{
+        "id": "3b8ecf37-4e9d-4b73-aed5-13abcdc427e0",
+        "createdAt": "2022-04-28T16:16:37.217468Z",
+        "updatedAt": "2022-04-28T16:16:37.217468Z",
+        "trackingStatusCode": "DELIVERED",
+        "trackingSubStatusCode": "delivered",
+        "statusDetails": "Teslim Edildi",
+        "statusDate": "2022-04-23T14:29:45.06Z",
+        "locationName": "Sarnıç Mikro"
+    }
+    ...
+}
+}
+
+
+Alan Açıklamaları
+Alan İsmi	Açıklama
+trackingNumber	Kargo firması tarafından üretilen kargo takip numarası. Bazı kargo firmaları takip numarasını şubeye teslimde ileteceği için bu alanı almak için periyodik sorgu yapmanız gerekebilir. Bunun yerine Webhook kullanırsanız biz size çağrı yaptığımızda alabilirsiniz.
+trackingUrl	Kargo firması tarafından üretilen kargo takip adresi. Bazı kargo firmaları takip adresini şubeye teslimde ileteceği için bu alanı almak için periyodik sorgu yapmanız gerekebilir. Bunun yerine Webhook kullanırsanız biz size çağrı yaptığımızda alabilirsiniz. Dilerseniz https://app.geliver.io/tracking/{shipmentID} adresini de kullanabilirsiniz.
+trackingStatus.trackingStatusCode	Gönderinin o anki genel durumu (PRE_TRANSIT, TRANSIT, DELIVERED, RETURNED, FAILURE, UNKNOWN)
+trackingStatus.trackingSubStatusCode	Gönderinin o anki detaylı durumu. Aşağıdaki tabloda tüm değerleri görebilirsiniz.
+trackingStatus.statusDetails	Yazılı olarak gönderinin o anki durumu. Genelde kargo firması bunu belirtir.
+trackingStatus.statusDate	Gönderi durumunun güncellendiği zaman.
+trackingStatus.locationName	Gönderi durumu alındığındaki paketin konumu.
+Kargo Durum Değerleri
+trackingStatusCode	trackingSubStatusCode	Açıklama
+PRE_TRANSIT	information_received	Kargo sistemde oluşturuldu
+TRANSIT	package_accepted	Kargo, Gönderici şube tarafından teslim alındı.
+TRANSIT	package_departed	Kargo, aktarma merkezinden ayrıldı
+TRANSIT	package_processing	Kargo aktarma merkezinde
+TRANSIT	delivery_scheduled	Kargo alıcı şubede
+TRANSIT	out_for_delivery	Kargo dağıtımda
+TRANSIT	package_damaged	Paket hasarlı
+TRANSIT	package_forwarded_to_another_carrier	Kargo aracı firmaya verildi
+TRANSIT	delivery_rescheduled	Kargo dağıtım zamanı değişti (yanlış şube vs)
+DELIVERED	delivered	Kargo alıcıya teslim edildi
+FAILURE	package_lost	Paket kayboldu
+FAILURE	package_undeliverable	Kargo dağıtılamıyor
+RETURNED	return_to_sender	Kargo iade edildi
+UNKNOWN	other	Bilinmeyen durum
+Gönderiyi iade etme
+Gönderileriniz için iade gönderisi oluşturmak için aşağıdaki isteğimizi kullanabilirsiniz.
+
+Gönderiyi iade etme isteği
+cURL
+curl --location 'https://api.geliver.io/api/v1/shipments/shipmentID' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {{bearerToken}}' ' \
+--data '{
+"isReturn": true,
+"willAccept": true,
+"providerServiceCode": "SURAT_STANDART",
+"count": 2,
+"senderAddress": {
+    "name": "Test Company Name",
+    "phone": "+905051234567",
+    "address1": "Celal Bayar Üniversitesi Teknokenti Daire 102",
+    "countryCode": "TR",
+    "cityCode": "45",
+    "districtName": "Yunusemre"
+}
+}'
+
+isReturn
+🔸
+bool
+zorunlu
+Gönderiyi iade etmek için true olarak gönderilmelidir.
+
+willAccept
+🔸
+bool
+zorunlu
+Gönderinin kabul edilip edilmeyeceğini belirtir. true ise kabul edilir.
+
+providerServiceCode
+🔸
+string
+zorunlu
+Kargo hizmeti türünü belirten servis kodu. Örneğin, 'SURAT_STANDART'.
+
+count
+🔸
+int
+zorunlu
+İade edilen gönderi sayısı.
+
+senderAddress
+🔸
+object
+zorunlu
+Gönderici adresi bilgileri.
+
+senderAddress.name
+🔸
+string
+zorunlu
+Göndericinin adı veya şirket adı.
+
+senderAddress.phone
+🔸
+string
+Göndericinin telefon numarası.
+
+senderAddress.address1
+🔸
+string
+zorunlu
+Göndericinin adres satırı 1.
+
+senderAddress.countryCode
+🔸
+string
+zorunlu
+Göndericinin ülke kodu.
+
+senderAddress.cityCode
+🔸
+string
+zorunlu
+Göndericinin şehir plaka kodu.
+
+senderAddress.districtName
+🔸
+string
+zorunlu
+Göndericinin ilçe adı.
+
+Yanıt diğer gönderi oluşturma isteğiyle aynı olduğundan eklenmemiştir.
+Gönderi paketlerini güncelleme
+Geliver sistemimizde oluşan gönderilerinizin paket boyutunu güncellemek için Gönderi paketlerini güncelleme isteğimizi kullanabilirsiniz.
+
+Uyarı
+Gönderi paketlerini güncelleme isteğini, henüz etiketini satın almadığınız gönderilerinizde kullanabilirsiniz.
+
+Gönderi paketlerini güncelleme isteği
+cURL
+curl --location --request PATCH 'https://api.geliver.io/api/v1/shipments/:shipmentID' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer {{bearerToken}}' ' \
+--data '{
+    "height": 1,
+    "width": 1,
+    "length": 1,
+    "distanceUnit": "cm",
+    "weight": 1,
+    "massUnit": "kg"
+}'
+
+height
+🔸
+float
+zorunlu
+Paket yüksekliği
+
+width
+🔸
+float
+zorunlu
+Paket genişliği
+
+length
+🔸
+float
+Paket uzunluğu
+
+distanceUnit
+🔸
+string
+zorunlu
+Uzunluk birimi
+
+weight
+🔸
+float
+Paket ağırlığı
+
+massUnit
+🔸
+string
+zorunlu
+Kütle birimi
+
+Gönderi paketlerini güncelleme isteğine gelen yanıt
+200 OK
+{
+"result": true,
+"additionalMessage": "Success",
+"data": {
+    "id": "18307372-0986-4e47-b5df-1984603b95df",
+    "createdAt": "2025-03-11T01:16:35.780477+03:00",
+    "updatedAt": "2025-03-11T01:16:49.636543+03:00",
+    "amount": "0",
+    "currency": "TL",
+    "amountLocal": "0",
+    "amountVat": "0",
+    "amountLocalVat": "0",
+    "amountTax": "0",
+    "amountLocalTax": "0",
+    "totalAmount": "0",
+    "totalAmountLocal": "0",
+    "amountOld": "0",
+    "amountLocalOld": "0",
+    "discountRate": "0",
+    "bonusBalance": "0",
+    "length": "1",
+    "width": "1",
+    "height": "1",
+    "desi": "1",
+    "oldDesi": "0",
+    "distanceUnit": "",
+    "weight": "1",
+    "oldWeight": "0",
+    "massUnit": "kg",
+    "useWeightOfItems": false,
+    "useDimensionsOfItems": false,
+    "trackingStatus": null,
+    "labelFileType": "PROVIDER_PDF",
+    "hidePackageContentOnTag": false,
+    "shipmentDate": null,
+    "invoiceGenerated": false,
+    "refundInvoiceID": null,
+    "productPaymentOnDelivery": false,
+    "orderID": "1277f33d-b00e-4ef3-abdf-2ba052ec5dd1",
+    "order": {
+    "id": "1277f33d-b00e-4ef3-abdf-2ba052ec5dd1",
+    "createdAt": "2025-03-11T01:16:35.775758+03:00",
+    "updatedAt": "2025-03-11T01:16:35.775758+03:00",
+    "itemIDs": null,
+    "buyerShippingCost": "0",
+    "buyerShipmentMethod": "",
+    "totalAmount": "0",
+    "totalTax": "0",
+    "sourceCode": "GLV",
+    "orderNumber": "",
+    "orderCode": "",
+    "notes": "",
+    "organizationID": null
+    },
+    "senderAddressID": "18541a76-87e9-4b9b-a79a-e5082aee838f",
+    "senderAddress": null,
+    "recipientAddressID": "129c435c-d68e-4225-82dd-9cea976e244b",
+    "recipientAddress": null,
+    "createReturnLabel": false,
+    "statusCode": "GOT_OFFERS",
+    "offers": {
+    "createdAt": "2025-03-11T01:16:49.612025+03:00",
+    "updatedAt": "2025-03-11T01:16:49.637259+03:00",
+    "length": "1",
+    "width": "1",
+    "height": "1",
+    "weight": "1",
+    "cheapest": {
+        "id": "5d188325-e03f-434a-9d9a-6175c5078fd3",
+        "createdAt": "2025-03-11T01:16:49.621165+03:00",
+        "updatedAt": "2025-03-11T01:16:49.621165+03:00",
+        "amount": "15",
+        "currency": "TL",
+        "amountLocal": "15",
+        "amountVat": "3",
+        "amountLocalVat": "3",
+        "amountTax": "0",
+        "amountLocalTax": "0",
+        "totalAmount": "18",
+        "totalAmountLocal": "18",
+        "amountOld": "0",
+        "amountLocalOld": "0",
+        "discountRate": "0",
+        "bonusBalance": "0.75",
+        "providerCode": "PTT",
+        "providerServiceCode": "PTT_STANDART",
+        "averageEstimatedTime": 88968000000000,
+        "averageEstimatedTimeHumanReadible": "02 gün 00 saat",
+        "durationTerms": "",
+        "rating": 0,
+        "isAccepted": false,
+        "isGlobal": true,
+        "isC2C": true,
+        "integrationType": "C2C",
+        "isMainOffer": false,
+        "isProviderAccountOffer": false,
+        "providerAccountOwnerType": "",
+        "providerAccountName": null
+    },
+    "fastest": {
+        "id": "150c49c7-ed95-4df8-af57-6692dc4f08b7",
+        "createdAt": "2025-03-11T01:16:49.627137+03:00",
+        "updatedAt": "2025-03-11T01:16:49.627137+03:00",
+        "amount": "60.5",
+        "currency": "TL",
+        "amountLocal": "60.5",
+        "amountVat": "12.39",
+        "amountLocalVat": "12.39",
+        "amountTax": "1.43",
+        "amountLocalTax": "142.18",
+        "totalAmount": "74.31",
+        "totalAmountLocal": "74.31",
+        "amountOld": "0",
+        "amountLocalOld": "0",
+        "discountRate": "0",
+        "bonusBalance": "2.75",
+        "providerCode": "HEPSIJET",
+        "providerServiceCode": "HEPSIJET_STANDART",
+        "averageEstimatedTimeHumanReadible": "01 gün 00 saat",
+        "durationTerms": "",
+        "rating": 0,
+        "isAccepted": false,
+        "isGlobal": true,
+        "isC2C": true,
+        "integrationType": "",
+        "isMainOffer": false,
+        "isProviderAccountOffer": false,
+        "providerAccountOwnerType": "",
+        "providerAccountName": null
+    },
+    "list": [
+        {
+        "id": "1d188325-e03f-434a-9d9a-6175c5078fd3",
+        "createdAt": "2025-03-11T01:16:49.621165+03:00",
+        "updatedAt": "2025-03-11T01:16:49.621165+03:00",
+        "amount": "15",
+        "currency": "TL",
+        "amountLocal": "15",
+        "amountVat": "3",
+        "amountLocalVat": "3",
+        "amountTax": "0",
+        "amountLocalTax": "0",
+        "totalAmount": "18",
+        "totalAmountLocal": "18",
+        "amountOld": "0",
+        "amountLocalOld": "0",
+        "discountRate": "0",
+        "bonusBalance": "0.75",
+        "providerCode": "PTT",
+        "providerServiceCode": "PTT_STANDART",
+        "averageEstimatedTime": 88968000000000,
+        "averageEstimatedTimeHumanReadible": "02 gün 00 saat",
+        "durationTerms": "",
+        "rating": 0,
+        "isAccepted": false,
+        "isGlobal": true,
+        "isC2C": true,
+        "integrationType": "C2C",
+        "isMainOffer": false,
+        "isProviderAccountOffer": false,
+        "providerAccountOwnerType": "",
+        "providerAccountName": null
+        },
+        {
+        "id": "1cc6e801-de39-4d5c-9ac3-85a5127ded3a",
+        "createdAt": "2025-03-11T01:16:49.622703+03:00",
+        "updatedAt": "2025-03-11T01:16:49.622703+03:00",
+        "amount": "16.5",
+        "currency": "TL",
+        "amountLocal": "16.5",
+        "amountVat": "3.38",
+        "amountLocalVat": "3.38",
+        "amountTax": "0.39",
+        "amountLocalTax": "38.78",
+        "totalAmount": "20.27",
+        "totalAmountLocal": "20.27",
+        "amountOld": "0",
+        "amountLocalOld": "0",
+        "discountRate": "0",
+        "bonusBalance": "0.75",
+        "providerCode": "SENDEO",
+        "providerServiceCode": "SENDEO_STANDART",
+        "averageEstimatedTime": 135438000000000,
+        "averageEstimatedTimeHumanReadible": "02 gün 13 saat",
+        "durationTerms": "",
+        "rating": 0,
+        "isAccepted": false,
+        "isGlobal": true,
+        "isC2C": true,
+        "integrationType": "C2C",
+        "isMainOffer": false,
+        "isProviderAccountOffer": false,
+        "providerAccountOwnerType": "",
+        "providerAccountName": null
+        },
+        {
+        "id": "1e059d62-dd58-46f1-9835-53c83ddcc753",
+        "createdAt": "2025-03-11T01:16:49.624317+03:00",
+        "updatedAt": "2025-03-11T01:16:49.624317+03:00",
+        "amount": "21.5",
+        "currency": "TL",
+        "amountLocal": "21.5",
+        "amountVat": "4.41",
+        "amountLocalVat": "4.41",
+        "amountTax": "0.51",
+        "amountLocalTax": "50.53",
+        "totalAmount": "26.41",
+        "totalAmountLocal": "26.41",
+        "amountOld": "0",
+        "amountLocalOld": "0",
+        "discountRate": "0",
+        "bonusBalance": "1",
+        "providerCode": "SURAT",
+        "providerServiceCode": "SURAT_STANDART",
+        "averageEstimatedTime": 96951000000000,
+        "averageEstimatedTimeHumanReadible": "02 gün 02 saat",
+        "durationTerms": "",
+        "rating": 0,
+        "isAccepted": false,
+        "isGlobal": true,
+        "isC2C": true,
+        "integrationType": "C2C",
+        "isMainOffer": false,
+        "isProviderAccountOffer": false,
+        "providerAccountOwnerType": "",
+        "providerAccountName": null
+        },
+        {
+        "id": "123dde52-2b12-4720-8627-640252744a93",
+        "createdAt": "2025-03-11T01:16:49.625673+03:00",
+        "updatedAt": "2025-03-11T01:16:49.625673+03:00",
+        "amount": "29",
+        "currency": "TL",
+        "amountLocal": "29",
+        "amountVat": "5.94",
+        "amountLocalVat": "5.94",
+        "amountTax": "0.69",
+        "amountLocalTax": "68.15",
+        "totalAmount": "35.62",
+        "totalAmountLocal": "35.62",
+        "amountOld": "0",
+        "amountLocalOld": "0",
+        "discountRate": "0",
+        "bonusBalance": "1.5",
+        "providerCode": "YURTICI",
+        "providerServiceCode": "YURTICI_STANDART",
+        "averageEstimatedTime": 135438000000000,
+        "averageEstimatedTimeHumanReadible": "02 gün 13 saat",
+        "durationTerms": "",
+        "rating": 0,
+        "isAccepted": false,
+        "isGlobal": true,
+        "isC2C": true,
+        "integrationType": "C2C",
+        "isMainOffer": false,
+        "isProviderAccountOffer": false,
+        "providerAccountOwnerType": "",
+        "providerAccountName": null
+        },
+        {
+        "id": "150c49c7-ed95-4df8-af57-6692dc4f08b7",
+        "createdAt": "2025-03-11T01:16:49.627137+03:00",
+        "updatedAt": "2025-03-11T01:16:49.627137+03:00",
+        "amount": "60.5",
+        "currency": "TL",
+        "amountLocal": "60.5",
+        "amountVat": "12.39",
+        "amountLocalVat": "12.39",
+        "amountTax": "1.43",
+        "amountLocalTax": "142.18",
+        "totalAmount": "74.31",
+        "totalAmountLocal": "74.31",
+        "amountOld": "0",
+        "amountLocalOld": "0",
+        "discountRate": "0",
+        "bonusBalance": "2.75",
+        "providerCode": "HEPSIJET",
+        "providerServiceCode": "HEPSIJET_STANDART",
+        "averageEstimatedTimeHumanReadible": "01 gün 00 saat",
+        "durationTerms": "",
+        "rating": 0,
+        "isAccepted": false,
+        "isGlobal": true,
+        "isC2C": true,
+        "integrationType": "",
+        "isMainOffer": false,
+        "isProviderAccountOffer": false,
+        "providerAccountOwnerType": "",
+        "providerAccountName": null
+        },
+        {
+        "id": "15a92e4f-7327-46e1-a27c-8458c1bbed10",
+        "createdAt": "2025-03-11T01:16:49.632947+03:00",
+        "updatedAt": "2025-03-11T01:16:49.632947+03:00",
+        "amount": "1.25",
+        "currency": "TL",
+        "amountLocal": "1.25",
+        "amountVat": "0.25",
+        "amountLocalVat": "0.25",
+        "amountTax": "0",
+        "amountLocalTax": "0",
+        "totalAmount": "1.5",
+        "totalAmountLocal": "1.5",
+        "amountOld": "0",
+        "amountLocalOld": "0",
+        "discountRate": "0",
+        "bonusBalance": "0",
+        "providerCode": "PTT",
+        "providerServiceCode": "PTT_STANDART",
+        "providerAccountID": "73344ee2-2ae8-4f2c-84df-219541adcd24",
+        "averageEstimatedTime": 88968000000000,
+        "averageEstimatedTimeHumanReadible": "02 gün 00 saat",
+        "durationTerms": "",
+        "rating": 0,
+        "isAccepted": false,
+        "isGlobal": false,
+        "isC2C": false,
+        "integrationType": "DEFAULT",
+        "isMainOffer": false,
+        "isProviderAccountOffer": true,
+        "providerAccountOwnerType": "THIRD_PARTY_ORGANIZATION",
+        "providerAccountName": "FRD"
+        },
+        {
+        "id": "108ea1f0-c8da-4467-ad43-3e3cf698328b",
+        "createdAt": "2025-03-11T01:16:49.635298+03:00",
+        "updatedAt": "2025-03-11T01:16:49.635298+03:00",
+        "amount": "1",
+        "currency": "TL",
+        "amountLocal": "1",
+        "amountVat": "0",
+        "amountLocalVat": "0",
+        "amountTax": "0",
+        "amountLocalTax": "0",
+        "totalAmount": "1",
+        "totalAmountLocal": "0",
+        "amountOld": "0",
+        "amountLocalOld": "0",
+        "discountRate": "0",
+        "bonusBalance": "0",
+        "providerCode": "MNG",
+        "providerServiceCode": "MNG_STANDART",
+        "providerAccountID": "sads-sds254a-434a-af0b-e2bd00f6fc8b",
+        "averageEstimatedTime": 112434000000000,
+        "averageEstimatedTimeHumanReadible": "02 gün 07 saat",
+        "durationTerms": "",
+        "rating": 0,
+        "isAccepted": false,
+        "isGlobal": false,
+        "isC2C": false,
+        "integrationType": "DEFAULT",
+        "isMainOffer": false,
+        "isProviderAccountOffer": true,
+        "providerAccountOwnerType": "CURRENT_ORGANIZATION",
+        "providerAccountName": "testkargo"
+        }
+    ],
+    "percentageCompleted": 100,
+    "totalOffersRequested": 7,
+    "totalOffersCompleted": 7,
+    "allowOfferFallback": false
+    },
+    "acceptedOffer": null,
+    "enableAutomation": false,
+    "organizationShipmentID": 373,
+    "providerBranchName": null,
+    "providerInvoiceNo": null,
+    "providerReceiptNo": null,
+    "providerSerialNo": null,
+    "hasError": false,
+    "lastErrorMessage": null,
+    "lastErrorCode": null,
+    "cancelDate": "0001-01-01T00:00:00Z",
+    "isReturned": false,
+    "isReturn": false,
+    "isTrackingOnly": false,
+    "isRecipientSmsActivated": true,
+    "packageAcceptedAt": null,
+    "tenantId": null
+}
+}
+Kargo takip durum kodları
+trackingStatusCode	trackingSubStatusCode	Açıklama
+PRE_TRANSIT	information_received	Kargo sistemde oluşturuldu
+PRE_TRANSIT	pickup_scheduled	Gönderinin alımı planlandı.
+PRE_TRANSIT	pickup_out_for_collection	Kurye gönderiyi teslim almak üzere yola çıktı.
+PRE_TRANSIT	pickup_failed	Kurye gönderiyi teslim almaya çalıştı ancak başarılı olamadı.
+TRANSIT	package_accepted	Kargo, Gönderici şube tarafından teslim alındı.
+TRANSIT	package_departed	Kargo, aktarma merkezinden ayrıldı
+TRANSIT	package_processing	Kargo aktarma merkezinde
+TRANSIT	delivery_scheduled	Kargo alıcı şubede
+TRANSIT	out_for_delivery	Kargo dağıtımda
+TRANSIT	package_damaged	Paket hasarlı
+TRANSIT	package_forwarded_to_another_carrier	Kargo aracı firmaya verildi
+TRANSIT	delivery_rescheduled	Kargo dağıtım zamanı değişti (yanlış şube vs)
+DELIVERED	delivered	Kargo alıcıya teslim edildi
+FAILURE	package_lost	Paket kayboldu
+FAILURE	package_undeliverable	Kargo dağıtılamıyor
+RETURNED	return_to_sender	Kargo iade edildi
+UNKNOWN	other	Bilinmeyen durum
+Sağlayıcı Servis Kodları
+İsteklerimizde kargo firmalarıyla işlem yapabilmek için providerServiceCode'ları kullanmanız gerekmektedir.
+
+Kod	Açıklama
+SURAT_STANDART	Sürat Kargo standart gönderi.
+YURTICI_STANDART	Yurtiçi Kargo standart gönderi.
+PTT_STANDART	PTT Kargo standart gönderi.
+PTT_KAPIDA_ODEME	PTT Kargo kapıda ödeme gönderisi.
+DHL_STANDART	DHL Ecommerce standart gönderi.
+HEPSIJET_STANDART	hepsiJET Kargo standart gönderi.
+KOLAYGELSIN_STANDART	Kolay Gelsin Kargo standart gönderi.
+PAKETTAXI_STANDART	Paket Taxi Kurye standart gönderi.
+ARAS_STANDART	Aras Kargo standart gönderi.
+GELIVER_STANDART	Test gönderisi oluştururken kullanılır.
+Webhook oluşturma
+Gönderilerinizin takip bilgilerini anlık olarak iletebildiğimiz webhook sistemimiz ile, siparişlerinizin taşıma bilgilerini anlık olarak işleyebilirsiniz. Webhook ile taşıma durumu her değiştiğinde sisteminizde belirlediğiniz endpoint'e istek ile bir json gövdesi iletilir. Buradaki verileri uygun şekilde işleyebilir ve taşıma durumunu her seferinde istek atarak sorgulama yükünden kurtulabilirsiniz. Geliştirme sürecinde sizlere webhook.site platformunu tavsiye ederiz. webhook.site linkiniz ile bir webhook oluşturun ve sonrasında test gönderinizin hareket durumlarını güncelleyin. Webhook sistemimiz sipariş durumunuzla ilgili bilgileri iletecektir.
+
+Webhook oluşturma isteği
+cURL
+curl --location --globoff 'https://api.geliver.io/api/v1/webhook' \
+--header 'Authorization: Bearer {{bearerToken}}' \
+--header 'Content-Type: application/json' \
+--data '{
+"type": "TRACK_UPDATED",
+"url": "https://postman-echo.com/post"
+}'
+
+type
+🔸
+string
+zorunlu
+Webhook Tipi: TRACK_UPDATED, gönderinizin hareket durumu güncellendiğinde tetiklenir.
+
+url
+🔸
+string
+zorunlu
+Webhook gönderilecek endpoint
+
+Webhook oluşturma isteğine gelen yanıt
+200 OK
+{
+"result": true,
+"additionalMessage": "Success",
+"data": {
+    "id": "10a26f76-e668-494b-bafa-372e5bf65128",
+    "createdAt": "2025-03-07T17:17:16.156052172Z",
+    "updatedAt": "2025-03-07T17:17:16.156052172Z",
+    "organizationID": "5f718ef7-8ecc-419f-83b4-d45d178e8341",
+    "type": "TRACK_UPDATED",
+    "url": "https://webhooksitesi.com/post",
+    "headerName": "",
+    "headerValue": "",
+    "isActive": true
+}
+}
+Webhookları silme
+Oluşturduğunuz webhookları, webhook silme isteğimiz ile silebilirsiniz. Bunun için webhookID'ye sahip olmalısınız. Bu bilgiyi, webhooklarınızı listeleyerek bulabilirsiniz.
+
+Webhookları silme isteği
+cURL
+curl --location --globoff --request DELETE 'https://api.geliver.io/api/v1/webhook/webhookID' \
+--header 'Authorization: Bearer {{bearerToken}}'
+
+Webhookları silme isteğine gelen yanıt
+200 OK
+{
+"result": true,
+"additionalMessage": "Success",
+"data": {
+    "id": "00000000-0000-0000-0000-000000000000",
+    "createdAt": "0001-01-01T00:00:00Z",
+    "updatedAt": "0001-01-01T00:00:00Z",
+    "organizationID": null,
+    "type": "",
+    "url": "",
+    "headerName": "",
+    "headerValue": "",
+    "isActive": false
+}
+}
+
+Webhookları listeleme
+Oluşturduğunuz webhookları listelemek için Webhookları listeleme isteğimizi kullanabilirsiniz.
+
+Webhookları listeleme isteği
+cURL
+ccurl --location --globoff 'https://api.geliver.io/api/v1/webhook' \
+--header 'Authorization: Bearer {{bearerToken}}'
+
+Webhookları listeleme isteğine gelen yanıt
+200 OK
+
+{
+"result": true,
+"additionalMessage": "Success",
+"data": [
+{
+  "id": "320a1e7f-2f1a-4c9a-a0a4-337dc5665e08",
+  "createdAt": "2023-09-04T21:50:39.396252+03:00",
+  "updatedAt": "2023-09-04T21:50:39.396252+03:00",
+  "organizationID": "5f718ef7-asdsa-419f-83b4-d45d178e8341",
+  "type": "TRACK_UPDATED",
+  "url": "https://webhooksitesi.com",
+  "headerName": "",
+  "headerValue": "",
+  "isActive": true
+},
+{
+  "id": "dfb68e0b-ad76-4d9b-be86-892672fdf73d",
+  "createdAt": "2023-09-04T21:50:39.400112+03:00",
+  "updatedAt": "2023-09-04T21:50:39.400112+03:00",
+  "organizationID": "5f718ef7-asdsa-419f-83b4-d45d178e8341",
+  "type": "TRANSACTION_CREATED",
+  "url": "https://sdsds.com/webhook/geliver.php?token=asdasdsad",
+  "headerName": "",
+  "headerValue": "",
+  "isActive": true
+},
+{
+  "id": "47402eb7-b1f2-41fd-812d-d5a1a124f7da",
+  "createdAt": "2023-09-05T12:27:56.20988+03:00",
+  "updatedAt": "2023-09-05T12:27:56.20988+03:00",
+  "organizationID": "5f718ef7-asad-419f-83b4-d45d178e8341",
+  "type": "TRACK_UPDATED",
+  "url": "https://sdsd.online/experimental/test.php",
+  "headerName": "",
+  "headerValue": "",
+  "isActive": true
+},
+{
+  "id": "f663f9c0-16a1-45ad-b362-a8b98fd5c132",
+  "createdAt": "2024-08-16T14:29:51.949639+03:00",
+  "updatedAt": "2024-08-16T14:29:51.949639+03:00",
+  "organizationID": "5f718ef7-asds-419f-83b4-d45d178e8341",
+  "type": "TRACK_UPDATED",
+  "url": "https://webhoadsadok.site/39694748-asd-48d6-bc65-5f5918caddad",
+  "headerName": "",
+  "headerValue": "",
+  "isActive": true
+}
+]
+}
+Webhookları test etme
+Oluşturduğunuz webhookları Webhookları test etme isteği ile tetikleyebilirsiniz.
+
+Webhookları test etme isteği
+cURL
+curl --location --globoff --request PUT 'https://api.geliver.io/api/v1/webhook' \
+--header 'Authorization: Bearer {{bearerToken}}' \
+--header 'Content-Type: application/json' \
+--data '{
+"type": "TRACK_UPDATED",
+"url": "https://webhooksitesi.com"
+}'
+Bakiye görüntüleme
+Bakiyenizi görüntülemek için bakiye görüntüleme isteğimizi kullanabilirsiniz. İstek içerisindeki organizationID bilgisini, Geliver panelinizde Hesabı Yönet > Üyeler menüsüne giderek, açılan linkteki https://app.geliver.io/organizations/ kısmından sonra başlayan ID'yi kopyalayıp edinebilirsiniz.
+
+Bakiye görüntüleme isteği
+cURL
+curl --location --globoff 'https://api.geliver.io/api/v1/organizations/{{organizationId}}/balance' \
+--header 'Authorization: Bearer {{bearerToken}}'
+
+Bakiye görüntüleme isteğine gelen yanıt
+json
+{
+    "result":true,
+    "additionalMessage":"Success",
+    "data":"0",
+    "debt":"36"
+}
+Kargo fiyatlarını listeleme
+Geliver kendi kargo anlaşmaları ile uygun fiyatlı gönderim yapabileceğiniz bir akıllı kargo pazaryeri platformudur. Geliver'in avantajlı fiyatlarını güncel olarak çekebileceğiniz Kargo fiyatlarını listeleme isteğimizi aşağıda bulabilirsiniz.
+
+Kargo fiyatlarını listeleme isteği
+cURL
+curl --location --globoff 'https://api.geliver.io/api/v1/priceList?paramType=parcel&length=2&width=5&height=5&weight=24' \
+--header 'Authorization: Bearer {{bearerToken}}'
+
+
+Fiyat sorgulama isteğine gelen yanıt
+200 OK
+{
+"result": true,
+"additionalMessage": "Success",
+"priceList": [
+    {
+        "desi": "30",
+        "offers": [
+            {
+                "amount": "94.25",
+                "currency": "TL",
+                "amountLocal": "94.25",
+                "amountVat": "19.3",
+                "amountLocalVat": "19.3",
+                "amountTax": "2.22",
+                "amountLocalTax": "221.49",
+                "totalAmount": "115.76",
+                "totalAmountLocal": "115.76",
+                "providerCode": "SENDEO",
+                "providerServiceCode": "SENDEO_STANDART"
+            },
+            {
+                "amount": "116",
+                "currency": "TL",
+                "amountLocal": "116",
+                "amountVat": "23.75",
+                "amountLocalVat": "23.75",
+                "amountTax": "2.73",
+                "amountLocalTax": "272.6",
+                "totalAmount": "142.48",
+                "totalAmountLocal": "142.48",
+                "providerCode": "SURAT",
+                "providerServiceCode": "SURAT_STANDART"
+            },
+            {
+                "amount": "197.25",
+                "currency": "TL",
+                "amountLocal": "197.25",
+                "amountVat": "39.45",
+                "amountLocalVat": "39.45",
+                "amountTax": "0",
+                "amountLocalTax": "0",
+                "totalAmount": "236.7",
+                "totalAmountLocal": "236.7",
+                "providerCode": "PTT",
+                "providerServiceCode": "PTT_STANDART"
+            },
+            {
+                "amount": "249",
+                "currency": "TL",
+                "amountLocal": "249",
+                "amountVat": "50.98",
+                "amountLocalVat": "50.98",
+                "amountTax": "5.86",
+                "amountLocalTax": "585.15",
+                "totalAmount": "305.83",
+                "totalAmountLocal": "305.83",
+                "providerCode": "YURTICI",
+                "providerServiceCode": "YURTICI_STANDART"
+            }
+        ]
+    }
+]
+}
+
+
+Yanıt içerisindeki alanların açıklamaları
+result
+🔸
+boolean
+İsteğin başarılı olup olmadığını belirtir. true ise başarılıdır.
+
+data
+🔸
+object
+Oluşturulan gönderinin kaydı.
+
+code
+🔸
+string
+Eğer istek başarısız ise burada hata kodu bulunur.
+
+message
+🔸
+string
+Eğer istek başarısız ise burada hata mesajı bulunur.
+
+additionalMessage
+🔸
+string
+Sadece test ortamı için geçerli olan detaylı hata mesajı.
+
+priceList.offers
+🔸
+array
+Alınan tüm teklifleri bu alanda fiyatlarıyla görebilirsiniz.
+
+priceList.offers.amount
+🔸
+string
+Tekliflerin her birinin fiyatı (vergiler hariç).
+
+priceList.offers.amountTax
+🔸
+string
+Tekliflerin her birinin sadece vergilerinin ücretleri toplamı.
+
+priceList.offers.amountVat
+🔸
+string
+Tekliflerin her birinin sadece KDV’sinin ücreti.
+
+priceList.offers.totalAmount
+🔸
+string
+Tekliflerin her birinin vergiler dahil toplam ücreti.
+
+priceList.offers.currency
+🔸
+string
+Tekliflerin her birinin para birimi kısaltması.
+
+test modunu kullan basta
