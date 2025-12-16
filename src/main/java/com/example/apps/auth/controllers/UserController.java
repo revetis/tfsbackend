@@ -18,44 +18,58 @@ import com.example.apps.auth.dtos.UserRegisterDTOIU;
 import com.example.apps.auth.services.IUserService;
 import com.example.settings.maindto.ApiTemplate;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/rest/api/public/auth")
 public class UserController {
 
-    @Autowired
-    private IUserService userService;
+        @Autowired
+        private IUserService userService;
 
-    @PostMapping(path = "/register")
-    public UserRegisterDTO registerUser(@RequestBody @Valid UserRegisterDTOIU request) {
-        return userService.registerUser(request);
-    }
-
-    @PostMapping(path = "/login")
-    public UserLoginDTO login(@RequestBody @Valid UserLoginDTOIU request) {
-        return userService.login(request);
-    }
-
-    @PostMapping(path = "/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestBody @Valid ForgotPasswordDTOIU request) {
-        if (request.getEmail() == null) {
-            return ResponseEntity.badRequest().body("Email is required");
+        @PostMapping(path = "/register")
+        public ResponseEntity<ApiTemplate<Void, UserRegisterDTO>> registerUser(
+                        @RequestBody @Valid UserRegisterDTOIU request,
+                        HttpServletRequest servletRequest) {
+                UserRegisterDTO registeredUser = userService.registerUser(request);
+                return ResponseEntity
+                                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                registeredUser));
         }
-        userService.forgotPassword(request, null);
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, "/forgot-password", null,
-                "Password reset link sent to your email"));
-    }
 
-    @PutMapping(path = "/forgot-password/reset")
-    public ResponseEntity<?> forgotPasswordSetNewPassword(@RequestParam String token,
-            @RequestBody @Valid ForgotPasswordSetNewPasswordDTOIU newPassword) {
-        if (token == null) {
-            return ResponseEntity.badRequest().body("Token is required");
+        @PostMapping(path = "/login")
+        public ResponseEntity<ApiTemplate<Void, UserLoginDTO>> login(@RequestBody @Valid UserLoginDTOIU request,
+                        HttpServletRequest servletRequest) {
+                UserLoginDTO loggedInUser = userService.login(request);
+                return ResponseEntity.ok(
+                                ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                loggedInUser));
         }
-        userService.forgotPassword(null, newPassword, token);
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, "/forgot-password/reset", null,
-                "Password reset successfully"));
-    }
+
+        @PostMapping(path = "/forgot-password")
+        public ResponseEntity<ApiTemplate<Void, String>> forgotPassword(@RequestBody @Valid ForgotPasswordDTOIU request,
+                        HttpServletRequest servletRequest) {
+                if (request.getEmail() == null) {
+                        throw new IllegalArgumentException("Email is required");
+                }
+                userService.forgotPassword(request, null);
+                return ResponseEntity
+                                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                "Password reset link sent to your email"));
+        }
+
+        @PutMapping(path = "/forgot-password/reset")
+        public ResponseEntity<ApiTemplate<Void, String>> forgotPasswordSetNewPassword(@RequestParam String token,
+                        @RequestBody @Valid ForgotPasswordSetNewPasswordDTOIU newPassword,
+                        HttpServletRequest servletRequest) {
+                if (token == null) {
+                        throw new IllegalArgumentException("Token is required");
+                }
+                userService.forgotPassword(null, newPassword, token);
+                return ResponseEntity
+                                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                "Password reset successfully"));
+        }
 
 }

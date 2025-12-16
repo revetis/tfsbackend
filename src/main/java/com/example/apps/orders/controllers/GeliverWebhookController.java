@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.apps.orders.dtos.GeliverWebhookDTO;
 import com.example.apps.orders.services.GeliverWebhookService;
+import com.example.settings.maindto.ApiTemplate;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,17 +23,20 @@ public class GeliverWebhookController {
     private final GeliverWebhookService webhookService;
 
     @PostMapping("/shipment")
-    public ResponseEntity<String> handleShipmentUpdate(@RequestBody GeliverWebhookDTO webhook) {
+    public ResponseEntity<ApiTemplate<Void, String>> handleShipmentUpdate(@RequestBody GeliverWebhookDTO webhook,
+            HttpServletRequest servletRequest) {
         log.info("Received Geliver webhook: shipmentId={}, status={}",
                 webhook.getShipmentId(), webhook.getTrackingStatusCode());
 
         try {
             webhookService.processShipmentUpdate(webhook);
-            return ResponseEntity.ok("Webhook processed successfully");
+            return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                    "Webhook processed successfully"));
         } catch (Exception e) {
             log.error("Error processing Geliver webhook", e);
             // Return 200 OK to prevent Geliver retries
-            return ResponseEntity.ok("Webhook received");
+            return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                    "Webhook received"));
         }
     }
 }

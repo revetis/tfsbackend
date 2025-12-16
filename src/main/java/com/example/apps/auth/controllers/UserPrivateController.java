@@ -4,6 +4,7 @@ import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,8 +17,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.apps.auth.dtos.LogoutRequestDTOIU;
 import com.example.apps.auth.dtos.ResetPasswordDTOIU;
-import com.example.apps.auth.dtos.UserDTO;
 import com.example.apps.auth.dtos.UserUpdateDTOIU;
+import com.example.apps.auth.securities.CustomUserDetails;
 import com.example.apps.auth.services.IUserService;
 import com.example.settings.maindto.ApiTemplate;
 
@@ -30,24 +31,33 @@ public class UserPrivateController {
     @Autowired
     private IUserService userService;
 
-    @GetMapping(path = "/profile/{username}")
-    public UserDTO profile(@PathVariable String username) {
-        return userService.profile(username);
+    @GetMapping(path = "/profile")
+    public ResponseEntity<?> profile(Principal principal) {
+        Long userId = ((CustomUserDetails) ((Authentication) principal).getPrincipal()).getId();
+
+        return ResponseEntity.ok(
+                ApiTemplate.apiTemplateGenerator(true, 200, "/profile/" + principal.getName(), null,
+                        userService.profile(principal.getName(), userId)));
     }
 
     @PostMapping(path = "/profile/avatar")
     public ResponseEntity<?> uploadAvatar(@RequestParam("file") MultipartFile file, Principal principal) {
         if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("File is empty");
+            return ResponseEntity.badRequest()
+                    .body(ApiTemplate.apiTemplateGenerator(false, 400, "/profile/avatar", "File is empty", null));
         }
-
-        userService.avatar(file, principal);
-        return ResponseEntity.ok("Avatar uploaded successfully");
+        Long userId = ((CustomUserDetails) ((Authentication) principal).getPrincipal()).getId();
+        userService.avatar(file, userId);
+        return ResponseEntity.ok(
+                ApiTemplate.apiTemplateGenerator(true, 200, "/profile/avatar", null, "Avatar uploaded successfully"));
     }
 
     @PutMapping(path = "/profile")
-    public UserDTO updateProfile(@RequestBody @Valid UserUpdateDTOIU request, Principal principal) {
-        return userService.updateProfile(request, principal);
+    public ResponseEntity<?> updateProfile(@RequestBody @Valid UserUpdateDTOIU request, Principal principal) {
+        return ResponseEntity.ok(
+                ApiTemplate.apiTemplateGenerator(true, 200, "/profile", null,
+                        userService.updateProfile(request, principal)));
+
     }
 
     @PostMapping(path = "/logout")
@@ -70,7 +80,8 @@ public class UserPrivateController {
     @PostMapping(path = "/verify-email")
     public ResponseEntity<?> verifyEmail(@RequestParam String token) {
         if (token == null) {
-            return ResponseEntity.badRequest().body("Token is required");
+            return ResponseEntity.badRequest()
+                    .body(ApiTemplate.apiTemplateGenerator(false, 400, "/verify-email", "Token is required", null));
         }
         userService.verifyEmail(token);
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, "/verify-email", null,

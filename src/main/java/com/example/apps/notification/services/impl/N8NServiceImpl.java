@@ -2,7 +2,6 @@ package com.example.apps.notification.services.impl;
 
 import java.util.Map;
 
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -27,11 +26,12 @@ public class N8NServiceImpl implements IN8NService {
     public void triggerWorkflow(String webhookUrl, Map<String, Object> payload) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        
-        String apiKey = applicationProperties.getN8N_API_KEY();
-        if (apiKey != null && !apiKey.isEmpty()) {
-            headers.set("X-N8N-API-KEY", apiKey);
-        }
+
+        // String apiKey = applicationProperties.getN8N_API_KEY();
+        // if (apiKey != null && !apiKey.isEmpty()) {
+        // headers.set("X-N8N-API-KEY", apiKey);
+        // }
+        headers.set("Authorization", "Bearer " + applicationProperties.getSECRET_KEY());
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 

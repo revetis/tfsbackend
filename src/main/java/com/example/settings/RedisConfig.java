@@ -9,52 +9,83 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import com.example.apps.orders.entities.Cart;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 @Configuration
 public class RedisConfig {
 
-    @Bean
-    public StringRedisTemplate redisTemplate(RedisConnectionFactory factory) {
-        return new StringRedisTemplate(factory);
-    }
+        // Cart için RedisTemplate
+        @Bean
+        public RedisTemplate<String, Cart> cartRedisTemplate(RedisConnectionFactory connectionFactory) {
+                RedisTemplate<String, Cart> template = new RedisTemplate<>();
+                template.setConnectionFactory(connectionFactory);
 
-    @Bean
-    public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+                // Key serializer
+                template.setKeySerializer(new StringRedisSerializer());
+                template.setHashKeySerializer(new StringRedisSerializer());
 
-        RedisSerializer<Object> valueSerializer = RedisSerializer.json();
+                // Value serializer with Jackson
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
 
-        Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
+                Jackson2JsonRedisSerializer<Cart> serializer = new Jackson2JsonRedisSerializer<>(Cart.class);
+                serializer.setObjectMapper(objectMapper);
 
-        cacheConfigs.put("accessTokenBlacklist",
-                RedisCacheConfiguration.defaultCacheConfig()
-                        .serializeKeysWith(
-                                RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                        .serializeValuesWith(
-                                RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer))
-                        .entryTtl(Duration.ofHours(1)));
+                template.setValueSerializer(serializer);
+                template.setHashValueSerializer(serializer);
 
-        cacheConfigs.put("refreshTokenBlacklist",
-                RedisCacheConfiguration.defaultCacheConfig()
-                        .serializeKeysWith(
-                                RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                        .serializeValuesWith(
-                                RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer))
-                        .entryTtl(Duration.ofDays(7)));
+                template.afterPropertiesSet();
+                return template;
+        }
 
-        cacheConfigs.put("users",
-                RedisCacheConfiguration.defaultCacheConfig()
-                        .serializeKeysWith(
-                                RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                        .serializeValuesWith(
-                                RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer))
-                        .entryTtl(Duration.ofMinutes(5)));
+        // Genel StringRedisTemplate
+        @Bean
+        public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory factory) {
+                return new StringRedisTemplate(factory);
+        }
 
-        return RedisCacheManager.builder(redisConnectionFactory)
-                .withInitialCacheConfigurations(cacheConfigs)
-                .build();
-    }
+        // Redis Cache Manager
+        @Bean
+        public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+                RedisSerializer<Object> valueSerializer = RedisSerializer.json();
+
+                Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
+
+                cacheConfigs.put("accessTokenBlacklist",
+                                RedisCacheConfiguration.defaultCacheConfig()
+                                                .serializeKeysWith(RedisSerializationContext.SerializationPair
+                                                                .fromSerializer(new StringRedisSerializer()))
+                                                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                                                                .fromSerializer(valueSerializer))
+                                                .entryTtl(Duration.ofHours(1)));
+
+                cacheConfigs.put("refreshTokenBlacklist",
+                                RedisCacheConfiguration.defaultCacheConfig()
+                                                .serializeKeysWith(RedisSerializationContext.SerializationPair
+                                                                .fromSerializer(new StringRedisSerializer()))
+                                                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                                                                .fromSerializer(valueSerializer))
+                                                .entryTtl(Duration.ofDays(7)));
+
+                cacheConfigs.put("users",
+                                RedisCacheConfiguration.defaultCacheConfig()
+                                                .serializeKeysWith(RedisSerializationContext.SerializationPair
+                                                                .fromSerializer(new StringRedisSerializer()))
+                                                .serializeValuesWith(RedisSerializationContext.SerializationPair
+                                                                .fromSerializer(valueSerializer))
+                                                .entryTtl(Duration.ofMinutes(5)));
+
+                return RedisCacheManager.builder(redisConnectionFactory)
+                                .withInitialCacheConfigurations(cacheConfigs)
+                                .build();
+        }
 }

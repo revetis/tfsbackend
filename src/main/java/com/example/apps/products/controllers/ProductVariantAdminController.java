@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.apps.products.dtos.ProductVariantDTO;
 import com.example.apps.products.dtos.ProductVariantDTOIU;
 import com.example.apps.products.services.IProductVariantService;
+import com.example.settings.maindto.ApiTemplate;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -29,29 +31,40 @@ public class ProductVariantAdminController {
     private final IProductVariantService productVariantService;
 
     @GetMapping
-    public ResponseEntity<List<ProductVariantDTO>> getAll() {
-        return ResponseEntity.ok(productVariantService.getAll());
+    public ResponseEntity<ApiTemplate<Void, List<ProductVariantDTO>>> getAll(HttpServletRequest servletRequest) {
+        List<ProductVariantDTO> productVariants = productVariantService.getAll();
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, productVariants));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductVariantDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(productVariantService.getById(id));
+    public ResponseEntity<ApiTemplate<Void, ProductVariantDTO>> getById(@PathVariable Long id,
+            HttpServletRequest servletRequest) {
+        ProductVariantDTO productVariant = productVariantService.getById(id);
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, productVariant));
     }
 
     @PostMapping
-    public ResponseEntity<ProductVariantDTO> create(@Valid @RequestBody ProductVariantDTOIU productVariantDTOIU) {
-        return ResponseEntity.ok(productVariantService.create(productVariantDTOIU));
+    public ResponseEntity<ApiTemplate<Void, ProductVariantDTO>> create(
+            @Valid @RequestBody ProductVariantDTOIU productVariantDTOIU, HttpServletRequest servletRequest) {
+        ProductVariantDTO createdProductVariant = productVariantService.create(productVariantDTOIU);
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                createdProductVariant));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductVariantDTO> update(@PathVariable Long id,
-            @Valid @RequestBody ProductVariantDTOIU productVariantDTOIU) {
-        return ResponseEntity.ok(productVariantService.update(id, productVariantDTOIU));
+    public ResponseEntity<ApiTemplate<Void, ProductVariantDTO>> update(@PathVariable Long id,
+            @Valid @RequestBody ProductVariantDTOIU productVariantDTOIU, HttpServletRequest servletRequest) {
+        ProductVariantDTO updatedProductVariant = productVariantService.update(id, productVariantDTOIU);
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                updatedProductVariant));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiTemplate<Void, String>> delete(@PathVariable Long id, HttpServletRequest servletRequest) {
         productVariantService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                "Product variant deleted successfully"));
     }
 }

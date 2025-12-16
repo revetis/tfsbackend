@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.apps.orders.dtos.IyzicoWebhookDTO;
 import com.example.apps.orders.services.IyzicoWebhookService;
+import com.example.settings.maindto.ApiTemplate;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,9 +24,9 @@ public class IyzicoWebhookController {
     private final IyzicoWebhookService webhookService;
 
     @PostMapping("/payment")
-    public ResponseEntity<String> handlePaymentWebhook(
+    public ResponseEntity<ApiTemplate<Void, String>> handlePaymentWebhook(
             @RequestHeader(value = "X-IYZ-SIGNATURE-V3", required = false) String signature,
-            @RequestBody IyzicoWebhookDTO webhook) {
+            @RequestBody IyzicoWebhookDTO webhook, HttpServletRequest servletRequest) {
 
         log.info("Received iyzico webhook: type={}, paymentId={}, status={}",
                 webhook.getIyziEventType(), webhook.getPaymentId(), webhook.getStatus());
@@ -32,7 +34,8 @@ public class IyzicoWebhookController {
         // Validate signature
         if (signature == null || !webhookService.validateSignature(signature, webhook)) {
             log.warn("Invalid webhook signature for payment: {}", webhook.getPaymentId());
-            return ResponseEntity.status(401).body("Invalid signature");
+            return ResponseEntity.status(401).body(ApiTemplate.apiTemplateGenerator(false, 401,
+                    servletRequest.getRequestURI(), null, "Invalid signature"));
         }
 
         try {
@@ -47,12 +50,14 @@ public class IyzicoWebhookController {
             }
 
             // Return 200 OK to prevent iyzico retries
-            return ResponseEntity.ok("Webhook processed successfully");
+            return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                    "Webhook processed successfully"));
 
         } catch (Exception e) {
             log.error("Error processing webhook", e);
             // Still return 200 to prevent retries for unrecoverable errors
-            return ResponseEntity.ok("Webhook received");
+            return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                    "Webhook received"));
         }
     }
 }

@@ -38,7 +38,7 @@ public class PaymentServiceImpl implements IPaymentService {
     private final Options iyzicoOptions;
 
     @Override
-    public PaymentResponse processPayment(Order order, PaymentRequest paymentRequest) {
+    public PaymentResponse processPayment(Order order, PaymentRequest paymentRequest, String ipAddress) {
         try {
             CreatePaymentRequest request = new CreatePaymentRequest();
             request.setLocale(Locale.TR.getValue());
@@ -70,7 +70,7 @@ public class PaymentServiceImpl implements IPaymentService {
             buyer.setEmail(paymentRequest.getBuyerEmail());
             buyer.setIdentityNumber(paymentRequest.getBuyerIdentityNumber());
             buyer.setRegistrationAddress(paymentRequest.getBuyerAddress());
-            buyer.setIp("85.34.78.112"); // Should be actual user IP
+            buyer.setIp(ipAddress); // Should be actual user IP
             buyer.setCity(paymentRequest.getBuyerCity());
             buyer.setCountry(paymentRequest.getBuyerCountry());
             buyer.setZipCode(paymentRequest.getBuyerZipCode());

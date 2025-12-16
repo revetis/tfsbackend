@@ -51,6 +51,7 @@ import com.example.apps.auth.securities.JWTGenerator;
 import com.example.apps.auth.securities.JWTTokenBlacklistService;
 import com.example.apps.auth.services.IUserService;
 import com.example.apps.notification.services.IN8NService;
+import com.example.apps.wishlists.entities.WishList;
 import com.example.settings.ApplicationProperties;
 import com.example.settings.exceptions.ForgotPasswordTokenIsInvalidException;
 import com.example.settings.exceptions.InvalidPasswordException;
@@ -91,6 +92,7 @@ public class UserService implements IUserService {
     private IN8NService n8NService;
 
     @Override
+    @Transactional
     public UserRegisterDTO registerUser(UserRegisterDTOIU request) {
 
         Optional<User> user = userRepository.findByUsername(request.getUsername());
@@ -103,7 +105,15 @@ public class UserService implements IUserService {
             throw new InvalidPasswordException("Passwords do not match");
         }
 
-        if (!request.getAcceptTerms()) {
+        if (!request.getPassword()
+                .matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.#])[A-Za-z\\d@$!%*?&.#]{8,}$")) {
+            throw new InvalidPasswordException(
+                    "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character, and minimum 8 characters long.");
+        }
+
+        if (!request.getAcceptTerms())
+
+        {
             throw new UserNotAcceptedTermsException("The user must accept the terms and conditions.");
         }
 
@@ -111,6 +121,7 @@ public class UserService implements IUserService {
                 .orElseThrow(
                         () -> new RoleNotFoundException("User Role not found, please contact the backend developers"));
         User newUser = new User();
+        WishList wishList = new WishList();
         newUser.setUsername(request.getUsername());
         newUser.setPassword(passwordEncoder.encode(request.getPassword()));
         newUser.setFirstName(request.getFirstName());
@@ -121,8 +132,11 @@ public class UserService implements IUserService {
         newUser.setGender(request.getGender());
         newUser.setAcceptTerms(request.getAcceptTerms());
         newUser.setEmailVerified(false);
+        newUser.setWishlist(wishList);
         newUser.setEnabled(true);
-        newUser.setRoles(List.of(role));
+        newUser.setRoles(new ArrayList<>(List.of(role)));
+
+        wishList.setUser(newUser);
 
         userRepository.save(newUser);
         Map<String, Object> payload = new HashMap<>();
@@ -137,8 +151,7 @@ public class UserService implements IUserService {
         payload.put("emailVerified", newUser.getEmailVerified());
         payload.put("createdAt", newUser.getCreatedAt());
         payload.put("updatedAt", newUser.getUpdatedAt());
-        n8NService.triggerWorkflow(
-                applicationProperties.getN8N_BASE_URL() + "webhook/sign-up", payload);
+        n8NService.triggerWorkflow(applicationProperties.getN8N_BASE_URL() + "webhook/sign-up", payload);
         return new UserRegisterDTO(newUser.getUsername());
     }
 
@@ -163,8 +176,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @Cacheable(value = "users", key = "#username")
-    public UserDTO profile(String username) throws AccessDeniedException {
+    @Cacheable(value = "users", key = "#userId")
+    public UserDTO profile(String username, Long userId) throws AccessDeniedException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUsername = authentication.getName();
@@ -173,7 +186,7 @@ public class UserService implements IUserService {
             throw new AccessDeniedException("Access denied");
         }
 
-        User userInfo = userRepository.findByUsername(username)
+        User userInfo = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         UserDTO userDTO = new UserDTO();
@@ -202,8 +215,9 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#principal.name")
-    public void avatar(MultipartFile file, java.security.Principal principal) {
+    @CacheEvict(value = "users", key = "#userId")
+    @Transactional
+    public void avatar(MultipartFile file, Long userId) {
         long maxSize = 2 * 1024 * 1024;
         if (file.getSize() > maxSize) {
             throw new IllegalArgumentException("File size exceeds 2 MB limit");
@@ -215,7 +229,7 @@ public class UserService implements IUserService {
             throw new IllegalArgumentException("Only JPG and PNG files are allowed");
         }
 
-        User user = userRepository.findByUsername(principal.getName())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
@@ -247,7 +261,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#principal.name")
+    @Transactional
+    @CacheEvict(value = "users", key = "#result.id")
     public UserDTO updateProfile(UserUpdateDTOIU request, Principal principal) {
 
         User user = userRepository.findByUsername(principal.getName())
@@ -326,7 +341,7 @@ public class UserService implements IUserService {
             return;
         }
         if (user == null) {
-            return;
+            throw new UserNotFoundException("User not found");
         }
 
         String token = UUID.randomUUID().toString();

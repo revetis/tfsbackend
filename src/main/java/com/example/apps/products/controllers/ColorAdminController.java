@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.apps.products.dtos.ColorDTO;
 import com.example.apps.products.dtos.ColorDTOIU;
 import com.example.apps.products.services.IColorService;
+import com.example.settings.maindto.ApiTemplate;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -29,28 +31,40 @@ public class ColorAdminController {
     private final IColorService colorService;
 
     @GetMapping
-    public ResponseEntity<List<ColorDTO>> getAll() {
-        return ResponseEntity.ok(colorService.getAll());
+    public ResponseEntity<ApiTemplate<Void, List<ColorDTO>>> getAll(HttpServletRequest servletRequest) {
+        List<ColorDTO> colors = colorService.getAll();
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, colors));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ColorDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(colorService.getById(id));
+    public ResponseEntity<ApiTemplate<Void, ColorDTO>> getById(@PathVariable Long id,
+            HttpServletRequest servletRequest) {
+        ColorDTO color = colorService.getById(id);
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, color));
     }
 
     @PostMapping
-    public ResponseEntity<ColorDTO> create(@Valid @RequestBody ColorDTOIU colorDTOIU) {
-        return ResponseEntity.ok(colorService.create(colorDTOIU));
+    public ResponseEntity<ApiTemplate<Void, ColorDTO>> create(@Valid @RequestBody ColorDTOIU colorDTOIU,
+            HttpServletRequest servletRequest) {
+        ColorDTO createdColor = colorService.create(colorDTOIU);
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, createdColor));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ColorDTO> update(@PathVariable Long id, @Valid @RequestBody ColorDTOIU colorDTOIU) {
-        return ResponseEntity.ok(colorService.update(id, colorDTOIU));
+    public ResponseEntity<ApiTemplate<Void, ColorDTO>> update(@PathVariable Long id,
+            @Valid @RequestBody ColorDTOIU colorDTOIU, HttpServletRequest servletRequest) {
+        ColorDTO updatedColor = colorService.update(id, colorDTOIU);
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, updatedColor));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiTemplate<Void, String>> delete(@PathVariable Long id, HttpServletRequest servletRequest) {
         colorService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                "Color deleted successfully"));
     }
 }

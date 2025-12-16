@@ -25,11 +25,11 @@ public interface IUserService {
 
     public String logout(String accessToken, String refreshToken);
 
-    public UserDTO profile(String username);
+    public UserDTO profile(String username, Long userId);
 
     public UserDTO updateProfile(UserUpdateDTOIU request, Principal principal);
 
-    public void avatar(MultipartFile file, Principal principal);
+    public void avatar(MultipartFile file, Long userId);
 
     public void resetPassword(ResetPasswordDTOIU request, Principal principal);
 

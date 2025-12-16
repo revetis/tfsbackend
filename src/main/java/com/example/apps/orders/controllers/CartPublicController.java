@@ -18,7 +18,9 @@ import com.example.apps.auth.repositories.IUserRepository;
 import com.example.apps.orders.dtos.CartDTO;
 import com.example.apps.orders.dtos.CartItemDTOIU;
 import com.example.apps.orders.services.ICartService;
+import com.example.settings.maindto.ApiTemplate;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -31,45 +33,56 @@ public class CartPublicController {
         private final IUserRepository userRepository;
 
         @GetMapping
-        public ResponseEntity<CartDTO> getCart(@AuthenticationPrincipal UserDetails userDetails) {
+        public ResponseEntity<ApiTemplate<Void, CartDTO>> getCart(@AuthenticationPrincipal UserDetails userDetails,
+                        HttpServletRequest servletRequest) {
                 User user = userRepository.findByUsername(userDetails.getUsername())
                                 .orElseThrow(() -> new RuntimeException("User not found"));
-                return ResponseEntity.ok(cartService.getCartByUserId(user.getId()));
+                CartDTO cart = cartService.getCartByUserId(user.getId());
+                return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(),
+                                null, cart));
         }
 
         @PostMapping("/items")
-        public ResponseEntity<CartDTO> addItem(
+        public ResponseEntity<ApiTemplate<Void, CartDTO>> addItem(
                         @AuthenticationPrincipal UserDetails userDetails,
-                        @Valid @RequestBody CartItemDTOIU item) {
+                        @Valid @RequestBody CartItemDTOIU item, HttpServletRequest servletRequest) {
                 User user = userRepository.findByUsername(userDetails.getUsername())
                                 .orElseThrow(() -> new RuntimeException("User not found"));
-                return ResponseEntity.ok(cartService.addItem(user.getId(), item));
+                CartDTO cart = cartService.addItem(user.getId(), item);
+                return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(),
+                                null, cart));
         }
 
         @PutMapping("/items/{productId}")
-        public ResponseEntity<CartDTO> updateItemQuantity(
+        public ResponseEntity<ApiTemplate<Void, CartDTO>> updateItemQuantity(
                         @AuthenticationPrincipal UserDetails userDetails,
                         @PathVariable Long productId,
-                        @RequestParam Integer quantity) {
+                        @RequestParam Integer quantity, HttpServletRequest servletRequest) {
                 User user = userRepository.findByUsername(userDetails.getUsername())
                                 .orElseThrow(() -> new RuntimeException("User not found"));
-                return ResponseEntity.ok(cartService.updateItemQuantity(user.getId(), productId, quantity));
+                CartDTO cart = cartService.updateItemQuantity(user.getId(), productId, quantity);
+                return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(),
+                                null, cart));
         }
 
         @DeleteMapping("/items/{productId}")
-        public ResponseEntity<CartDTO> removeItem(
+        public ResponseEntity<ApiTemplate<Void, CartDTO>> removeItem(
                         @AuthenticationPrincipal UserDetails userDetails,
-                        @PathVariable Long productId) {
+                        @PathVariable Long productId, HttpServletRequest servletRequest) {
                 User user = userRepository.findByUsername(userDetails.getUsername())
                                 .orElseThrow(() -> new RuntimeException("User not found"));
-                return ResponseEntity.ok(cartService.removeItem(user.getId(), productId));
+                CartDTO cart = cartService.removeItem(user.getId(), productId);
+                return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(),
+                                null, cart));
         }
 
         @DeleteMapping
-        public ResponseEntity<Void> clearCart(@AuthenticationPrincipal UserDetails userDetails) {
+        public ResponseEntity<ApiTemplate<Void, String>> clearCart(@AuthenticationPrincipal UserDetails userDetails,
+                        HttpServletRequest servletRequest) {
                 User user = userRepository.findByUsername(userDetails.getUsername())
                                 .orElseThrow(() -> new RuntimeException("User not found"));
                 cartService.clearCart(user.getId());
-                return ResponseEntity.noContent().build();
+                return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(),
+                                null, "Cart cleared successfully"));
         }
 }

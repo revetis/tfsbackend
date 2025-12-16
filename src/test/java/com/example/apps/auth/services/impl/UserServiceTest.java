@@ -1,17 +1,22 @@
 package com.example.apps.auth.services.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-import java.util.Optional;
 import java.util.List;
+import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -24,6 +29,8 @@ import com.example.apps.auth.entities.User;
 import com.example.apps.auth.repositories.IRoleRepository;
 import com.example.apps.auth.repositories.IUserRepository;
 import com.example.apps.auth.securities.JWTGenerator;
+import com.example.apps.notification.services.IN8NService;
+import com.example.settings.ApplicationProperties;
 import com.example.settings.exceptions.UserAlreadyExistsException;
 import com.example.settings.exceptions.UserNotFoundException;
 
@@ -34,7 +41,13 @@ public class UserServiceTest {
     private IUserRepository userRepository;
 
     @Mock
+    private ApplicationProperties applicationProperties;
+
+    @Mock
     private IRoleRepository roleRepository;
+
+    @Mock
+    private IN8NService n8NService;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -75,6 +88,7 @@ public class UserServiceTest {
         user.setEmail("test@example.com");
         user.setEnabled(true);
         user.setRoles(List.of(role));
+
     }
 
     @Test
@@ -93,6 +107,7 @@ public class UserServiceTest {
 
     @Test
     void registerUser_UserAlreadyExists() {
+
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(user));
 
         assertThrows(UserAlreadyExistsException.class, () -> userService.registerUser(registerRequest));

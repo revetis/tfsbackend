@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.apps.products.dtos.BrandDTO;
 import com.example.apps.products.dtos.BrandDTOIU;
 import com.example.apps.products.services.IBrandService;
+import com.example.settings.maindto.ApiTemplate;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -29,28 +31,40 @@ public class BrandAdminController {
     private final IBrandService brandService;
 
     @GetMapping
-    public ResponseEntity<List<BrandDTO>> getAll() {
-        return ResponseEntity.ok(brandService.getAll());
+    public ResponseEntity<ApiTemplate<Void, List<BrandDTO>>> getAll(HttpServletRequest servletRequest) {
+        List<BrandDTO> brands = brandService.getAll();
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, brands));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BrandDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(brandService.getById(id));
+    public ResponseEntity<ApiTemplate<Void, BrandDTO>> getById(@PathVariable Long id,
+            HttpServletRequest servletRequest) {
+        BrandDTO brand = brandService.getById(id);
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, brand));
     }
 
     @PostMapping
-    public ResponseEntity<BrandDTO> create(@Valid @RequestBody BrandDTOIU brandDTOIU) {
-        return ResponseEntity.ok(brandService.create(brandDTOIU));
+    public ResponseEntity<ApiTemplate<Void, BrandDTO>> create(@Valid @RequestBody BrandDTOIU brandDTOIU,
+            HttpServletRequest servletRequest) {
+        BrandDTO createdBrand = brandService.create(brandDTOIU);
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, createdBrand));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BrandDTO> update(@PathVariable Long id, @Valid @RequestBody BrandDTOIU brandDTOIU) {
-        return ResponseEntity.ok(brandService.update(id, brandDTOIU));
+    public ResponseEntity<ApiTemplate<Void, BrandDTO>> update(@PathVariable Long id,
+            @Valid @RequestBody BrandDTOIU brandDTOIU, HttpServletRequest servletRequest) {
+        BrandDTO updatedBrand = brandService.update(id, brandDTOIU);
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, updatedBrand));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<ApiTemplate<Void, String>> delete(@PathVariable Long id, HttpServletRequest servletRequest) {
         brandService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                "Brand deleted successfully"));
     }
 }

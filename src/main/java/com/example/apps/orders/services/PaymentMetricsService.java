@@ -50,4 +50,12 @@ public class PaymentMetricsService {
                 .register(meterRegistry)
                 .increment();
     }
+
+    public void recordWebhookProcessingDuration(String eventType, long durationMs) {
+        Timer.builder("webhook.processing.duration")
+                .description("Time taken to process incoming webhooks")
+                .tag("type", eventType)
+                .register(meterRegistry)
+                .record(durationMs, TimeUnit.MILLISECONDS);
+    }
 }

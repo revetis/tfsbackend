@@ -8,7 +8,7 @@ import com.example.apps.orders.entities.Order;
 
 public interface IPaymentService {
 
-    PaymentResponse processPayment(Order order, PaymentRequest paymentRequest);
+    PaymentResponse processPayment(Order order, PaymentRequest paymentRequest, String ipAddress);
 
     PaymentResponse refundPayment(String paymentTransactionId, BigDecimal amount);
 

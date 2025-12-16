@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.apps.products.dtos.ProductVariantDTO;
 import com.example.apps.products.services.IProductVariantService;
+import com.example.settings.maindto.ApiTemplate;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -21,12 +23,17 @@ public class ProductVariantPublicController {
     private final IProductVariantService productVariantService;
 
     @GetMapping
-    public ResponseEntity<List<ProductVariantDTO>> getAll() {
-        return ResponseEntity.ok(productVariantService.getAll());
+    public ResponseEntity<ApiTemplate<Void, List<ProductVariantDTO>>> getAll(HttpServletRequest servletRequest) {
+        List<ProductVariantDTO> productVariants = productVariantService.getAll();
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, productVariants));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductVariantDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(productVariantService.getById(id));
+    public ResponseEntity<ApiTemplate<Void, ProductVariantDTO>> getById(@PathVariable Long id,
+            HttpServletRequest servletRequest) {
+        ProductVariantDTO productVariant = productVariantService.getById(id);
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, productVariant));
     }
 }

@@ -20,6 +20,8 @@ public class GeliverWebhookService {
 
     private final ShipmentRepository shipmentRepository;
 
+    private final N8NNotificationService n8nService;
+
     @Transactional
     public void processShipmentUpdate(GeliverWebhookDTO webhook) {
         Shipment shipment = shipmentRepository
@@ -51,18 +53,26 @@ public class GeliverWebhookService {
             Order order = shipment.getOrder();
             order.setStatus(Order.OrderStatus.DELIVERED);
 
+            n8nService.sendShipmentDelivered(order, shipment);
+
             log.info("Shipment delivered: {} - Order: {}", webhook.getShipmentId(), order.getOrderNumber());
         } else if ("TRANSIT".equals(webhook.getTrackingStatusCode())) {
             if ("package_accepted".equals(webhook.getTrackingSubStatusCode())) {
                 shipment.setStatus(ShipmentStatus.SHIPPED);
                 shipment.setShipmentDate(webhook.getStatusDate());
+
+                n8nService.sendShipmentShipped(shipment.getOrder(), shipment);
             }
         } else if ("RETURNED".equals(webhook.getTrackingStatusCode())) {
             shipment.setStatus(ShipmentStatus.RETURNED);
+
+            n8nService.sendShipmentReturned(shipment.getOrder(), shipment);
         } else if ("FAILURE".equals(webhook.getTrackingStatusCode())) {
             shipment.setStatus(ShipmentStatus.FAILED);
             shipment.setHasError(true);
             shipment.setLastErrorMessage(webhook.getStatusDetails());
+
+            n8nService.sendShipmentFailed(shipment.getOrder(), shipment);
         }
 
         shipmentRepository.save(shipment);

@@ -8,7 +8,7 @@ import com.example.apps.orders.dtos.RefundRequest;
 
 public interface IOrderService {
 
-    OrderDTO createOrder(Long userId, OrderDTOIU orderDTO);
+    OrderDTO createOrder(Long userId, OrderDTOIU orderDTO, String ipAddress);
 
     OrderDTO getOrderById(Long orderId);
 

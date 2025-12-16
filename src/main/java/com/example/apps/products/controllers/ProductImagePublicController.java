@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.apps.products.dtos.ProductImageDTO;
 import com.example.apps.products.services.IProductImageService;
+import com.example.settings.maindto.ApiTemplate;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -21,12 +23,17 @@ public class ProductImagePublicController {
     private final IProductImageService productImageService;
 
     @GetMapping
-    public ResponseEntity<List<ProductImageDTO>> getAll() {
-        return ResponseEntity.ok(productImageService.getAll());
+    public ResponseEntity<ApiTemplate<Void, List<ProductImageDTO>>> getAll(HttpServletRequest servletRequest) {
+        List<ProductImageDTO> productImages = productImageService.getAll();
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, productImages));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductImageDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(productImageService.getById(id));
+    public ResponseEntity<ApiTemplate<Void, ProductImageDTO>> getById(@PathVariable Long id,
+            HttpServletRequest servletRequest) {
+        ProductImageDTO productImage = productImageService.getById(id);
+        return ResponseEntity
+                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, productImage));
     }
 }

@@ -53,7 +53,7 @@ public class OrderServiceImpl implements IOrderService {
 
     @Transactional
     @Override
-    public OrderDTO createOrder(Long userId, OrderDTOIU orderDTO) {
+    public OrderDTO createOrder(Long userId, OrderDTOIU orderDTO, String ipAddress) {
         // Get user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
@@ -128,7 +128,7 @@ public class OrderServiceImpl implements IOrderService {
         paymentRequest.setBuyerZipCode(orderDTO.getBuyerZipCode());
 
         // Process payment with iyzico
-        PaymentResponse paymentResponse = paymentService.processPayment(savedOrder, paymentRequest);
+        PaymentResponse paymentResponse = paymentService.processPayment(savedOrder, paymentRequest, ipAddress);
 
         if ("PAID".equals(paymentResponse.getStatus())) {
             savedOrder.setPaymentStatus(Order.PaymentStatus.PAID);
