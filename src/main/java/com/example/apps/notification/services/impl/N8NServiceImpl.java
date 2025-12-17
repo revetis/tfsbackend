@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.apps.notification.services.IN8NService;
-import com.example.settings.ApplicationProperties;
+import com.example.tfs.ApplicationProperties;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

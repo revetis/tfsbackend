@@ -48,6 +48,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    String refreshToken;
+
     private String firstName;
     private String lastName;
     private String email;

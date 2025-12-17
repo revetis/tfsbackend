@@ -1,6 +1,8 @@
 package com.example.apps.auth.services;
 
+import java.util.Map;
+
 public interface ITokenService {
-    public String refreshAccessToken(String refreshToken);
+    public Map<String, String> refreshAccessToken(String refreshToken, String ipAddress);
 
 }

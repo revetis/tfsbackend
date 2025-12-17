@@ -13,8 +13,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.example.settings.maindto.ApiErrorTemplate;
-import com.example.settings.maindto.ApiTemplate;
+import com.example.tfs.maindto.ApiErrorTemplate;
+import com.example.tfs.maindto.ApiTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;

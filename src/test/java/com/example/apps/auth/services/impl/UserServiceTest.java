@@ -30,9 +30,9 @@ import com.example.apps.auth.repositories.IRoleRepository;
 import com.example.apps.auth.repositories.IUserRepository;
 import com.example.apps.auth.securities.JWTGenerator;
 import com.example.apps.notification.services.IN8NService;
-import com.example.settings.ApplicationProperties;
-import com.example.settings.exceptions.UserAlreadyExistsException;
-import com.example.settings.exceptions.UserNotFoundException;
+import com.example.tfs.ApplicationProperties;
+import com.example.tfs.exceptions.UserAlreadyExistsException;
+import com.example.tfs.exceptions.UserNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {

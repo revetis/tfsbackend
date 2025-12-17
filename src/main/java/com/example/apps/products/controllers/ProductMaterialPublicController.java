@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.apps.products.dtos.ProductMaterialDTO;
 import com.example.apps.products.services.IProductMaterialService;
-import com.example.settings.maindto.ApiTemplate;
+import com.example.tfs.maindto.ApiTemplate;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;

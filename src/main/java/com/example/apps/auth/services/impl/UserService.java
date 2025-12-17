@@ -52,14 +52,14 @@ import com.example.apps.auth.securities.JWTTokenBlacklistService;
 import com.example.apps.auth.services.IUserService;
 import com.example.apps.notification.services.IN8NService;
 import com.example.apps.wishlists.entities.WishList;
-import com.example.settings.ApplicationProperties;
-import com.example.settings.exceptions.ForgotPasswordTokenIsInvalidException;
-import com.example.settings.exceptions.InvalidPasswordException;
-import com.example.settings.exceptions.RoleNotFoundException;
-import com.example.settings.exceptions.UserAlreadyExistsException;
-import com.example.settings.exceptions.UserNotAcceptedTermsException;
-import com.example.settings.exceptions.UserNotFoundException;
-import com.example.settings.exceptions.VerifyEmailTokenException;
+import com.example.tfs.ApplicationProperties;
+import com.example.tfs.exceptions.ForgotPasswordTokenIsInvalidException;
+import com.example.tfs.exceptions.InvalidPasswordException;
+import com.example.tfs.exceptions.RoleNotFoundException;
+import com.example.tfs.exceptions.UserAlreadyExistsException;
+import com.example.tfs.exceptions.UserNotAcceptedTermsException;
+import com.example.tfs.exceptions.UserNotFoundException;
+import com.example.tfs.exceptions.VerifyEmailTokenException;
 
 @Service
 public class UserService implements IUserService {
@@ -156,7 +156,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserLoginDTO login(UserLoginDTOIU request) {
+    public UserLoginDTO login(UserLoginDTOIU request, String ipAddress) {
         User user = userRepository.findByUsernameOrEmail(request.getUsername(), request.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
@@ -168,11 +168,13 @@ public class UserService implements IUserService {
         }
 
         String refreshToken = jwtGenerator.generateRefreshToken(user.getUsername(),
-                user.getRoles().stream().map(role -> role.getName()).toList());
+                user.getRoles().stream().map(role -> role.getName()).toList(), ipAddress);
 
-        String accessToken = jwtGenerator.generateAccessToken(refreshToken);
+        Map<String, String> tokens = jwtGenerator.generateAccessToken(refreshToken, ipAddress);
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
 
-        return new UserLoginDTO(refreshToken, accessToken);
+        return new UserLoginDTO(tokens.get("refreshToken"), tokens.get("accessToken"));
     }
 
     @Override

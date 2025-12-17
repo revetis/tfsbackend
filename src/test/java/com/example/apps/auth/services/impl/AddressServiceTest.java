@@ -21,9 +21,9 @@ import com.example.apps.auth.entities.User;
 import com.example.apps.auth.repositories.IAddressRepository;
 import com.example.apps.auth.repositories.IUserRepository;
 import com.example.apps.auth.securities.CustomUserDetails;
-import com.example.settings.exceptions.AddressDenied;
-import com.example.settings.exceptions.AddressNotFoundException;
-import com.example.settings.exceptions.UserNotFoundException;
+import com.example.tfs.exceptions.AddressDenied;
+import com.example.tfs.exceptions.AddressNotFoundException;
+import com.example.tfs.exceptions.UserNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class AddressServiceTest {

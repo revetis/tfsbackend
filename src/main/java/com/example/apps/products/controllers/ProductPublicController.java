@@ -14,7 +14,7 @@ import com.example.apps.products.documents.ProductDocument;
 import com.example.apps.products.dtos.ProductDTO;
 import com.example.apps.products.services.IProductService;
 import com.example.apps.products.services.search.ProductSearchService;
-import com.example.settings.maindto.ApiTemplate;
+import com.example.tfs.maindto.ApiTemplate;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -24,36 +24,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductPublicController {
 
-    private final IProductService productService;
-    private final ProductSearchService productSearchService;
+        private final IProductService productService;
+        private final ProductSearchService productSearchService;
 
-    @GetMapping
-    public ResponseEntity<ApiTemplate<Void, List<ProductDTO>>> getAll(HttpServletRequest servletRequest) {
-        List<ProductDTO> products = productService.getAll();
-        return ResponseEntity
-                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, products));
-    }
+        @GetMapping
+        public ResponseEntity<ApiTemplate<Void, List<ProductDTO>>> getAll(HttpServletRequest servletRequest) {
+                List<ProductDTO> products = productService.getAll();
+                return ResponseEntity
+                                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                products));
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiTemplate<Void, ProductDTO>> getById(@PathVariable Long id,
-            HttpServletRequest servletRequest) {
-        ProductDTO product = productService.getById(id);
-        return ResponseEntity
-                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, product));
-    }
+        @GetMapping("/{id}")
+        public ResponseEntity<ApiTemplate<Void, ProductDTO>> getById(@PathVariable Long id,
+                        HttpServletRequest servletRequest) {
+                ProductDTO product = productService.getById(id);
+                return ResponseEntity
+                                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                product));
+        }
 
-    @GetMapping("/search")
-    public ResponseEntity<ApiTemplate<Void, List<ProductDocument>>> search(
-            @RequestParam(required = false) String q,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String brand,
-            @RequestParam(required = false) BigDecimal minPrice,
-            @RequestParam(required = false) BigDecimal maxPrice,
-            @RequestParam(required = false) List<String> colors,
-            HttpServletRequest servletRequest) {
-        List<ProductDocument> results = productSearchService.searchProducts(q, category, brand, minPrice, maxPrice,
-                colors);
-        return ResponseEntity
-                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, results));
-    }
+        @GetMapping("/search")
+        public ResponseEntity<ApiTemplate<Void, List<ProductDocument>>> search(
+                        @RequestParam(required = false) String q,
+                        @RequestParam(required = false) String category,
+                        @RequestParam(required = false) String brand,
+                        @RequestParam(required = false) BigDecimal minPrice,
+                        @RequestParam(required = false) BigDecimal maxPrice,
+                        @RequestParam(required = false) List<String> colors,
+                        HttpServletRequest servletRequest) {
+                List<ProductDocument> results = productSearchService.searchProducts(q, category, brand, minPrice,
+                                maxPrice,
+                                colors);
+                return ResponseEntity
+                                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                results));
+        }
 }

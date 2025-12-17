@@ -4,8 +4,6 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
-import com.example.settings.utils.SlugUtils;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +18,7 @@ import com.example.apps.products.repositories.BrandRepository;
 import com.example.apps.products.repositories.CategoryRepository;
 import com.example.apps.products.repositories.ProductRepository;
 import com.example.apps.products.services.IProductService;
+import com.example.tfs.utils.SlugUtils;
 
 import lombok.RequiredArgsConstructor;
 

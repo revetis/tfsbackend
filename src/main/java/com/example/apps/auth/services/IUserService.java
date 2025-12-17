@@ -21,7 +21,7 @@ import java.util.List;
 public interface IUserService {
     public UserRegisterDTO registerUser(UserRegisterDTOIU request);
 
-    public UserLoginDTO login(UserLoginDTOIU request);
+    public UserLoginDTO login(UserLoginDTOIU request, String ipAddress);
 
     public String logout(String accessToken, String refreshToken);
 

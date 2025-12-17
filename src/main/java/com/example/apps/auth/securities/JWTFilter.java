@@ -12,9 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.settings.ApplicationProperties;
-import com.example.settings.maindto.ApiErrorTemplate;
-import com.example.settings.maindto.ApiTemplate;
+import com.example.tfs.ApplicationProperties;
+import com.example.tfs.maindto.ApiErrorTemplate;
+import com.example.tfs.maindto.ApiTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Claims;
@@ -76,6 +76,18 @@ public class JWTFilter extends OncePerRequestFilter {
             }
             String username = claims.getSubject();
             List<String> roles = (List<String>) claims.get("roles", List.class);
+            String ipAddress = claims.get("ipAddress", String.class);
+            String requestIp = request.getHeader("X-Forwarded-For");
+            if (requestIp != null && requestIp.contains(",")) {
+                requestIp = requestIp.split(",")[0];
+            }
+            if (requestIp == null) {
+                requestIp = request.getRemoteAddr();
+            }
+
+            if (!ipAddress.equals(requestIp) || ipAddress == null || ipAddress.isBlank()) {
+                throw new JwtException("This token is not valid for this IP address.");
+            }
 
             List<SimpleGrantedAuthority> authorities = roles.stream()
                     .map(SimpleGrantedAuthority::new)

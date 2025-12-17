@@ -16,7 +16,7 @@ import com.example.apps.auth.dtos.UserLoginDTOIU;
 import com.example.apps.auth.dtos.UserRegisterDTO;
 import com.example.apps.auth.dtos.UserRegisterDTOIU;
 import com.example.apps.auth.services.IUserService;
-import com.example.settings.maindto.ApiTemplate;
+import com.example.tfs.maindto.ApiTemplate;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -41,7 +41,15 @@ public class UserController {
         @PostMapping(path = "/login")
         public ResponseEntity<ApiTemplate<Void, UserLoginDTO>> login(@RequestBody @Valid UserLoginDTOIU request,
                         HttpServletRequest servletRequest) {
-                UserLoginDTO loggedInUser = userService.login(request);
+                String ipAddress = servletRequest.getHeader("X-Forwarded-For");
+                if (ipAddress != null && ipAddress.contains(",")) {
+                        ipAddress = ipAddress.split(",")[0];
+                }
+                if (ipAddress == null) {
+                        ipAddress = servletRequest.getRemoteAddr();
+                }
+
+                UserLoginDTO loggedInUser = userService.login(request, ipAddress);
                 return ResponseEntity.ok(
                                 ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
                                                 loggedInUser));

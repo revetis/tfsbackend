@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.example.apps.orders.dtos.OrderDTO;
 import com.example.apps.orders.dtos.OrderDTOIU;
-import com.example.apps.orders.dtos.RefundRequest;
+import com.example.apps.payments.dtos.RefundRequest;
 
 public interface IOrderService {
 

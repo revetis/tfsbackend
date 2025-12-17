@@ -20,7 +20,7 @@ import com.example.apps.auth.dtos.ResetPasswordDTOIU;
 import com.example.apps.auth.dtos.UserUpdateDTOIU;
 import com.example.apps.auth.securities.CustomUserDetails;
 import com.example.apps.auth.services.IUserService;
-import com.example.settings.maindto.ApiTemplate;
+import com.example.tfs.maindto.ApiTemplate;
 
 import jakarta.validation.Valid;
 

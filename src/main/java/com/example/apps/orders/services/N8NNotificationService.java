@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.apps.orders.entities.Order;
 import com.example.apps.orders.entities.Shipment;
-import com.example.settings.ApplicationProperties;
+import com.example.tfs.ApplicationProperties;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

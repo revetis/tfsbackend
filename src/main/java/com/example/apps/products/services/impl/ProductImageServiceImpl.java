@@ -13,8 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.settings.utils.SlugUtils;
-
 import com.example.apps.products.dtos.ProductImageDTO;
 import com.example.apps.products.dtos.ProductImageDTOIU;
 import com.example.apps.products.entities.ProductImage;
@@ -22,6 +20,7 @@ import com.example.apps.products.entities.ProductVariant;
 import com.example.apps.products.repositories.ProductImageRepository;
 import com.example.apps.products.repositories.ProductVariantRepository;
 import com.example.apps.products.services.IProductImageService;
+import com.example.tfs.utils.SlugUtils;
 
 import lombok.RequiredArgsConstructor;
 

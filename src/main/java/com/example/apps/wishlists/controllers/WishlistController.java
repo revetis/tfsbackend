@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.apps.products.dtos.ProductDTO;
 import com.example.apps.products.entities.Product;
 import com.example.apps.wishlists.services.IWishListService;
-import com.example.settings.maindto.ApiTemplate;
+import com.example.tfs.maindto.ApiTemplate;
 
 @RestController
 @RequestMapping("/rest/api/private/wishlists")

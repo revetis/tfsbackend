@@ -1,5 +1,7 @@
 package com.example.apps.auth.services.impl;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +15,8 @@ public class TokenService implements ITokenService {
     private JWTGenerator jwtGenerator;
 
     @Override
-    public String refreshAccessToken(String refreshToken) {
-        return jwtGenerator.generateAccessToken(refreshToken);
+    public Map<String, String> refreshAccessToken(String refreshToken, String ipAddress) {
+        return jwtGenerator.generateAccessToken(refreshToken, ipAddress);
 
     }
 

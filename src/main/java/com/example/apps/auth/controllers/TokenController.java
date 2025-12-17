@@ -1,5 +1,7 @@
 package com.example.apps.auth.controllers;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.apps.auth.dtos.RefreshAccessTokenDTO;
 import com.example.apps.auth.dtos.RefreshAccessTokenDTOIU;
 import com.example.apps.auth.services.ITokenService;
-import com.example.settings.maindto.ApiTemplate;
+import com.example.tfs.maindto.ApiTemplate;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -26,8 +28,18 @@ public class TokenController {
     public ResponseEntity<ApiTemplate<Void, RefreshAccessTokenDTO>> refreshAccessToken(
             @RequestBody @Valid RefreshAccessTokenDTOIU request,
             HttpServletRequest servletRequest) {
-        String accessToken = tokenService.refreshAccessToken(request.getRefreshToken());
-        RefreshAccessTokenDTO dto = new RefreshAccessTokenDTO(accessToken);
+        String ipAddress = servletRequest.getHeader("X-Forwarded-For");
+        if (ipAddress != null && ipAddress.contains(",")) {
+            ipAddress = ipAddress.split(",")[0];
+        }
+        if (ipAddress == null) {
+            ipAddress = servletRequest.getRemoteAddr();
+        }
+
+        Map<String, String> tokens = tokenService.refreshAccessToken(request.getRefreshToken(), ipAddress);
+
+        RefreshAccessTokenDTO dto = new RefreshAccessTokenDTO(tokens.get("refreshToken"), tokens.get("accessToken"));
+
         return ResponseEntity
                 .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null, dto));
     }

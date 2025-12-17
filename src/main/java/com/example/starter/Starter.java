@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import com.example.settings.ApplicationProperties;
+import com.example.tfs.ApplicationProperties;
 
 @SpringBootApplication
 @ComponentScan(value = "com.example")

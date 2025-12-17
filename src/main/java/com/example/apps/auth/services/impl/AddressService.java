@@ -16,9 +16,9 @@ import com.example.apps.auth.repositories.IAddressRepository;
 import com.example.apps.auth.repositories.IUserRepository;
 import com.example.apps.auth.securities.CustomUserDetails;
 import com.example.apps.auth.services.IAddressService;
-import com.example.settings.exceptions.AddressDenied;
-import com.example.settings.exceptions.AddressNotFoundException;
-import com.example.settings.exceptions.UserNotFoundException;
+import com.example.tfs.exceptions.AddressDenied;
+import com.example.tfs.exceptions.AddressNotFoundException;
+import com.example.tfs.exceptions.UserNotFoundException;
 
 @Service
 public class AddressService implements IAddressService {

@@ -17,10 +17,10 @@ import com.example.apps.products.repositories.ProductRepository;
 import com.example.apps.wishlists.entities.WishList;
 import com.example.apps.wishlists.repositories.WishListRepository;
 import com.example.apps.wishlists.services.IWishListService;
-import com.example.settings.exceptions.ProductNotFound;
-import com.example.settings.exceptions.UserNotFoundException;
-import com.example.settings.exceptions.WishListAlreadyContainsProduct;
-import com.example.settings.exceptions.WishListNotFound;
+import com.example.tfs.exceptions.ProductNotFound;
+import com.example.tfs.exceptions.UserNotFoundException;
+import com.example.tfs.exceptions.WishListAlreadyContainsProduct;
+import com.example.tfs.exceptions.WishListNotFound;
 
 @Service
 public class WishListServiceImpl implements IWishListService {
