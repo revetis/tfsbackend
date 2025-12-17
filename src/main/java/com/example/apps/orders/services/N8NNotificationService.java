@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.apps.orders.entities.Order;
-import com.example.apps.orders.entities.Shipment;
+import com.example.apps.shipments.entities.Shipment;
 import com.example.tfs.ApplicationProperties;
 
 import lombok.RequiredArgsConstructor;

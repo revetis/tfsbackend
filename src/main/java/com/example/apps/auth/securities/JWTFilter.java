@@ -35,7 +35,6 @@ public class JWTFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper;
 
-    @Autowired
     public JWTFilter(ApplicationProperties appProperties, ObjectMapper objectMapper) {
         this.SECRET_KEY_STR = appProperties.getSECRET_KEY();
         this.SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_STR.getBytes());

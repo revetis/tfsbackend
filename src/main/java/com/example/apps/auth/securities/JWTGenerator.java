@@ -26,7 +26,6 @@ public class JWTGenerator {
     private final String SECRET_KEY_STR;
     private final SecretKey SECRET_KEY;
 
-    @Autowired
     public JWTGenerator(ApplicationProperties appProperties) {
         this.SECRET_KEY_STR = appProperties.getSECRET_KEY();
         this.SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_STR.getBytes());
