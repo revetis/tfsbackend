@@ -1,4 +1,4 @@
-package com.example.apps.orders.repositories;
+package com.example.apps.shipments.repositories;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.apps.orders.entities.Shipment;
-import com.example.apps.orders.entities.Shipment.ShipmentStatus;
-import com.example.apps.orders.entities.Shipment.TrackingStatus;
+import com.example.apps.shipments.entities.Shipment;
+import com.example.apps.shipments.entities.Shipment.ShipmentStatus;
+import com.example.apps.shipments.entities.Shipment.TrackingStatus;
 
 @Repository
 public interface ShipmentRepository extends JpaRepository<Shipment, Long> {

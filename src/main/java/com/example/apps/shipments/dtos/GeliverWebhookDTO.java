@@ -1,4 +1,4 @@
-package com.example.apps.orders.dtos;
+package com.example.apps.shipments.dtos;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
