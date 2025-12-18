@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApplicationProperties {
 
+    private String STATIC_PATH = "tfsbackend\\src\\main\\resources\\static";
+
     private String SECRET_KEY;
 
     private String N8N_API_KEY;
@@ -23,4 +25,14 @@ public class ApplicationProperties {
     private String N8N_BASE_URL;
 
     private String FRONTEND_URL;
+
+    private String IYZICO_API_KEY;
+    private String IYZICO_SECRET_KEY;
+    private String IYZICO_BASE_URL;
+
+    private String GELIVER_API_BASEURL;
+    private String GELIVER_API_TOKEN;
+    private String GELIVER_TEST_MODE;
+    private String GELIVER_WEBHOOK_URL;
+
 }

@@ -1,32 +1,43 @@
 package com.example.apps.products.dtos;
 
-import java.math.BigDecimal;
-import com.example.apps.products.enums.Size;
+import java.util.List;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductVariantDTOIU {
-    @NotNull(message = "Variant price cannot be null")
-    @Positive(message = "Variant price must be positive")
-    private BigDecimal variantPrice;
+    @NotBlank(message = "Name is required")
+    @Size(min = 3, max = 50, message = "Name must be between 3 and 50 characters")
+    private String name;
 
-    @NotNull(message = "Stock cannot be null")
-    private Integer stock;
+    @NotNull(message = "Price is required")
+    @Min(value = 0, message = "Price must be greater than or equal to 0")
+    private Long price;
 
-    @NotNull(message = "Size cannot be null")
-    private Size size;
+    @Min(value = 0, message = "Discount ratio must be greater than or equal to 0")
+    private Long discountRatio;
 
-    @NotNull(message = "Product ID cannot be null")
-    private Long productId;
+    @NotNull(message = "Stock is required")
+    private ProductVariantStockDTOIU stock;
 
-    @NotNull(message = "Color ID cannot be null")
-    private Long colorId;
+    @NotNull(message = "Color is required")
+    private ProductVariantColorDTOIU color;
 
-    private Boolean isActive;
+    @NotNull(message = "Enable is required")
+    private Boolean enable;
+
+    @NotNull(message = "Images are required")
+    @Size(min = 1, message = "At least one image is required")
+    private List<ProductVariantImageDTOIU> images;
+
 }

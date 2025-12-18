@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.example.tfs.ApplicationProperties;
 
@@ -15,6 +16,7 @@ import com.example.tfs.ApplicationProperties;
 @ComponentScan(value = "com.example")
 @EnableCaching
 @EntityScan(value = "com.example")
+@EnableAsync
 @EnableJpaRepositories(value = "com.example")
 @EnableConfigurationProperties(ApplicationProperties.class)
 @EnableElasticsearchRepositories(basePackages = {
@@ -25,6 +27,9 @@ public class Starter {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Starter.class, args);
+		System.out.println("___________________________________");
+		System.out.println("THEFIRSTSTEP SUNUCUSU BAŞLATILDI");
+		System.out.println("___________________________________");
 	}
 
 }

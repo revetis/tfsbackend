@@ -1,17 +1,34 @@
 package com.example.apps.products.services;
 
-import java.util.List;
-import com.example.apps.products.dtos.CategoryDTO;
-import com.example.apps.products.dtos.CategoryDTOIU;
+import org.springframework.data.domain.Page;
+
+import com.example.apps.products.dtos.MainCategoryDTO;
+import com.example.apps.products.dtos.MainCategoryDTOIU;
+import com.example.apps.products.dtos.SubCategoryDTO;
+import com.example.apps.products.dtos.SubCategoryDTOIU;
 
 public interface ICategoryService {
-    List<CategoryDTO> getAll();
+    MainCategoryDTO createMainCategory(MainCategoryDTOIU mainCategoryDTO);
 
-    CategoryDTO getById(Long id);
+    MainCategoryDTO updateMainCategory(Long id, MainCategoryDTOIU mainCategoryDTO);
 
-    CategoryDTO create(CategoryDTOIU categoryDTOIU);
+    Boolean deleteMainCategory(Long id);
 
-    CategoryDTO update(Long id, CategoryDTOIU categoryDTOIU);
+    MainCategoryDTO getMainCategoryById(Long id);
 
-    void delete(Long id);
+    Page<MainCategoryDTO> getAllMainCategories(int page, int size);
+
+    SubCategoryDTO createSubCategory(SubCategoryDTOIU subCategoryDTO);
+
+    SubCategoryDTO updateSubCategory(Long id, SubCategoryDTOIU subCategoryDTO);
+
+    Boolean deleteSubCategory(Long id);
+
+    SubCategoryDTO changeMainCategoryOfSubCategory(Long subCategoryId, Long mainCategoryId);
+
+    SubCategoryDTO getSubCategoryById(Long id);
+
+    Page<SubCategoryDTO> getSubCategoriesByMainCategoryId(Long mainCategoryId, int page, int size);
+
+    Page<SubCategoryDTO> getAllSubCategories(int page, int size);
 }

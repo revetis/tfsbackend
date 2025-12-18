@@ -1,21 +1,27 @@
 package com.example.apps.products.dtos;
 
-import java.math.BigDecimal;
-import com.example.apps.products.enums.Size;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductVariantDTO {
     private Long id;
-    private BigDecimal variantPrice;
-    private Integer stock;
-    private Size size;
-    private String sku;
-    private Long productId;
-    private Long colorId;
-    private Boolean isActive;
+    private String name;
+    private Long price;
+    private Long discountRatio;
+    private Long discountPrice;
+    private ProductVariantStockDTO stock;
+    private ProductVariantColorDTO color;
+    private Boolean enable;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private List<ProductVariantImageDTO> images;
 }

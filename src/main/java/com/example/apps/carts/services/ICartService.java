@@ -1,17 +1,20 @@
 package com.example.apps.carts.services;
 
+import com.example.apps.carts.dtos.CartCheckoutDTO;
 import com.example.apps.carts.dtos.CartDTO;
 import com.example.apps.carts.dtos.CartItemDTOIU;
 
 public interface ICartService {
+    public CartDTO getCartByUserId(Long userId, Long actualUserId);
 
-    CartDTO getCartByUserId(Long userId);
+    public CartDTO addItemToCart(Long userId, CartItemDTOIU cartItemDTOIU, Long actualUserId);
 
-    CartDTO addItem(Long userId, CartItemDTOIU item);
+    public CartDTO removeItemFromCart(Long userId, Long cartItemId, Long actualUserId);
 
-    CartDTO updateItemQuantity(Long userId, Long productId, Integer quantity);
+    public Boolean clearCart(Long userId, Long actualUserId);
 
-    CartDTO removeItem(Long userId, Long productId);
+    public CartDTO updateItemQuantity(Long userId, Long cartItemId, Integer quantity, Long actualUserId);
 
-    void clearCart(Long userId);
+    public CartCheckoutDTO validateCartForCheckout(Long userId, Long actualUserId, Double shippingCost);
+
 }

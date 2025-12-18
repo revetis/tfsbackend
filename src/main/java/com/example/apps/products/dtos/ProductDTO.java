@@ -1,21 +1,28 @@
 package com.example.apps.products.dtos;
 
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductDTO {
+
     private Long id;
     private String name;
     private String description;
-    private String slug;
-    private BigDecimal mainPrice;
-    private Double discountRatio;
-    private Long categoryId;
-    private Long brandId;
-    private Boolean isActive;
+    private Boolean enable;
+    private List<ProductVariantDTO> variants;
+    private ProductMaterialDTO material;
+    private SubCategoryDTO subCategory;
+    private Double taxRatio;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
 }

@@ -14,10 +14,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.example.apps.auth.dtos.RoleDTO;
-import com.example.apps.auth.dtos.RoleDTOIU;
-import com.example.apps.auth.entities.Role;
-import com.example.apps.auth.repositories.IRoleRepository;
+import com.example.apps.auths.dtos.RoleDTO;
+import com.example.apps.auths.dtos.RoleDTOIU;
+import com.example.apps.auths.entities.Role;
+import com.example.apps.auths.repositories.IRoleRepository;
+import com.example.apps.auths.services.impl.RoleService;
 
 @ExtendWith(MockitoExtension.class)
 public class RoleServiceTest {

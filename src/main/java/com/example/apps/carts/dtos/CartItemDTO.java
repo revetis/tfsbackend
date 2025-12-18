@@ -1,21 +1,18 @@
 package com.example.apps.carts.dtos;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItemDTO {
-    private Long productId;
-    private String productName;
+    private Long id;
+    private Long productVariantId;
     private Integer quantity;
-    private BigDecimal price;
-
-    public BigDecimal getTotalPrice() {
-        return price.multiply(BigDecimal.valueOf(quantity));
-    }
 }

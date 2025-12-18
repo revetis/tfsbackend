@@ -1,6 +1,7 @@
 package com.example.apps.auth.services.impl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,22 +21,25 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.example.apps.auth.dtos.UserLoginDTO;
-import com.example.apps.auth.dtos.UserLoginDTOIU;
-import com.example.apps.auth.dtos.UserRegisterDTO;
-import com.example.apps.auth.dtos.UserRegisterDTOIU;
-import com.example.apps.auth.entities.Role;
-import com.example.apps.auth.entities.User;
-import com.example.apps.auth.repositories.IRoleRepository;
-import com.example.apps.auth.repositories.IUserRepository;
-import com.example.apps.auth.securities.JWTGenerator;
-import com.example.apps.notification.services.IN8NService;
+import com.example.apps.auths.dtos.UserLoginDTO;
+import com.example.apps.auths.dtos.UserLoginDTOIU;
+import com.example.apps.auths.dtos.UserRegisterDTO;
+import com.example.apps.auths.dtos.UserRegisterDTOIU;
+import com.example.apps.auths.entities.Role;
+import com.example.apps.auths.entities.User;
+import com.example.apps.auths.repositories.IRoleRepository;
+import com.example.apps.auths.repositories.IUserRepository;
+import com.example.apps.auths.securities.JWTGenerator;
+import com.example.apps.auths.services.impl.UserService;
+import com.example.apps.notifications.services.IN8NService;
 import com.example.tfs.ApplicationProperties;
 import com.example.tfs.exceptions.UserAlreadyExistsException;
 import com.example.tfs.exceptions.UserNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
+
+    String FAKE_IP_ADDRESS = "127.0.0.1";
 
     @Mock
     private IUserRepository userRepository;
@@ -118,10 +122,15 @@ public class UserServiceTest {
     void login_Success() {
         when(userRepository.findByUsernameOrEmail(anyString(), any())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-        when(jwtGenerator.generateRefreshToken(anyString(), anyList())).thenReturn("refreshToken");
-        when(jwtGenerator.generateAccessToken(anyString())).thenReturn("accessToken");
+        when(jwtGenerator.generateRefreshToken(anyString(), anyList(), anyString()))
+                .thenReturn("refreshToken");
+        when(jwtGenerator.generateAccessToken(anyString(), anyString()))
+                .thenReturn(
+                        Map.of(
+                                "accessToken", "accessToken",
+                                "refreshToken", "refreshToken"));
 
-        UserLoginDTO result = userService.login(loginRequest);
+        UserLoginDTO result = userService.login(loginRequest, FAKE_IP_ADDRESS);
 
         assertNotNull(result);
         assertEquals("refreshToken", result.getRefreshToken());
@@ -132,6 +141,6 @@ public class UserServiceTest {
     void login_UserNotFound() {
         when(userRepository.findByUsernameOrEmail(anyString(), any())).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> userService.login(loginRequest));
+        assertThrows(UserNotFoundException.class, () -> userService.login(loginRequest, FAKE_IP_ADDRESS));
     }
 }

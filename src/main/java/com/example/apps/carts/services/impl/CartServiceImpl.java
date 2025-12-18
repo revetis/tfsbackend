@@ -1,115 +1,258 @@
 package com.example.apps.carts.services.impl;
 
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.example.apps.carts.dtos.CartCheckoutDTO;
 import com.example.apps.carts.dtos.CartDTO;
 import com.example.apps.carts.dtos.CartItemDTO;
 import com.example.apps.carts.dtos.CartItemDTOIU;
 import com.example.apps.carts.entities.Cart;
 import com.example.apps.carts.entities.CartItem;
+import com.example.apps.carts.exceptions.CartException;
+import com.example.apps.carts.repositories.CartItemRepository;
 import com.example.apps.carts.repositories.CartRepository;
 import com.example.apps.carts.services.ICartService;
-import com.example.apps.products.entities.Product;
-import com.example.apps.products.repositories.ProductRepository;
+import com.example.apps.products.entities.ProductVariant;
+import com.example.apps.products.exceptions.ProductVariantException;
+import com.example.apps.products.repositories.ProductVariantRepository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class CartServiceImpl implements ICartService {
 
     private final CartRepository cartRepository;
-    private final ProductRepository productRepository;
+    private final CartItemRepository cartItemRepository;
+    private final ProductVariantRepository productVariantRepository;
 
     @Override
-    public CartDTO getCartByUserId(Long userId) {
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseGet(() -> createNewCart(userId));
-        return mapToDTO(cart);
+    public CartDTO getCartByUserId(Long userId, Long actualUserId) {
+        Cart cart = cartRepository.findCartByUserId(userId).orElseThrow(() -> new CartException("Cart not found"));
+
+        if (!cart.getUserId().equals(actualUserId))
+            throw new AccessDeniedException("You are not authorized to access this cart.");
+
+        return CartDTO.builder().id(cart.getId()).userId(cart.getUserId())
+                .items(cart.getItems().stream()
+                        .map(item -> CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
+                                .quantity(item.getQuantity()).build())
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Override
-    public CartDTO addItem(Long userId, CartItemDTOIU itemDTO) {
-        // Validate product exists
-        Product product = productRepository.findById(itemDTO.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + itemDTO.getProductId()));
+    @Transactional
+    @CacheEvict(value = "cartCheckoutCache", key = "#userId")
+    public CartDTO addItemToCart(Long userId, CartItemDTOIU cartItemDTOIU, Long actualUserId) {
+        Cart cart = cartRepository.findCartByUserId(userId).orElseThrow(() -> new CartException("Cart not found"));
+        if (!cart.getUserId().equals(actualUserId))
+            throw new AccessDeniedException("You are not authorized to access this cart.");
 
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseGet(() -> createNewCart(userId));
+        ProductVariant variant = productVariantRepository.findById(cartItemDTOIU.getProductVariantId())
+                .orElseThrow(() -> new ProductVariantException("Product variant not found"));
 
-        CartItem cartItem = new CartItem();
-        cartItem.setProductId(product.getId());
-        cartItem.setProductName(product.getName());
-        cartItem.setQuantity(itemDTO.getQuantity());
-        cartItem.setPrice(product.getMainPrice());
+        CartItem newCartItem = CartItem.builder()
+                .productVariantId(variant.getId())
+                .quantity(cartItemDTOIU.getQuantity())
+                .cart(cart)
+                .build();
 
-        cart.addItem(cartItem);
+        cartItemRepository.save(newCartItem);
+        cart.getItems().add(newCartItem);
+        cartRepository.save(cart);
+        return CartDTO.builder().id(cart.getId()).userId(cart.getUserId())
+                .items(cart.getItems().stream()
+                        .map(item -> CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
+                                .quantity(item.getQuantity()).build())
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "cartCheckoutCache", key = "#userId")
+    public CartDTO removeItemFromCart(Long userId, Long cartItemId, Long actualUserId) {
+        Cart cart = cartRepository.findCartByUserId(userId).orElseThrow(() -> new CartException("Cart not found"));
+
+        if (!cart.getUserId().equals(actualUserId))
+            throw new AccessDeniedException("You are not authorized to access this cart.");
+
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartException("Cart item not found"));
+
+        if (!cartItem.getCart().getId().equals(cart.getId()))
+            throw new CartException("Cart item does not belong to the user's cart.");
+
+        cart.getItems().remove(cartItem);
+        cartItemRepository.delete(cartItem);
+        cartRepository.save(cart);
+        Cart updatedCart = cartRepository.findById(cart.getId())
+                .orElseThrow(() -> new CartException("Cart not found after item removal"));
+
+        return CartDTO.builder().id(updatedCart.getId()).userId(updatedCart.getUserId())
+                .items(updatedCart.getItems().stream()
+                        .map(item -> CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
+                                .quantity(item.getQuantity()).build())
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "cartCheckoutCache", key = "#userId")
+    public Boolean clearCart(Long userId, Long actualUserId) {
+        Cart cart = cartRepository.findCartByUserId(userId).orElseThrow(() -> new CartException("Cart not found"));
+
+        if (!cart.getUserId().equals(actualUserId))
+            throw new AccessDeniedException("You are not authorized to access this cart.");
+
+        cartItemRepository.deleteAll(cart.getItems());
+        cart.getItems().clear();
         cartRepository.save(cart);
 
-        log.info("Added item to cart for user: {}, product: {}", userId, product.getId());
-        return mapToDTO(cart);
+        return true;
     }
 
     @Override
-    public CartDTO updateItemQuantity(Long userId, Long productId, Integer quantity) {
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+    @Transactional
+    @CacheEvict(value = "cartCheckoutCache", key = "#userId")
+    public CartDTO updateItemQuantity(Long userId, Long cartItemId, Integer quantity, Long actualUserId) {
+        Cart cart = cartRepository.findCartByUserId(userId).orElseThrow(() -> new CartException("Cart not found"));
 
-        if (quantity <= 0) {
-            cart.removeItem(productId);
-        } else {
-            cart.updateItemQuantity(productId, quantity);
-        }
+        if (!cart.getUserId().equals(actualUserId))
+            throw new AccessDeniedException("You are not authorized to access this cart.");
 
-        cartRepository.save(cart);
-        log.info("Updated cart item quantity for user: {}, product: {}", userId, productId);
-        return mapToDTO(cart);
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new CartException("Cart item not found"));
+
+        if (!cartItem.getCart().getId().equals(cart.getId()))
+            throw new CartException("Cart item does not belong to the user's cart.");
+
+        cartItem.setQuantity(quantity);
+        cartItemRepository.save(cartItem);
+
+        return CartDTO.builder().id(cart.getId()).userId(cart.getUserId())
+                .items(cart.getItems().stream()
+                        .map(item -> CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
+                                .quantity(item.getQuantity()).build())
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Override
-    public CartDTO removeItem(Long userId, Long productId) {
-        Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found for user: " + userId));
+    @Cacheable(value = "cartCheckoutCache", key = "#userId")
+    public CartCheckoutDTO validateCartForCheckout(Long userId, Long actualUserId, Double shippingCost) {
+        Cart cart = cartRepository.findCartByUserId(userId).orElseThrow(() -> new CartException("Cart not found"));
 
-        cart.removeItem(productId);
-        cartRepository.save(cart);
+        if (!cart.getUserId().equals(actualUserId))
+            throw new AccessDeniedException("You are not authorized to access this cart.");
 
-        log.info("Removed item from cart for user: {}, product: {}", userId, productId);
-        return mapToDTO(cart);
-    }
-
-    @Override
-    public void clearCart(Long userId) {
-        cartRepository.deleteByUserId(userId);
-        log.info("Cleared cart for user: {}", userId);
-    }
-
-    private Cart createNewCart(Long userId) {
-        Cart cart = new Cart();
-        cart.setUserId(userId);
-        return cart;
-    }
-
-    private CartDTO mapToDTO(Cart cart) {
-        CartDTO dto = new CartDTO();
-        dto.setUserId(cart.getUserId());
-        dto.setItems(cart.getItems().stream()
-                .map(this::mapItemToDTO)
+        List<ProductVariant> variants = productVariantRepository.findAllById(cart.getItems().stream()
+                .map(CartItem::getProductVariantId)
                 .collect(Collectors.toList()));
-        dto.setCreatedAt(cart.getCreatedAt());
-        dto.setUpdatedAt(cart.getUpdatedAt());
-        return dto;
+
+        Map<Long, ProductVariant> variantMap = variants.stream()
+                .collect(Collectors.toMap(ProductVariant::getId, v -> v));
+
+        CartCheckoutDTO checkout = CartCheckoutDTO.builder().validatedItems(cart.getItems().stream().map(item -> {
+            CartItemDTO itemDTO = CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
+                    .quantity(item.getQuantity()).build();
+            return itemDTO;
+        }).collect(Collectors.toList())).subTotal(calculateCartSubtotal(cart, variantMap))
+                .totalDiscount(calculateCartTotalDiscount(cart, variantMap)).shippingFee(shippingCost)
+                .taxAmount(calculateTaxAmount(cart, variantMap)).finalAmount(calculateFinalAmount(cart, variantMap))
+                .isStockAvailable(isStockAvailable(cart, variantMap)).checkoutToken(generateCheckoutToken())
+                .build();
+
+        return checkout;
     }
 
-    private CartItemDTO mapItemToDTO(CartItem item) {
-        return new CartItemDTO(
-                item.getProductId(),
-                item.getProductName(),
-                item.getQuantity(),
-                item.getPrice());
+    private String generateCheckoutToken() {
+        return java.util.UUID.randomUUID().toString();
     }
+
+    private Boolean isStockAvailable(Cart cart, Map<Long, ProductVariant> variants) {
+        ProductVariant variant = null;
+        for (CartItem item : cart.getItems()) {
+
+            variant = variants.get(item.getProductVariantId());
+            if (variant == null) {
+                throw new ProductVariantException("Product variant not found for cart item.");
+            }
+            if (variant.getStock().getQuantity() < item.getQuantity()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Double calculateFinalAmount(Cart cart, Map<Long, ProductVariant> variants) {
+        Double subtotal = calculateCartSubtotal(cart, variants);
+        Double totalDiscount = calculateCartTotalDiscount(cart, variants);
+        Double taxAmount = calculateTaxAmount(cart, variants);
+        Double shippingCost = 90.0; // Assuming a fixed shipping cost for simplicity
+
+        return subtotal - totalDiscount + taxAmount + shippingCost;
+    }
+
+    private Double calculateTaxAmount(Cart cart, Map<Long, ProductVariant> variants) {
+        Double taxAmount = 0.0;
+        ProductVariant variant = null;
+        for (CartItem item : cart.getItems()) {
+
+            variant = variants.get(item.getProductVariantId());
+            if (variant == null) {
+                throw new ProductVariantException("Product variant not found for cart item.");
+            }
+
+            Double itemPrice = variant.getDiscountPrice() != null ? variant.getDiscountPrice().doubleValue()
+                    : variant.getPrice().doubleValue();
+            // Assuming Product has a getTaxRatio() method returning tax ratio as a decimal
+            Double taxRatio = variant.getProduct().getTaxRatio();
+            taxAmount += (itemPrice * item.getQuantity()) * taxRatio / 100;
+        }
+        return taxAmount;
+    }
+
+    private Double calculateCartSubtotal(Cart cart, Map<Long, ProductVariant> variants) {
+        Double subtotal = 0.0;
+        ProductVariant variant = null;
+        for (CartItem item : cart.getItems()) {
+            variant = variants.get(item.getProductVariantId());
+            if (variant == null) {
+                throw new ProductVariantException("Product variant not found for cart item.");
+            }
+            subtotal += variant.getPrice().doubleValue() * item.getQuantity();
+        }
+        return subtotal;
+    }
+
+    private Double calculateCartTotalDiscount(Cart cart, Map<Long, ProductVariant> variants) {
+        Double totalDiscount = 0.0;
+        ProductVariant variant = null;
+        if (variants.isEmpty()) {
+            throw new ProductVariantException("No product variants found for cart items.");
+        }
+        for (CartItem item : cart.getItems()) {
+            variant = variants.get(item.getProductVariantId());
+            if (variant == null) {
+                throw new ProductVariantException("Product variant not found for cart item.");
+            }
+            if (variant.getDiscountPrice() != null) {
+                Double discountPerItem = variant.getPrice().doubleValue() - variant.getDiscountPrice().doubleValue();
+                totalDiscount += discountPerItem * item.getQuantity();
+            }
+        }
+        return totalDiscount;
+    }
+
 }
