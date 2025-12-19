@@ -45,7 +45,6 @@ public class JWTFilter extends OncePerRequestFilter {
     private JWTTokenBlacklistService jwtTokenBlacklistService;
 
     @Override
-    @SuppressWarnings("unchecked")
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException, MalformedJwtException {
 

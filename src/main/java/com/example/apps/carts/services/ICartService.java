@@ -1,11 +1,15 @@
 package com.example.apps.carts.services;
 
+import org.springframework.data.domain.Page;
+
 import com.example.apps.carts.dtos.CartCheckoutDTO;
 import com.example.apps.carts.dtos.CartDTO;
 import com.example.apps.carts.dtos.CartItemDTOIU;
 
 public interface ICartService {
     public CartDTO getCartByUserId(Long userId, Long actualUserId);
+
+    public Page<CartDTO> getAllCarts(int page, int size);
 
     public CartDTO addItemToCart(Long userId, CartItemDTOIU cartItemDTOIU, Long actualUserId);
 

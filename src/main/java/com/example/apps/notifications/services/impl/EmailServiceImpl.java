@@ -17,7 +17,6 @@ public class EmailServiceImpl implements IEmailService {
     @Override
     public void send(String to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        // TODO: Move "from" address to properties
         message.setFrom("samttre55@gmail.com");
         message.setTo(to);
         message.setSubject(subject);

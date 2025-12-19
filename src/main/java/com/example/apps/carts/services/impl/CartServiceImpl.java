@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -199,7 +200,7 @@ public class CartServiceImpl implements ICartService {
         Double subtotal = calculateCartSubtotal(cart, variants);
         Double totalDiscount = calculateCartTotalDiscount(cart, variants);
         Double taxAmount = calculateTaxAmount(cart, variants);
-        Double shippingCost = 90.0; // Assuming a fixed shipping cost for simplicity
+        Double shippingCost = 90.0;
 
         return subtotal - totalDiscount + taxAmount + shippingCost;
     }
@@ -216,7 +217,6 @@ public class CartServiceImpl implements ICartService {
 
             Double itemPrice = variant.getDiscountPrice() != null ? variant.getDiscountPrice().doubleValue()
                     : variant.getPrice().doubleValue();
-            // Assuming Product has a getTaxRatio() method returning tax ratio as a decimal
             Double taxRatio = variant.getProduct().getTaxRatio();
             taxAmount += (itemPrice * item.getQuantity()) * taxRatio / 100;
         }
@@ -253,6 +253,17 @@ public class CartServiceImpl implements ICartService {
             }
         }
         return totalDiscount;
+    }
+
+    @Override
+    public Page<CartDTO> getAllCarts(int page, int size) {
+        Page<Cart> cartsPage = cartRepository.findAll(org.springframework.data.domain.PageRequest.of(page, size));
+        return cartsPage.map(cart -> CartDTO.builder().id(cart.getId()).userId(cart.getUserId())
+                .items(cart.getItems().stream()
+                        .map(item -> CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
+                                .quantity(item.getQuantity()).build())
+                        .collect(Collectors.toList()))
+                .build());
     }
 
 }
