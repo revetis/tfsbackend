@@ -236,6 +236,7 @@ public class UserService implements IUserService {
             try {
                 Files.createDirectories(uploadPath);
             } catch (Exception e) {
+                System.getLogger(UserService.class.getName()).log(System.Logger.Level.ERROR, (String) null, e);
                 throw new RuntimeException("Error creating upload directory", e);
             }
         }
@@ -244,6 +245,7 @@ public class UserService implements IUserService {
             Files.copy(file.getInputStream(), uploadPath.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
             System.getLogger(UserService.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            throw new RuntimeException("Error saving file", ex);
         }
 
         user.setAvatarUrl("/uploads/avatars/" + filename);
@@ -379,17 +381,17 @@ public class UserService implements IUserService {
 
     private void sendForgotPasswordLink(User user, String token) {
 
-        Map<String, Object> paylaod = new HashMap<>();
-        paylaod.put("token", token);
-        paylaod.put("firstName", user.getFirstName());
-        paylaod.put("email", user.getEmail());
-        paylaod.put("preHeader", "Sifrenizi sıfırlamak için tıklayınız");
-        paylaod.put("subject", "Sifrenizi sıfırlamak için tıklayınız");
-        paylaod.put("baseURL", applicationProperties.getURL());
-        paylaod.put("targetURL",
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("token", token);
+        payload.put("firstName", user.getFirstName());
+        payload.put("email", user.getEmail());
+        payload.put("preHeader", "Sifrenizi sıfırlamak için tıklayınız");
+        payload.put("subject", "Sifrenizi sıfırlamak için tıklayınız");
+        payload.put("baseURL", applicationProperties.getURL());
+        payload.put("targetURL",
                 applicationProperties.getFRONTEND_URL() + "forgot-password/reset?token=" + token);
 
-        n8NService.triggerWorkflow(applicationProperties.getN8N_BASE_URL() + "webhook/forgot-password", paylaod);
+        n8NService.triggerWorkflow(applicationProperties.getN8N_BASE_URL() + "webhook/forgot-password", payload);
     }
 
     @Override

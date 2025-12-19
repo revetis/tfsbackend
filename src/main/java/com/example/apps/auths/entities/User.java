@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import com.example.apps.auths.enums.Genders;
+import com.example.apps.orders.entities.Order;
 import com.example.tfs.entities.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -49,6 +50,9 @@ public class User extends BaseEntity {
     private Boolean emailVerified = false;
     @Column(name = "accept_terms", nullable = false)
     private Boolean acceptTerms = false;
+
+    @OneToMany(mappedBy = "user", cascade = jakarta.persistence.CascadeType.ALL)
+    private List<Order> orders;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "birth_of_date")
