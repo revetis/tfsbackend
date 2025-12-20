@@ -10,6 +10,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import com.example.apps.notifications.utils.N8NProperties;
 import com.example.tfs.ApplicationProperties;
 
 @SpringBootApplication
@@ -18,7 +19,7 @@ import com.example.tfs.ApplicationProperties;
 @EntityScan(value = "com.example")
 @EnableAsync
 @EnableJpaRepositories(value = "com.example")
-@EnableConfigurationProperties(ApplicationProperties.class)
+@EnableConfigurationProperties({ ApplicationProperties.class, N8NProperties.class })
 @EnableElasticsearchRepositories(basePackages = {
 		"com.example.apps.products.repositories.search",
 		"com.example.apps.orders.repositories.search"

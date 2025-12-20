@@ -21,6 +21,7 @@ import com.example.apps.orders.enums.OrderStatus;
 import com.example.apps.orders.exceptions.OrderException;
 import com.example.apps.orders.repositories.OrderRepository;
 import com.example.apps.orders.services.IOrderService;
+import com.example.apps.payments.enums.PaymentStatus;
 import com.example.apps.products.services.IProductService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,8 @@ public class OrderService implements IOrderService {
         order.setShippingAddress(orderDTOIU.getShippingAddress());
         order.setBillingAddress(orderDTOIU.getBillingAddress());
         order.setStatus(OrderStatus.PENDING);
+        order.setPaymentOption(orderDTOIU.getPaymentOption());
+        order.setPaymentStatus(PaymentStatus.PENDING);
         order.setOrderNumber(generateCorporateOrderNumber());
 
         Order savedOrder = orderRepository.save(order);

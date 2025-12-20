@@ -29,6 +29,15 @@ public class OrderItem extends BaseEntity {
     @Column(name = "product_variant_name", nullable = false)
     private String productVariantName;
 
+    @Column(name = "product_variant_mainategory", nullable = false)
+    private String MainCategory;
+
+    @Column(name = "product_variant_subcategory", nullable = false)
+    private String SubCategory;
+
+    @Column(name = "item_type", nullable = false)
+    private String itemType;
+
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 

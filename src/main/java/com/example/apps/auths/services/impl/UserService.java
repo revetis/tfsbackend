@@ -51,6 +51,7 @@ import com.example.apps.auths.securities.JWTGenerator;
 import com.example.apps.auths.securities.JWTTokenBlacklistService;
 import com.example.apps.auths.services.IUserService;
 import com.example.apps.notifications.services.IN8NService;
+import com.example.apps.notifications.utils.N8NProperties;
 import com.example.tfs.ApplicationProperties;
 import com.example.tfs.exceptions.ForgotPasswordTokenIsInvalidException;
 import com.example.tfs.exceptions.InvalidPasswordException;
@@ -89,6 +90,9 @@ public class UserService implements IUserService {
 
     @Autowired
     private IN8NService n8NService;
+
+    @Autowired
+    private N8NProperties n8NProperties;
 
     @Override
     @Transactional
@@ -146,7 +150,7 @@ public class UserService implements IUserService {
         payload.put("emailVerified", newUser.getEmailVerified());
         payload.put("createdAt", newUser.getCreatedAt());
         payload.put("updatedAt", newUser.getUpdatedAt());
-        n8NService.triggerWorkflow(applicationProperties.getN8N_BASE_URL() + "webhook/sign-up", payload);
+        n8NService.triggerWorkflow(n8NProperties.getBaseUrl() + "webhook/sign-up", payload);
         return new UserRegisterDTO(newUser.getUsername());
     }
 
@@ -167,6 +171,7 @@ public class UserService implements IUserService {
 
         Map<String, String> tokens = jwtGenerator.generateAccessToken(refreshToken, ipAddress);
         user.setRefreshToken(refreshToken);
+        user.setLastLoginDate(new Date());
         userRepository.save(user);
 
         return new UserLoginDTO(tokens.get("refreshToken"), tokens.get("accessToken"));
@@ -391,7 +396,7 @@ public class UserService implements IUserService {
         payload.put("targetURL",
                 applicationProperties.getFRONTEND_URL() + "forgot-password/reset?token=" + token);
 
-        n8NService.triggerWorkflow(applicationProperties.getN8N_BASE_URL() + "webhook/forgot-password", payload);
+        n8NService.triggerWorkflow(n8NProperties.getBaseUrl() + "webhook/forgot-password", payload);
     }
 
     @Override
@@ -453,7 +458,7 @@ public class UserService implements IUserService {
         paylaod.put("baseURL", applicationProperties.getURL());
         paylaod.put("targetURL", applicationProperties.getFRONTEND_URL() + "verify-email?token=" + token);
 
-        n8NService.triggerWorkflow(applicationProperties.getN8N_BASE_URL() + "webhook/verify-email", paylaod);
+        n8NService.triggerWorkflow(n8NProperties.getBaseUrl() + "webhook/verify-email", paylaod);
     }
 
     @Override

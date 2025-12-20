@@ -2,6 +2,8 @@ package com.example.apps.orders.dtos;
 
 import java.util.List;
 
+import com.example.apps.payments.enums.PaymentOptions;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -22,6 +24,9 @@ public class OrderDTOIU {
     @NotEmpty(message = "Order must contain at least one item")
     @Valid
     private List<OrderItemDTOIU> items;
+
+    @NotBlank(message = "Payment status is required")
+    private PaymentOptions paymentOption;
 
     @NotBlank(message = "Shipping address is required")
     @Size(min = 10, max = 500, message = "Shipping address must be between 10 and 500 characters")

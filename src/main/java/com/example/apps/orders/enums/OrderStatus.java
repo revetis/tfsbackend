@@ -13,5 +13,4 @@ public enum OrderStatus {
     COMPLETED,
     RETURNED,
     CANCELLED;
-
 }

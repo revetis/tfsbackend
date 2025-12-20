@@ -54,6 +54,9 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = jakarta.persistence.CascadeType.ALL)
     private List<Order> orders;
 
+    @Column(name = "last_login_date")
+    private Date lastLoginDate;
+
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Column(name = "birth_of_date")
     private Date birthOfDate;
