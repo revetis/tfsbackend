@@ -1,6 +1,7 @@
 package com.example.apps.wishlists.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.apps.wishlists.services.IWishlistService;
 import com.example.tfs.maindto.ApiTemplate;
-
-import io.netty.handler.codec.http.HttpResponseStatus;
 
 @RestController
 @RequestMapping("/rest/api/private/wishlists")
@@ -40,7 +39,7 @@ public class WishlistPrivateController {
     public ResponseEntity<?> addProductToWishlist(@PathVariable Long userId, @PathVariable Long productId) {
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
-                HttpResponseStatus.ACCEPTED.code(),
+                HttpStatus.ACCEPTED.value(),
                 "/rest/api/private/wishlists/user/" + userId + "/add-product/" + productId,
                 null,
                 wishlistService.addProductToWishlist(userId, productId)));

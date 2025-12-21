@@ -1,10 +1,10 @@
 package com.example.apps.payments.dtos;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@Builder
+@NoArgsConstructor
 public class TransactionDTO {
     private String transactionId;
     private String status;

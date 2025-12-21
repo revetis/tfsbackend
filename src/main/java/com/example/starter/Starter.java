@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.example.apps.notifications.utils.N8NProperties;
 import com.example.tfs.ApplicationProperties;
+import com.vaadin.flow.spring.annotation.EnableVaadin;
 
 @SpringBootApplication
 @ComponentScan(value = "com.example")
@@ -20,6 +21,7 @@ import com.example.tfs.ApplicationProperties;
 @EnableAsync
 @EnableJpaRepositories(value = "com.example")
 @EnableConfigurationProperties({ ApplicationProperties.class, N8NProperties.class })
+@EnableVaadin(value = "com.example")
 @EnableElasticsearchRepositories(basePackages = {
 		"com.example.apps.products.repositories.search",
 		"com.example.apps.orders.repositories.search"

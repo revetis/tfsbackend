@@ -24,9 +24,4 @@ public class ApplicationProperties {
     private String IYZICO_SECRET_KEY;
     private String IYZICO_BASE_URL;
 
-    private String GELIVER_API_BASEURL;
-    private String GELIVER_API_TOKEN;
-    private String GELIVER_TEST_MODE;
-    private String GELIVER_WEBHOOK_URL;
-
 }

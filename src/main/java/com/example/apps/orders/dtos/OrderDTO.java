@@ -19,13 +19,18 @@ public class OrderDTO {
 
     private Long id;
     private String orderNumber;
+    private String paymentConversationId;
     private String paymentStatus;
     private String paymentOption;
+    private Long length;
+    private Long width;
+    private Long height;
+    private Long weight;
     private Long userId;
     private BigDecimal totalAmount;
     private OrderStatus status;
     private List<OrderItemDTO> items;
-    private String shippingAddress;
-    private String billingAddress;
+    private OrderAddressDTO shippingAddress;
+    private OrderAddressDTO billingAddress;
     private LocalDateTime createdAt;
 }

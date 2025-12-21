@@ -1,33 +1,44 @@
 package com.example.apps.payments.gateways.impl;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.example.apps.notifications.services.IN8NService;
-import com.example.apps.notifications.utils.N8NProperties;
+import com.example.apps.orders.entities.Order;
+
+import com.example.apps.orders.exceptions.OrderException;
 import com.example.apps.orders.repositories.OrderRepository;
 import com.example.apps.payments.dtos.BasketItemDTO;
 import com.example.apps.payments.dtos.PaymentRequestDTO;
 import com.example.apps.payments.dtos.PaymentResponseDTO;
+import com.example.apps.payments.entities.Payment;
 import com.example.apps.payments.enums.PaymentStatus;
-import com.example.apps.payments.exceptions.IyzicoRetrievePaymentDetailsException;
-import com.example.apps.payments.exceptions.IyzijoPaymentCreateException;
+import com.example.apps.payments.exceptions.IyzicoPaymentCreateException;
+import com.example.apps.payments.exceptions.IyzicoPaymentException;
 import com.example.apps.payments.gateways.IGateway;
+import com.example.apps.payments.gateways.utils.GatewayResult;
 import com.example.apps.payments.gateways.utils.GatewayUtils;
+import com.example.apps.payments.repositories.PaymentRepository;
 import com.example.tfs.ApplicationProperties;
 import com.iyzipay.Options;
 import com.iyzipay.model.Address;
 import com.iyzipay.model.BasketItem;
 import com.iyzipay.model.Buyer;
+import com.iyzipay.model.Cancel;
 import com.iyzipay.model.CheckoutForm;
 import com.iyzipay.model.Locale;
 import com.iyzipay.model.PayWithIyzicoInitialize;
 import com.iyzipay.model.PayWithIyzicoInitializeRequest;
+import com.iyzipay.model.Refund;
+import com.iyzipay.model.Status;
+import com.iyzipay.request.CreateCancelRequest;
+import com.iyzipay.request.CreateRefundV2Request;
 import com.iyzipay.request.RetrieveCheckoutFormRequest;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +46,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class IyzicoGateway implements IGateway {
+
+    private final PaymentRepository paymentRepository;
+
     String callbackURL = "rest/api/public/payments/callback/iyzico";
 
     private Options options;
@@ -42,23 +56,19 @@ public class IyzicoGateway implements IGateway {
     private ApplicationProperties applicationProperties;
 
     @Autowired
-    private IN8NService n8nService;
-
-    @Autowired
-    private N8NProperties n8NProperties;
-
-    @Autowired
     private OrderRepository orderRepository;
 
-    public IyzicoGateway(ApplicationProperties applicationProperties) {
+    public IyzicoGateway(ApplicationProperties applicationProperties, PaymentRepository paymentRepository) {
         this.applicationProperties = applicationProperties;
         this.options = new Options();
         this.options.setApiKey(applicationProperties.getIYZICO_API_KEY());
         this.options.setSecretKey(applicationProperties.getIYZICO_SECRET_KEY());
         this.options.setBaseUrl(applicationProperties.getIYZICO_BASE_URL());
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
+    @Transactional
     public PaymentResponseDTO initializePayment(PaymentRequestDTO request) {
         try {
             PayWithIyzicoInitializeRequest iyzicoRequest = new PayWithIyzicoInitializeRequest();
@@ -107,7 +117,7 @@ public class IyzicoGateway implements IGateway {
             for (BasketItemDTO basketItem : basketItems) {
                 for (int i = 0; i < basketItem.getQuantity(); i++) {
                     BasketItem item = new BasketItem();
-                    item.setId(basketItem.getId().toString());
+                    item.setId(basketItem.getId().toString() + "-" + i);
                     item.setName(basketItem.getName());
                     item.setCategory1(basketItem.getMainCategory());
                     item.setCategory2(basketItem.getSubCategory());
@@ -119,6 +129,14 @@ public class IyzicoGateway implements IGateway {
             iyzicoRequest.setBasketItems(basketItemForIyzico);
 
             PayWithIyzicoInitialize payWithIyzicoInitialize = PayWithIyzicoInitialize.create(iyzicoRequest, options);
+
+            Order order = orderRepository.findByOrderNumber(request.getOrderNumber()).orElseThrow(
+                    () -> new OrderException("Order not found for: " + request.getOrderNumber()));
+
+            order.setPaymentConversationId(iyzicoRequest.getConversationId());
+
+            orderRepository.save(order);
+
             return PaymentResponseDTO.builder()
                     .orderNumber(request.getOrderNumber())
                     .basketId(request.getBasketId())
@@ -130,49 +148,94 @@ public class IyzicoGateway implements IGateway {
                     .build();
         } catch (Exception e) {
             log.atInfo().setCause(e).log("Iyzico payment initialization failed: " + e.getMessage());
-            throw new IyzijoPaymentCreateException("Iyzico payment initialization failed: " + e.getMessage(), e);
+            throw new IyzicoPaymentCreateException("Iyzico payment initialization failed: " + e.getMessage(), e);
         }
 
     }
 
     @Override
-    public PaymentResponseDTO retrievePaymentDetails(String token, String conversationId) {
+    public GatewayResult retrievePaymentDetails(String token, String conversationId) {
+
+        RetrieveCheckoutFormRequest req = new RetrieveCheckoutFormRequest();
+        req.setToken(token);
+        req.setConversationId(conversationId);
+        req.setLocale(Locale.TR.getValue());
+
+        CheckoutForm res = CheckoutForm.retrieve(req, options);
+
+        if (!"success".equalsIgnoreCase(res.getStatus())) {
+            return new GatewayResult(
+                    PaymentStatus.FAILED,
+                    null,
+                    res.getErrorMessage());
+        }
+        return new GatewayResult(PaymentStatus.SUCCESS, res.getPosOrderId(), null);
+    }
+
+    @Override
+    public GatewayResult cancelPayment(String paymentId, String conversationId, String ip) {
+
+        Payment payment = paymentRepository.findByPaymentId(paymentId)
+                .orElseThrow(() -> new IyzicoPaymentException("Payment record not found"));
+
+        Boolean sameDay = payment.getCreatedAt().toLocalDate().equals(LocalDate.now());
+
+        if (!sameDay) {
+            throw new IyzicoPaymentException("Only orders placed on the same day can be returned.");
+        }
+
+        CreateCancelRequest request = new CreateCancelRequest();
+        request.setLocale(Locale.TR.getValue());
+        request.setConversationId(conversationId);
+        request.setPaymentId(paymentId);
+        request.setIp(ip);
+
         try {
-            RetrieveCheckoutFormRequest retrieveCheckoutFormRequest = new RetrieveCheckoutFormRequest();
-            retrieveCheckoutFormRequest.setToken(token);
-            retrieveCheckoutFormRequest.setConversationId(conversationId);
-            retrieveCheckoutFormRequest.setLocale(Locale.TR.getValue());
-            CheckoutForm checkoutFormResponse = CheckoutForm.retrieve(retrieveCheckoutFormRequest, options);
+            Cancel cancel = Cancel.create(request, options);
 
-            if (!"success".equalsIgnoreCase(checkoutFormResponse.getStatus())) {
-                log.error("Iyzico detail inquiry failed. Error: {}, Code: {}",
-                        checkoutFormResponse.getErrorMessage(), checkoutFormResponse.getErrorCode());
-
-                return PaymentResponseDTO.builder()
-                        .paymentStatus(PaymentStatus.FAILED.toString())
-                        .build();
+            if (Status.SUCCESS.getValue().equals(cancel.getStatus())) {
+                log.info("Iyzico cancel successful for PaymentId: {}", paymentId);
+                return new GatewayResult(PaymentStatus.SUCCESS, paymentId, null);
+            } else {
+                log.error("Iyzico cancel failed. Error: {}", cancel.getErrorMessage());
+                return new GatewayResult(PaymentStatus.FAILED, paymentId, cancel.getErrorMessage());
             }
-            Map<String, Object> payload = new HashMap<>();
-            payload.put("subject", "Siparişiniz onaylandı");
-            payload.put("preHeader", "Siparişiniz onaylandı");
-            payload.put("faviconURL", "http://localhost:3000/favicon.ico");
-
-            n8nService.triggerWorkflow(n8NProperties.getWebhook().getOrderConfirmation(), payload);
-
-            return PaymentResponseDTO.builder()
-                    .orderNumber(checkoutFormResponse.getBasketId())
-                    .paymentId(checkoutFormResponse.getPaymentId())
-                    .paymentStatus(checkoutFormResponse.getPaymentStatus())
-                    .binNumber(checkoutFormResponse.getBinNumber())
-                    .cardFamily(checkoutFormResponse.getCardFamily())
-                    .totalPrice(checkoutFormResponse.getPrice())
-                    .currency(checkoutFormResponse.getCurrency())
-                    .conversationId(checkoutFormResponse.getConversationId())
-                    .build();
         } catch (Exception e) {
-            log.atInfo().setCause(e).log("Iyzico payment details retrieval failed: " + e.getMessage());
-            throw new IyzicoRetrievePaymentDetailsException(
-                    "Iyzico payment details retrieval failed: " + e.getMessage(), e);
+            log.error("Iyzico cancel exception", e);
+            return new GatewayResult(PaymentStatus.FAILED, paymentId, e.getMessage());
+        }
+    }
+
+    @Override
+    public GatewayResult refundPayment(String paymentId, String conversationId, String ip, BigDecimal amount) {
+        Payment payment = paymentRepository.findByPaymentId(paymentId)
+                .orElseThrow(() -> new IyzicoPaymentException("Payment record not found"));
+        Boolean sameDay = payment.getCreatedAt().toLocalDate().equals(LocalDate.now());
+
+        if (sameDay) {
+            throw new IyzicoPaymentException("Orders placed on the same day should be cancelled, not refunded.");
+        }
+
+        CreateRefundV2Request request = new CreateRefundV2Request();
+        request.setLocale(Locale.TR.getValue());
+        request.setConversationId(conversationId);
+        request.setPaymentId(paymentId);
+        request.setIp(ip);
+        request.setPrice(amount);
+
+        try {
+            Refund refund = Refund.createV2(request, options);
+
+            if (Status.SUCCESS.getValue().equals(refund.getStatus())) {
+                log.info("Iyzico refund successful for PaymentId: {}", paymentId);
+                return new GatewayResult(PaymentStatus.SUCCESS, paymentId, null);
+            } else {
+                log.error("Iyzico refund failed. Error: {}", refund.getErrorMessage());
+                return new GatewayResult(PaymentStatus.FAILED, paymentId, refund.getErrorMessage());
+            }
+        } catch (Exception e) {
+            log.error("Iyzico refund exception", e);
+            return new GatewayResult(PaymentStatus.FAILED, paymentId, e.getMessage());
         }
     }
 

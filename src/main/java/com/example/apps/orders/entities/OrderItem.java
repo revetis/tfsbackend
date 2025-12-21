@@ -44,10 +44,14 @@ public class OrderItem extends BaseEntity {
     @Column(name = "price", nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "order_id", nullable = false)
-    private Long orderId;
+    @Column(name = "paid_price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal paidPrice;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
+
+    @Column(name = "return_status", nullable = false)
+    private Boolean returnStatus = false;
+
 }

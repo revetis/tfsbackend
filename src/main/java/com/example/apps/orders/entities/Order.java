@@ -1,5 +1,6 @@
 package com.example.apps.orders.entities;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.example.apps.auths.entities.User;
@@ -17,6 +18,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,15 +36,12 @@ public class Order extends BaseEntity {
     @Column(name = "order_number", nullable = false, unique = true)
     private String orderNumber;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user", nullable = true)
+    @JoinColumn(name = "user_id", nullable = true)
     private User user;
 
     @Column(name = "total_amount", nullable = false)
-    private Double totalAmount;
+    private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -56,12 +55,38 @@ public class Order extends BaseEntity {
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;
 
+    @Column(name = "payment_conversation_id", unique = true)
+    private String paymentConversationId;
+
+    @Column(name = "payment_id")
+    private String paymentId;
+
+    @Column(name = "email_sent", nullable = false)
+    private Boolean emailSent = false;
+
+    @Column(name = "customer_email", nullable = false)
+    private String customerEmail;
+
+    @Column(name = "customer_name")
+    private String customerName;
+
+    @Column(name = "length")
+    private Long length;
+    @Column(name = "width")
+    private Long width;
+    @Column(name = "height")
+    private Long height;
+    @Column(name = "weight")
+    private Long weight;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
 
-    @Column(name = "shipping_address", nullable = false)
-    private String shippingAddress;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "shipping_address_id")
+    private OrderAddress shippingAddress;
 
-    @Column(name = "billing_address", nullable = false)
-    private String billingAddress;
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "billing_address_id")
+    private OrderAddress billingAddress;
 }

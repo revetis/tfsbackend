@@ -34,7 +34,10 @@ public class SecurityConfigurations {
                         "/v3/api-docs/**", // Genellikle diğer Swagger/OpenAPI yolları
                         "/swagger-ui.html", // Swagger UI sayfası
                         "/swagger-ui/**", // Swagger UI statik kaynakları
-                        "/.well-known/**" // Tarayıcı uzantıları gibi özel yollar
+                        "/.well-known/**", // Tarayıcı uzantıları gibi özel yollar
+                        "/VAADIN/**", // Vaadin'in statik dosyaları
+                        "/admin/**", // Sizin panel yolunuz
+                        "/line-awesome/**" // Vaadin ikonları için
         };
 
         @Bean
@@ -43,6 +46,7 @@ public class SecurityConfigurations {
                 http.csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(
                                                 auth -> auth.requestMatchers(PUBLIC_URLS).permitAll()
+
                                                                 .requestMatchers("/rest/api/public/**", "/error")
                                                                 .permitAll()
                                                                 .requestMatchers("/rest/api/private/**").hasRole("USER")

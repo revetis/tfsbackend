@@ -5,8 +5,10 @@ import java.util.List;
 import com.example.apps.payments.enums.PaymentOptions;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,14 +27,31 @@ public class OrderDTOIU {
     @Valid
     private List<OrderItemDTOIU> items;
 
-    @NotBlank(message = "Payment status is required")
+    @NotNull(message = "Payment status is required")
     private PaymentOptions paymentOption;
 
-    @NotBlank(message = "Shipping address is required")
-    @Size(min = 10, max = 500, message = "Shipping address must be between 10 and 500 characters")
-    private String shippingAddress;
+    @NotNull(message = "Shipping address is required")
+    @Valid
+    private OrderAddressDTO shippingAddress;
 
-    @NotBlank(message = "Billing address is required")
-    @Size(min = 10, max = 500, message = "Billing address must be between 10 and 500 characters")
-    private String billingAddress;
+    @NotNull(message = "Billing address is required")
+    @Valid
+    private OrderAddressDTO billingAddress;
+    @NotBlank(message = "Customer email is required")
+
+    @Email(message = "Invalid email format")
+    private String customerEmail;
+
+    @NotBlank(message = "Customer name is required")
+    private String customerName;
+
+    @NotNull(message = "Length is required")
+    private Long length;
+    @NotNull(message = "Width is required")
+    private Long width;
+    @NotNull(message = "Height is required")
+    private Long height;
+    @NotNull(message = "Weight is required")
+    private Long weight;
+
 }

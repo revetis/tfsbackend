@@ -16,6 +16,7 @@ public class PaymentResponseDTO {
     private String iyzicoPageUrl;
     private String token;
     private BigDecimal totalPrice;
+    private BigDecimal paidPrice;
     private String currency;
 
     private String paymentId;

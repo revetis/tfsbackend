@@ -4,6 +4,7 @@ import java.util.Date;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
@@ -25,7 +26,6 @@ public class BuyerDTO {
     private String email;
 
     @NotBlank(message = "Registration address is mandatory.")
-    @Size(min = 5, message = "Registration address is too short, please provide more details.")
     private String registrationAddress;
 
     @NotBlank(message = "City is required.")
@@ -45,7 +45,6 @@ public class BuyerDTO {
     private Date registrationDate;
 
     @NotBlank(message = "Identity number is mandatory.")
-    @Size(min = 11, max = 11, message = "Identity number must be exactly 11 characters.")
     private String identityNumber;
 
     @NotBlank(message = "Phone number is required.")

@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.apps.wishlists.services.IWishlistService;
 import com.example.tfs.maindto.ApiTemplate;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
-
 @RestController
 @RequestMapping("/rest/api/admin/wishlists")
 @Validated

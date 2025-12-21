@@ -11,7 +11,9 @@ import com.example.apps.orders.entities.Order;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-    Optional<Order> findByOrderNumber(Long orderNumber);
+    Optional<Order> findByOrderNumber(String orderNumber);
+
+    Optional<Order> findBypaymentConversationId(String paymentConversationId);
 
     Collection<OrderItemDTO> findAllByUserId(Long userId);
 

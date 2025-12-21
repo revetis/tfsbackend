@@ -102,8 +102,6 @@ public class WishlistService implements IWishlistService {
                 .build();
     }
 
-    @Autowired
-
     @Override
     @Transactional
     public Boolean moveToCart(Long userId, Long productId) {

@@ -41,7 +41,7 @@ public class Product extends BaseEntity {
 
     private Boolean enable;
 
-    @Column(name = "tax_ratio", nullable = false, precision = 5, scale = 2)
+    @Column(name = "tax_ratio", nullable = false)
     private Double taxRatio;
 
 }
