@@ -5,9 +5,10 @@ import java.util.List;
 import com.example.apps.orders.dtos.OrderItemDTO;
 import com.example.apps.orders.dtos.OrderItemDTOIU;
 import com.example.apps.orders.entities.Order;
+import com.example.apps.orders.entities.OrderItem;
 
 public interface IOrderItemService {
-    OrderItemDTO create(OrderItemDTOIU orderItemDTOIU, Order order);
+    OrderItem create(OrderItemDTOIU orderItemDTOIU, Order order);
 
     OrderItemDTO getById(Long orderItemId);
 

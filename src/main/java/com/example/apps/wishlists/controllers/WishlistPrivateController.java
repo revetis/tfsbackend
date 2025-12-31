@@ -28,7 +28,7 @@ public class WishlistPrivateController {
     public ResponseEntity<?> getWishlistByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
-                HttpResponseStatus.ACCEPTED.code(),
+                HttpStatus.ACCEPTED.value(),
                 "/rest/api/private/wishlists/user/" + userId,
                 null,
                 wishlistService.getWishlistById(userId)));
@@ -50,7 +50,7 @@ public class WishlistPrivateController {
     public ResponseEntity<?> removeProductFromWishlist(@PathVariable Long userId, @PathVariable Long productId) {
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
-                HttpResponseStatus.ACCEPTED.code(),
+                HttpStatus.ACCEPTED.value(),
                 "/rest/api/private/wishlists/user/" + userId + "/remove-product/" + productId,
                 null,
                 wishlistService.removeProductFromWishlist(userId, productId)));
@@ -62,7 +62,7 @@ public class WishlistPrivateController {
         wishlistService.clearWishlist(userId);
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
-                HttpResponseStatus.ACCEPTED.code(),
+                HttpStatus.ACCEPTED.value(),
                 "/rest/api/private/wishlists/user/" + userId + "/clear",
                 null,
                 "Wishlist cleared successfully."));
@@ -73,7 +73,7 @@ public class WishlistPrivateController {
     public ResponseEntity<?> moveToCart(@PathVariable Long userId, @PathVariable Long productId) {
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
-                HttpResponseStatus.ACCEPTED.code(),
+                HttpStatus.ACCEPTED.value(),
                 "/rest/api/private/wishlists/user/" + userId + "/move-to-cart/" + productId,
                 null,
                 wishlistService.moveToCart(userId, productId)

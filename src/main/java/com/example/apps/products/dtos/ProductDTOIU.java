@@ -19,7 +19,7 @@ public class ProductDTOIU {
     private String name;
 
     @NotBlank(message = "Description is required")
-    @Size(min = 10, max = 500, message = "Description must be between 10 and 500 characters")
+    @Size(min = 10, max = 5000, message = "Description must be between 10 and 5000 characters")
     private String description;
 
     @NotNull(message = "Material ID is required")
@@ -28,6 +28,15 @@ public class ProductDTOIU {
     private Long subCategoryId;
     @NotNull(message = "Tax ratio is required")
     private Double taxRatio;
+
+    private String gender;
+    private String sizeChart;
+    private String brand;
+    private String careInstructions;
+    private String origin;
+    private String quality;
+    private String style;
+    private String season;
 
     private Boolean enable;
 

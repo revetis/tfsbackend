@@ -11,6 +11,7 @@ import com.example.apps.products.dtos.ProductVariantDTO;
 import com.example.apps.products.dtos.ProductVariantDTOIU;
 import com.example.apps.products.dtos.ProductVariantImageDTO;
 import com.example.apps.products.dtos.ProductVariantStockDTO;
+import com.example.apps.products.enums.ProductSize;
 
 public interface IProductService {
     ProductDTO createProduct(ProductDTOIU productDTOIU);
@@ -31,6 +32,10 @@ public interface IProductService {
 
     ProductVariantDTO getVariantById(Long variantId);
 
+    Page<ProductVariantDTO> getAllVariants(int page, int size);
+
+    ProductVariantDTO createVariant(ProductVariantDTOIU variantDTOIU);
+
     Long calculateDiscountPrice(Long productVariantId);
 
     ProductVariantImageDTO updateVariantImage(MultipartFile file, Long variantImageId, String alt);
@@ -39,9 +44,9 @@ public interface IProductService {
 
     ProductVariantImageDTO addVariantImage(MultipartFile file, Long variantId, String alt);
 
-    ProductVariantStockDTO decreaseStock(Long variantId, Long quantity);
+    ProductVariantStockDTO decreaseStock(Long variantId, Long quantity, ProductSize size);
 
-    ProductVariantStockDTO increaseStock(Long variantId, Long quantity);
+    ProductVariantStockDTO increaseStock(Long variantId, Long quantity, ProductSize size);
 
     ProductMaterialDTO createProductMaterial(ProductMaterialDTOIU productMaterialDTO);
 
@@ -52,4 +57,6 @@ public interface IProductService {
     ProductMaterialDTO getProductMaterialById(Long id);
 
     Page<ProductMaterialDTO> getAllProductMaterials(int page, int size);
+
+    String uploadImage(MultipartFile file);
 }

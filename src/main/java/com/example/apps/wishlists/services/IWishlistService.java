@@ -23,4 +23,5 @@ public interface IWishlistService {
 
     Boolean moveToCart(Long userId, Long productId);
 
+    public WishlistProductDTO getWishlistItemById(Long id);
 }

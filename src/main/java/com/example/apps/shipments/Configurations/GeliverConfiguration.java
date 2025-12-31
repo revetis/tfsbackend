@@ -1,4 +1,4 @@
-package com.example.apps.shipments.Configurations;
+package com.example.apps.shipments.configurations;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +26,7 @@ public class GeliverConfiguration {
 
     private String senderAddressId;
     private String returnAddressId;
+    private String returnProviderCode = "SURAT_STANDART"; // Default return shipping provider
 
     @Data
     public static class Api {

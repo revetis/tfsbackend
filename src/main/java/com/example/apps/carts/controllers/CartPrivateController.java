@@ -1,5 +1,6 @@
 package com.example.apps.carts.controllers;
 
+import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +19,6 @@ import com.example.apps.carts.services.ICartService;
 import com.example.tfs.maindto.ApiTemplate;
 import com.example.tfs.utils.SecurityUtils;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
 import jakarta.validation.Valid;
 
 @RestController
@@ -37,7 +37,7 @@ public class CartPrivateController {
     public ResponseEntity<?> getCartByUserId(@PathVariable Long userId) {
         Long actualUserId = securityUtils.getCurrentUserId();
 
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpResponseStatus.ACCEPTED.code(),
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpStatus.SC_ACCEPTED,
                 "/rest/api/admin/carts/user/" + userId, null, cartService.getCartByUserId(userId, actualUserId)));
     }
 
@@ -46,7 +46,7 @@ public class CartPrivateController {
     public ResponseEntity<?> addItemToCart(@PathVariable Long userId, @RequestBody @Valid CartItemDTOIU cartItemDTOIU) {
         Long actualUserId = securityUtils.getCurrentUserId();
 
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpResponseStatus.ACCEPTED.code(),
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpStatus.SC_ACCEPTED,
                 "/rest/api/private/carts/user/" + userId + "/add-item", null,
                 cartService.addItemToCart(userId, cartItemDTOIU, actualUserId)));
     }
@@ -56,7 +56,7 @@ public class CartPrivateController {
     public ResponseEntity<?> removeItemFromCart(@PathVariable Long userId, @PathVariable Long cartItemId) {
         Long actualUserId = securityUtils.getCurrentUserId();
 
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpResponseStatus.ACCEPTED.code(),
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpStatus.SC_ACCEPTED,
                 "/rest/api/private/carts/user/" + userId + "/remove-item/" + cartItemId, null,
                 cartService.removeItemFromCart(userId, cartItemId, actualUserId)));
     }
@@ -67,7 +67,7 @@ public class CartPrivateController {
         Long actualUserId = securityUtils.getCurrentUserId();
 
         cartService.clearCart(userId, actualUserId);
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpResponseStatus.ACCEPTED.code(),
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpStatus.SC_ACCEPTED,
                 "/rest/api/private/carts/user/" + userId + "/clear", null, "Cart cleared successfully"));
     }
 
@@ -77,7 +77,7 @@ public class CartPrivateController {
             @PathVariable Integer quantity) {
         Long actualUserId = securityUtils.getCurrentUserId();
 
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpResponseStatus.ACCEPTED.code(),
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpStatus.SC_ACCEPTED,
                 "/rest/api/private/carts/user/" + userId + "/update-item-quantity/" + cartItemId + "/" + quantity,
                 null,
                 cartService.updateItemQuantity(userId, cartItemId, quantity, actualUserId)));
@@ -89,7 +89,7 @@ public class CartPrivateController {
             @RequestParam(defaultValue = "90.0") Double shippingCost) {
         Long actualUserId = securityUtils.getCurrentUserId();
 
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpResponseStatus.ACCEPTED.code(),
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpStatus.SC_ACCEPTED,
                 "/rest/api/private/carts/user/" + userId + "/checkout-validation", null,
                 cartService.validateCartForCheckout(userId, actualUserId, shippingCost)));
     }

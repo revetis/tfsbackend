@@ -15,9 +15,14 @@ public class OrderItemDTO {
 
     private Long id;
     private Long productVariantId;
+    private Long productId;
     private String productVariantName;
+    private String imageUrl;
     private Integer quantity;
     private BigDecimal price;
     private Long orderId;
+    private com.example.apps.products.enums.ProductSize size;
+    private String color;
+    private String gender;
 
 }

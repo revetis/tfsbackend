@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class GeliverTransactionShipmentRequest {
 
-    private boolean test = true;
+    private Boolean test = true;
 
     @NotNull(message = "Recipient address is required")
     @Valid
@@ -25,21 +25,19 @@ public class GeliverTransactionShipmentRequest {
     @NotBlank(message = "Width is required")
     private String width;
 
-    @NotBlank(message = "Distance unit is required")
     private String distanceUnit = "cm";
 
     @NotBlank(message = "Weight is required")
     private String weight;
 
-    @NotBlank(message = "Mass unit is required")
     private String massUnit = "kg";
 
     @NotEmpty(message = "Items list cannot be empty")
     @Valid
     private List<GeliverItemRequest> items;
 
-    private boolean productPaymentOnDelivery = false;
-    private boolean hidePackageContentOnTag = false;
+    private Boolean productPaymentOnDelivery = false;
+    private Boolean hidePackageContentOnTag = false;
 
     @NotNull(message = "Order details are required")
     @Valid

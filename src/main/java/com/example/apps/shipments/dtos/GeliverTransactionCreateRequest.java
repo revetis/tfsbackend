@@ -11,7 +11,9 @@ public class GeliverTransactionCreateRequest {
     @NotBlank(message = "Provider service code is required (e.g., PTT_STANDART)")
     private String providerServiceCode;
 
-    @NotNull(message = "Shipment details are required")
-    @Valid
     private GeliverTransactionShipmentRequest shipment;
+
+    private String offerId;
+
+    private String shipmentId;
 }

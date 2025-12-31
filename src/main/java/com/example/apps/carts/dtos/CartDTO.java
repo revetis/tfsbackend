@@ -17,4 +17,6 @@ public class CartDTO {
     private Long id;
     private Long userId;
     private List<CartItemDTO> items;
+    private java.time.LocalDateTime createdAt;
+    private java.time.LocalDateTime updatedAt;
 }

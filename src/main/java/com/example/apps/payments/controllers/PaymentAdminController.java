@@ -1,14 +1,18 @@
 package com.example.apps.payments.controllers;
 
+import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.apps.payments.dtos.OrderReturnRequestDTO;
+import com.example.apps.payments.dtos.PaymentAdminDTO;
 import com.example.apps.payments.services.IPaymentService;
 import com.example.tfs.maindto.ApiTemplate;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
+
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
@@ -27,7 +31,7 @@ public class PaymentAdminController {
 
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
-                HttpResponseStatus.OK.code(),
+                HttpStatus.SC_OK,
                 "Ödeme iade/iptal işlemi başarıyla tamamlandı ve n8n bildirimi gönderildi.",
                 null,
                 null));
@@ -41,9 +45,32 @@ public class PaymentAdminController {
 
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
-                HttpResponseStatus.OK.code(),
+                HttpStatus.SC_OK,
                 "Kısmi iade işlemi başarıyla gerçekleştirildi.",
                 null,
                 null));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<ApiTemplate<Void, List<PaymentAdminDTO>>> getAllPayments(HttpServletRequest servletRequest) {
+        List<PaymentAdminDTO> payments = paymentService.getAllPayments();
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
+                true,
+                200,
+                servletRequest.getRequestURI(),
+                null,
+                payments));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiTemplate<Void, PaymentAdminDTO>> getPaymentById(@PathVariable Long id,
+            HttpServletRequest servletRequest) {
+        PaymentAdminDTO payment = paymentService.getPaymentById(id);
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
+                true,
+                200,
+                servletRequest.getRequestURI(),
+                null,
+                payment));
     }
 }

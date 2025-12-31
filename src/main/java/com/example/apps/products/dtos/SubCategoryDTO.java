@@ -17,4 +17,5 @@ public class SubCategoryDTO {
     private java.time.LocalDateTime createdAt;
     private java.time.LocalDateTime updatedAt;
     private MainCategoryDTO mainCategory;
+    private Long mainCategoryId;
 }

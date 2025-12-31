@@ -21,4 +21,5 @@ public interface ICartService {
 
     public CartCheckoutDTO validateCartForCheckout(Long userId, Long actualUserId, Double shippingCost);
 
+    public CartDTO getCartById(Long id);
 }

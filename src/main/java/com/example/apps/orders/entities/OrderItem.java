@@ -29,13 +29,13 @@ public class OrderItem extends BaseEntity {
     @Column(name = "product_variant_name", nullable = false)
     private String productVariantName;
 
-    @Column(name = "product_variant_mainategory", nullable = false)
+    @Column(name = "product_variant_mainategory", nullable = true)
     private String MainCategory;
 
-    @Column(name = "product_variant_subcategory", nullable = false)
+    @Column(name = "product_variant_subcategory", nullable = true)
     private String SubCategory;
 
-    @Column(name = "item_type", nullable = false)
+    @Column(name = "item_type", nullable = true)
     private String itemType;
 
     @Column(name = "quantity", nullable = false)
@@ -53,5 +53,15 @@ public class OrderItem extends BaseEntity {
 
     @Column(name = "return_status", nullable = false)
     private Boolean returnStatus = false;
+
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @Column(name = "size")
+    private com.example.apps.products.enums.ProductSize size;
+
+    @Column(name = "color")
+    private String color;
+
+    @Column(name = "gender")
+    private String gender;
 
 }

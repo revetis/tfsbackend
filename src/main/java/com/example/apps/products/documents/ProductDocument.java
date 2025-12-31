@@ -1,5 +1,6 @@
 package com.example.apps.products.documents;
 
+import com.example.apps.products.enums.ProductSize;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
@@ -11,13 +12,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document(indexName = "products") // İndeks adını burada belirliyoruz efendim
+@Document(indexName = "products")
 public class ProductDocument {
 
     @Id
-    private String id; // ES için String id daha esnektir, JPA id'sini buraya map ederiz
+    private String id;
 
-    @Field(type = FieldType.Text, analyzer = "turkish") // Türkçe arama desteği için
+    @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "turkish"), otherFields = {
+            @InnerField(suffix = "keyword", type = FieldType.Keyword)
+    })
     private String name;
 
     @Field(type = FieldType.Text, analyzer = "turkish")
@@ -29,21 +32,32 @@ public class ProductDocument {
     @Field(type = FieldType.Keyword)
     private String material;
 
-    // ManyToOne ilişkiyi düzleştiriyoruz veya bir alt obje olarak tutuyoruz
     @Field(type = FieldType.Object)
     private SubCategoryDocument subCategory;
 
-    // OneToMany ilişkiyi 'Nested' olarak tutmak, alt veriler içinde doğru arama
-    // yapmanızı sağlar
     @Field(type = FieldType.Nested)
     private List<ProductVariantDocument> variants;
+
+    @Field(type = FieldType.Text, analyzer = "turkish")
+    private String careInstructions;
+    @Field(type = FieldType.Keyword)
+    private String origin;
+    @Field(type = FieldType.Keyword)
+    private String quality;
+    @Field(type = FieldType.Keyword)
+    private String style;
+    @Field(type = FieldType.Keyword)
+    private String season;
 
     @Field(type = FieldType.Boolean)
     private Boolean enable;
     @Field(type = FieldType.Keyword)
-    private List<String> colors; // ["Kırmızı", "Mavi"]
+    private List<String> colors;
     @Field(type = FieldType.Keyword)
-    private List<String> sizes; // ["S", "M", "L"]
+    private List<ProductSize> sizes;
+
+    @Field(type = FieldType.Keyword)
+    private String gender;
 
     @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
     private LocalDateTime createdAt;

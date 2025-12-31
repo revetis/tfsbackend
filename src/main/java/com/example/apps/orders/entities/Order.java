@@ -1,6 +1,7 @@
 package com.example.apps.orders.entities;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.example.apps.auths.entities.User;
@@ -70,6 +71,15 @@ public class Order extends BaseEntity {
     @Column(name = "customer_name")
     private String customerName;
 
+    @Column(name = "customer_first_name")
+    private String customerFirstName;
+
+    @Column(name = "customer_last_name")
+    private String customerLastName;
+
+    @Column(name = "customer_phone")
+    private String customerPhone;
+
     @Column(name = "length")
     private Long length;
     @Column(name = "width")
@@ -78,6 +88,19 @@ public class Order extends BaseEntity {
     private Long height;
     @Column(name = "weight")
     private Long weight;
+
+    // Discount fields
+    @Column(name = "coupon_code")
+    private String couponCode;
+
+    @Column(name = "discount_amount")
+    private BigDecimal discountAmount = BigDecimal.ZERO;
+
+    @Column(name = "campaign_id")
+    private Long campaignId;
+
+    @Column(name = "campaign_name")
+    private String campaignName;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
@@ -89,4 +112,38 @@ public class Order extends BaseEntity {
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "billing_address_id")
     private OrderAddress billingAddress;
+
+    // Shipping selection fields
+    @Column(name = "selected_shipping_offer_id")
+    private String selectedShippingOfferId;
+
+    @Column(name = "shipping_cost")
+    private BigDecimal shippingCost;
+
+    @Column(name = "shipping_provider")
+    private String shippingProvider;
+
+    @Column(name = "geliver_shipment_id")
+    private String geliverShipmentId;
+
+    @Column(name = "tracking_number")
+    private String trackingNumber;
+
+    @Column(name = "tracking_url")
+    private String trackingUrl;
+
+    @Column(name = "label_url")
+    private String labelUrl;
+
+    @Column(name = "barcode")
+    private String barcode;
+
+    // ------------------------------
+    public void addOrderItem(OrderItem item) {
+        if (this.orderItems == null) {
+            this.orderItems = new ArrayList<>();
+        }
+        this.orderItems.add(item);
+        item.setOrder(this); // İlişkinin sahibi tarafını set ediyoruz
+    }
 }

@@ -3,24 +3,21 @@ package com.example.apps.auths.controllers;
 import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.apps.auths.dtos.LogoutRequestDTOIU;
 import com.example.apps.auths.dtos.ResetPasswordDTOIU;
+
 import com.example.apps.auths.dtos.UserUpdateDTOIU;
 import com.example.apps.auths.securities.CustomUserDetails;
 import com.example.apps.auths.services.IUserService;
 import com.example.tfs.maindto.ApiTemplate;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 @RestController
@@ -60,12 +57,38 @@ public class UserPrivateController {
     }
 
     @PostMapping(path = "/logout")
-    public ResponseEntity<?> logout(@RequestBody @Valid LogoutRequestDTOIU request) {
-        String accessToken = request.getAccessToken();
-        String refreshToken = request.getRefreshToken();
-        userService.logout(accessToken, refreshToken);
+    public ResponseEntity<?> logout(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken,
+            @CookieValue(name = "accessToken", required = false) String accessToken,
+            HttpServletResponse response) {
+
+        // Blacklist tokens if they exist
+        if (accessToken != null && refreshToken != null) {
+            userService.logout(accessToken, refreshToken);
+        }
+
+        // Clear cookies by setting maxAge to 0
+        ResponseCookie clearAccessCookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .secure(false)
+                .build();
+
+        ResponseCookie clearRefreshCookie = ResponseCookie.from("refreshToken", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .secure(false)
+                .build();
+
         return ResponseEntity
-                .ok(ApiTemplate.apiTemplateGenerator(true, 200, "/logout", null, "Logged out successfully"));
+                .ok()
+                .header(HttpHeaders.SET_COOKIE, clearAccessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, clearRefreshCookie.toString())
+                .body(ApiTemplate.apiTemplateGenerator(true, 200, "/logout", null, "Logged out successfully"));
     }
 
     @PostMapping(path = "/reset-password")

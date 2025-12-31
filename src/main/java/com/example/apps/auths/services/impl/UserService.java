@@ -12,7 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import com.example.apps.auths.dtos.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -20,24 +24,13 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.apps.auths.dtos.AddressDTO;
-import com.example.apps.auths.dtos.ForgotPasswordDTOIU;
-import com.example.apps.auths.dtos.ForgotPasswordSetNewPasswordDTOIU;
-import com.example.apps.auths.dtos.ResetPasswordDTOIU;
-import com.example.apps.auths.dtos.RoleDTO;
-import com.example.apps.auths.dtos.UserDTO;
-import com.example.apps.auths.dtos.UserDTOCreate;
-import com.example.apps.auths.dtos.UserDTOUpdate;
-import com.example.apps.auths.dtos.UserLoginDTO;
-import com.example.apps.auths.dtos.UserLoginDTOIU;
-import com.example.apps.auths.dtos.UserRegisterDTO;
-import com.example.apps.auths.dtos.UserRegisterDTOIU;
-import com.example.apps.auths.dtos.UserUpdateDTOIU;
 import com.example.apps.auths.entities.Address;
 import com.example.apps.auths.entities.ForgotPasswordToken;
 import com.example.apps.auths.entities.Role;
@@ -61,6 +54,9 @@ import com.example.tfs.exceptions.UserNotAcceptedTermsException;
 import com.example.tfs.exceptions.UserNotFoundException;
 import com.example.tfs.exceptions.VerifyEmailTokenException;
 
+import javax.crypto.SecretKey;
+
+@Slf4j
 @Service
 public class UserService implements IUserService {
 
@@ -94,6 +90,12 @@ public class UserService implements IUserService {
     @Autowired
     private N8NProperties n8NProperties;
 
+    @Autowired
+    private com.example.tfs.StorageService storageService;
+
+    @Autowired
+    private com.example.apps.orders.services.IOrderService orderService;
+
     @Override
     @Transactional
     public UserRegisterDTO registerUser(UserRegisterDTOIU request) {
@@ -109,14 +111,12 @@ public class UserService implements IUserService {
         }
 
         if (!request.getPassword()
-                .matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&.#])[A-Za-z\\d@$!%*?&.#]{8,}$")) {
+                .matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$")) {
             throw new InvalidPasswordException(
                     "Password must contain at least one uppercase letter, one lowercase letter, one number and one special character, and minimum 8 characters long.");
         }
 
-        if (!request.getAcceptTerms())
-
-        {
+        if (!request.getAcceptTerms()) {
             throw new UserNotAcceptedTermsException("The user must accept the terms and conditions.");
         }
 
@@ -132,6 +132,7 @@ public class UserService implements IUserService {
         newUser.setPhoneNumber(request.getPhoneNumber());
         newUser.setAvatarUrl(request.getAvatarUrl());
         newUser.setGender(request.getGender());
+        newUser.setBirthOfDate(request.getBirthOfDate());
         newUser.setAcceptTerms(request.getAcceptTerms());
         newUser.setEmailVerified(false);
         newUser.setEnabled(true);
@@ -156,29 +157,33 @@ public class UserService implements IUserService {
 
     @Override
     public UserLoginDTO login(UserLoginDTOIU request, String ipAddress) {
-        User user = userRepository.findByUsernameOrEmail(request.getUsername(), request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+
+        User user = userRepository.findByEmail(request.getUsernameOrEmail())
+                .orElseGet(() -> userRepository.findByUsername(request.getUsernameOrEmail())
+                        .orElseThrow(() -> new UserNotFoundException("Invalid password or email/username")));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidPasswordException("Invalid password");
+            throw new InvalidPasswordException("Invalid password or email/username");
         }
         if (!user.getEnabled()) {
-            throw new UserNotFoundException("User not found");
+            throw new UserNotFoundException("Invalid password or email/username");
         }
 
         String refreshToken = jwtGenerator.generateRefreshToken(user.getUsername(),
                 user.getRoles().stream().map(role -> role.getName()).toList(), ipAddress);
 
-        Map<String, String> tokens = jwtGenerator.generateAccessToken(refreshToken, ipAddress);
         user.setRefreshToken(refreshToken);
         user.setLastLoginDate(new Date());
         userRepository.save(user);
+
+        Map<String, String> tokens = jwtGenerator.generateAccessTokenForLogin(refreshToken, ipAddress);
 
         return new UserLoginDTO(tokens.get("refreshToken"), tokens.get("accessToken"));
     }
 
     @Override
-    @Cacheable(value = "users", key = "#userId")
+    @Transactional
+    @Cacheable(value = "users", key = "#a1")
     public UserDTO profile(String username, Long userId) throws AccessDeniedException {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -198,17 +203,21 @@ public class UserService implements IUserService {
         // Her bir List<adress> ve List<Role> objesini List<Role||AddressDTO> objesine
         // donusturuyoruz
         List<AddressDTO> addressDTOs = new ArrayList<>();
-        for (Address address : userInfo.getAddresses()) {
-            AddressDTO addressDTO = new AddressDTO();
-            BeanUtils.copyProperties(address, addressDTO);
-            addressDTOs.add(addressDTO);
+        if (userInfo.getAddresses() != null) {
+            for (Address address : userInfo.getAddresses()) {
+                AddressDTO addressDTO = new AddressDTO();
+                BeanUtils.copyProperties(address, addressDTO);
+                addressDTOs.add(addressDTO);
+            }
         }
         List<RoleDTO> roleDTOs = new ArrayList<>();
 
-        for (Role role : userInfo.getRoles()) {
-            RoleDTO roleDTO = new RoleDTO();
-            roleDTO.setName(role.getName());
-            roleDTOs.add(roleDTO);
+        if (userInfo.getRoles() != null) {
+            for (Role role : userInfo.getRoles()) {
+                RoleDTO roleDTO = new RoleDTO();
+                roleDTO.setName(role.getName());
+                roleDTOs.add(roleDTO);
+            }
         }
         userDTO.setAddresses(addressDTOs);
         userDTO.setRoles(roleDTOs);
@@ -217,7 +226,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    @CacheEvict(value = "users", key = "#userId")
+    @CacheEvict(value = "users", key = "#a1")
     @Transactional
     public void avatar(MultipartFile file, Long userId) {
         long maxSize = 2 * 1024 * 1024;
@@ -234,25 +243,7 @@ public class UserService implements IUserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename();
-        java.nio.file.Path uploadPath = Paths.get("uploads/avatars");
-
-        if (!Files.exists(uploadPath)) {
-            try {
-                Files.createDirectories(uploadPath);
-            } catch (Exception e) {
-                System.getLogger(UserService.class.getName()).log(System.Logger.Level.ERROR, (String) null, e);
-                throw new RuntimeException("Error creating upload directory", e);
-            }
-        }
-
-        try {
-            Files.copy(file.getInputStream(), uploadPath.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ex) {
-            System.getLogger(UserService.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-            throw new RuntimeException("Error saving file", ex);
-        }
-
+        String filename = storageService.store(file, "avatars");
         user.setAvatarUrl("/uploads/avatars/" + filename);
         userRepository.save(user);
     }
@@ -327,14 +318,15 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public void forgotPassword(ForgotPasswordDTOIU request, ForgotPasswordSetNewPasswordDTOIU newPassword,
             String... args) {
-        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
         String parToken = null;
         if (args.length > 0 && args[0] != null) {
             parToken = args[0];
         }
 
+        // Handle password reset with token first (request can be null in this case)
         if (parToken != null) {
             ForgotPasswordToken forgotPasswordToken = forgotPasswordTokenRepository.findByToken(parToken);
             if (forgotPasswordToken == null) {
@@ -344,8 +336,22 @@ public class UserService implements IUserService {
             forgotPasswordSetNewPassword(userSetPass, newPassword, parToken);
             return;
         }
+
+        // Handle forgot password request (email required)
+        if (request == null || request.getEmail() == null) {
+            throw new IllegalArgumentException("Email is required");
+        }
+
+        User user = userRepository.findByEmail(request.getEmail()).orElse(null);
         if (user == null) {
             throw new UserNotFoundException("User not found");
+        }
+
+        // Delete existing forgot password token if exists (orphanRemoval will handle
+        // actual deletion)
+        if (user.getForgotPasswordToken() != null) {
+            user.setForgotPasswordToken(null);
+            userRepository.saveAndFlush(user);
         }
 
         String token = UUID.randomUUID().toString();
@@ -463,13 +469,27 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream().map(this::convertToDTO).toList();
+        return userRepository.findAll(org.springframework.data.domain.Sort.by("createdAt").descending()).stream()
+                .map(this::convertToDTO).toList();
     }
 
     @Override
     public UserDTO getUserById(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
+        return convertToDTO(user);
+    }
+
+    @Override
+    public User getById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
+    }
+
+    @Override
+    public UserDTO getUserByUsernameOrEmail(String usernameOrEmail) {
+        User user = userRepository.findByUsername(usernameOrEmail).orElseGet(() -> userRepository
+                .findByEmail(usernameOrEmail).orElseThrow(() -> new UserNotFoundException("User not found")));
         return convertToDTO(user);
     }
 
@@ -481,6 +501,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public UserDTO updateUser(Long userId, UserDTOUpdate request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -491,6 +512,28 @@ public class UserService implements IUserService {
         user.setPhoneNumber(request.getPhoneNumber());
         user.setGender(request.getGender());
         user.setBirthOfDate(request.getBirthOfDate());
+
+        if (request.getEnabled() != null) {
+            user.setEnabled(request.getEnabled());
+        }
+
+        if (request.getEmailVerified() != null) {
+            user.setEmailVerified(request.getEmailVerified());
+        }
+
+        if (request.getAvatarUrl() != null) {
+            user.setAvatarUrl(request.getAvatarUrl());
+        }
+
+        if (request.getRoleIds() != null) {
+            List<Role> roles = new ArrayList<>();
+            for (Long roleId : request.getRoleIds()) {
+                Role role = roleRepository.findById(roleId)
+                        .orElseThrow(() -> new RoleNotFoundException("Role not found with id: " + roleId));
+                roles.add(role);
+            }
+            user.setRoles(roles);
+        }
 
         User updatedUser = userRepository.save(user);
         return convertToDTO(updatedUser);
@@ -576,6 +619,64 @@ public class UserService implements IUserService {
         userRepository.save(user);
     }
 
+    /**
+     * Kullanicinin yetkilerini ve izinlerini kontrol eder, !YUKSEK! seviye bir
+     * methodtur
+     *
+     * @param refreshToken
+     * @param accessToken
+     * @param ipAddress
+     * @return yetki kontrol eder, yetki gecersizse false dondurur
+     */
+    @Override
+    public AccessCheckDTO accessCheck(String refreshToken, String accessToken, String ipAddress) {
+        AccessCheckDTO dto = new AccessCheckDTO();
+        dto.setIsPermitted(false);
+
+        try {
+            SecretKey key = applicationProperties.getJwtSigningKey();
+            var parser = Jwts.parserBuilder().setSigningKey(key).build();
+
+            // refresh token blacklist
+            if (jwtTokenBlacklistService.isRefreshTokenBlacklisted(refreshToken)) {
+                return dto;
+            }
+
+            // refresh token parse + IP kontrolü
+            Claims refreshClaims = parser.parseClaimsJws(refreshToken).getBody();
+            String refreshIp = refreshClaims.get("ipAddress", String.class);
+
+            if (!ipAddress.equals(refreshIp)) {
+                return dto;
+            }
+
+            // access token yoksa yetki yok
+            if (accessToken == null || jwtTokenBlacklistService.isAccessTokenBlacklisted(accessToken)) {
+                return dto;
+            }
+
+            // access token parse
+            Claims accessClaims = parser.parseClaimsJws(accessToken).getBody();
+            List<?> roles = accessClaims.get("roles", List.class);
+
+            if (roles == null || !roles.contains("ROLE_ADMIN")) {
+                return dto;
+            }
+
+            // access token süresi dolmuş mu
+            if (accessClaims.getExpiration().before(new Date())) {
+                return dto;
+            }
+
+            dto.setIsPermitted(true);
+            return dto;
+
+        } catch (Exception e) {
+            log.atError().log(e.getMessage());
+            return dto;
+        }
+    }
+
     private UserDTO convertToDTO(User user) {
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(user, userDTO);
@@ -593,15 +694,27 @@ public class UserService implements IUserService {
         if (user.getRoles() != null) {
             for (Role role : user.getRoles()) {
                 RoleDTO roleDTO = new RoleDTO();
-                roleDTO.setId(role.getId());
-                roleDTO.setName(role.getName());
+                BeanUtils.copyProperties(role, roleDTO);
                 roleDTOs.add(roleDTO);
             }
         }
 
         userDTO.setAddresses(addressDTOs);
         userDTO.setRoles(roleDTOs);
+
+        if (user.getId() != null) {
+            userDTO.setOrders(orderService.getByUserId(user.getId()));
+        }
+
         return userDTO;
     }
 
+    @Override
+    @Transactional
+    public void adminResetPassword(Long userId, String newPassword) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }

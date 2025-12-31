@@ -2,6 +2,7 @@ package com.example.apps.wishlists.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -26,7 +27,7 @@ public class WishlistAdminController {
     public ResponseEntity<?> getAllWishlists(Pageable pageable) {
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
-                HttpResponseStatus.ACCEPTED.code(),
+                HttpStatus.ACCEPTED.value(),
                 "/rest/api/admin/wishlists/all",
                 null,
                 wishlistService.getAllWishlists(pageable)));
@@ -36,9 +37,19 @@ public class WishlistAdminController {
     public ResponseEntity<?> getWishlistByUserId(@PathVariable Long userId) {
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
-                HttpResponseStatus.ACCEPTED.code(),
+                HttpStatus.ACCEPTED.value(),
                 "/rest/api/admin/wishlists/user/" + userId,
                 null,
                 wishlistService.getWishlistById(userId)));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getWishlistById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
+                true,
+                HttpStatus.OK.value(),
+                "/rest/api/admin/wishlists/" + id,
+                null,
+                wishlistService.getWishlistItemById(id)));
     }
 }

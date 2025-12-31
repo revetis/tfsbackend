@@ -39,4 +39,12 @@ public class UserDTOUpdate {
 
     @NotNull(message = "Gender is required")
     private Genders gender;
+
+    private Boolean enabled;
+
+    private Boolean emailVerified;
+
+    private String avatarUrl;
+
+    private java.util.List<Long> roleIds;
 }

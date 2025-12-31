@@ -1,5 +1,6 @@
 package com.example.apps.products.controllers;
 
+import org.apache.hc.core5.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -14,7 +15,6 @@ import com.example.apps.products.dtos.SubCategoryDTOIU;
 import com.example.apps.products.services.ICategoryService;
 import com.example.tfs.maindto.ApiTemplate;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -39,7 +39,7 @@ public class CategoryController {
 
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                                 true,
-                                HttpResponseStatus.OK.code(),
+                                HttpStatus.SC_OK,
                                 "/main-category/get-all",
                                 null,
                                 categoryService.getAllMainCategories(page, size)));
@@ -49,7 +49,7 @@ public class CategoryController {
         public ResponseEntity<?> createMainCategory(@RequestBody @Valid MainCategoryDTOIU dto) {
                 MainCategoryDTO category = categoryService.createMainCategory(dto);
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                                true, HttpResponseStatus.CREATED.code(),
+                                true, HttpStatus.SC_CREATED,
                                 "/main-category/create", null, category));
         }
 
@@ -58,14 +58,14 @@ public class CategoryController {
                         @RequestBody @Valid MainCategoryDTOIU dto) {
                 MainCategoryDTO category = categoryService.updateMainCategory(id, dto);
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                                true, HttpResponseStatus.OK.code(),
+                                true, HttpStatus.SC_OK,
                                 "/main-category/update", null, category));
         }
 
         @DeleteMapping("/main-category/delete/{id}")
         public ResponseEntity<?> deleteMainCategory(@PathVariable Long id) {
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                                true, HttpResponseStatus.OK.code(),
+                                true, HttpStatus.SC_OK,
                                 "/main-category/delete", null,
                                 categoryService.deleteMainCategory(id)));
         }
@@ -73,7 +73,7 @@ public class CategoryController {
         @GetMapping("/main-category/get/{id}")
         public ResponseEntity<?> getMainCategory(@PathVariable Long id) {
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                                true, HttpResponseStatus.OK.code(),
+                                true, HttpStatus.SC_OK,
                                 "/main-category/get", null,
                                 categoryService.getMainCategoryById(id)));
         }
@@ -82,7 +82,7 @@ public class CategoryController {
         public ResponseEntity<?> createSubCategory(@RequestBody @Valid SubCategoryDTOIU dto) {
                 SubCategoryDTO subCategory = categoryService.createSubCategory(dto);
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                                true, HttpResponseStatus.CREATED.code(),
+                                true, HttpStatus.SC_CREATED,
                                 "/sub-category/create", null, subCategory));
         }
 
@@ -91,14 +91,14 @@ public class CategoryController {
                         @RequestBody @Valid SubCategoryDTOIU dto) {
                 SubCategoryDTO subCategory = categoryService.updateSubCategory(id, dto);
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                                true, HttpResponseStatus.OK.code(),
+                                true, HttpStatus.SC_OK,
                                 "/sub-category/update", null, subCategory));
         }
 
         @DeleteMapping("/sub-category/delete/{id}")
         public ResponseEntity<?> deleteSubCategory(@PathVariable Long id) {
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                                true, HttpResponseStatus.OK.code(),
+                                true, HttpStatus.SC_OK,
                                 "/sub-category/delete", null,
                                 categoryService.deleteSubCategory(id)));
         }
@@ -106,7 +106,7 @@ public class CategoryController {
         @GetMapping("/sub-category/get/{id}")
         public ResponseEntity<?> getSubCategory(@PathVariable Long id) {
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                                true, HttpResponseStatus.OK.code(),
+                                true, HttpStatus.SC_OK,
                                 "/sub-category/get", null,
                                 categoryService.getSubCategoryById(id)));
         }
@@ -120,7 +120,7 @@ public class CategoryController {
                                 mainCategoryId);
 
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                                true, HttpResponseStatus.OK.code(),
+                                true, HttpStatus.SC_OK,
                                 "/sub-category/change-main-category", null, subCategory));
         }
 
@@ -131,7 +131,7 @@ public class CategoryController {
 
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                                 true,
-                                HttpResponseStatus.OK.code(),
+                                HttpStatus.SC_OK,
                                 "/sub-category/get-all",
                                 null,
                                 categoryService.getAllSubCategories(page, size)));
@@ -145,7 +145,7 @@ public class CategoryController {
 
                 return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                                 true,
-                                HttpResponseStatus.OK.code(),
+                                HttpStatus.SC_OK,
                                 "/sub-category/get-by-main-category",
                                 null,
                                 categoryService.getSubCategoriesByMainCategoryId(mainCategoryId, page, size)));

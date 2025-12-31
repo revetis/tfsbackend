@@ -25,19 +25,44 @@ public class Product extends BaseEntity {
 
     @Column(nullable = false, name = "name")
     private String name;
-    @Column(nullable = false, name = "description")
+    @Column(nullable = false, name = "description", columnDefinition = "TEXT")
     private String description;
 
     @OneToMany(mappedBy = "product", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariant> variants;
 
     @ManyToOne
-    @JoinColumn(name = "main_category_id", nullable = false)
+    @JoinColumn(name = "material_id")
     private ProductMaterial productMaterial;
 
     @ManyToOne
     @JoinColumn(name = "sub_category_id", nullable = false)
     private SubCategory subCategory;
+
+    @Column(name = "gender")
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    private com.example.apps.products.enums.Gender gender;
+
+    @Column(name = "size_chart")
+    private String sizeChart;
+
+    @Column(name = "brand")
+    private String brand;
+
+    @Column(name = "care_instructions")
+    private String careInstructions;
+
+    @Column(name = "origin")
+    private String origin;
+
+    @Column(name = "quality")
+    private String quality;
+
+    @Column(name = "style")
+    private String style;
+
+    @Column(name = "season")
+    private String season;
 
     private Boolean enable;
 

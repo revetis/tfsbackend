@@ -32,6 +32,7 @@ import com.example.apps.auths.repositories.IUserRepository;
 import com.example.apps.auths.securities.JWTGenerator;
 import com.example.apps.auths.services.impl.UserService;
 import com.example.apps.notifications.services.IN8NService;
+import com.example.apps.notifications.utils.N8NProperties;
 import com.example.tfs.ApplicationProperties;
 import com.example.tfs.exceptions.UserAlreadyExistsException;
 import com.example.tfs.exceptions.UserNotFoundException;
@@ -59,6 +60,9 @@ public class UserServiceTest {
     @Mock
     private JWTGenerator jwtGenerator;
 
+    @Mock
+    private N8NProperties n8NProperties;
+
     @InjectMocks
     private UserService userService;
 
@@ -71,16 +75,16 @@ public class UserServiceTest {
     void setUp() {
         registerRequest = new UserRegisterDTOIU();
         registerRequest.setUsername("testuser");
-        registerRequest.setPassword("password");
-        registerRequest.setPasswordRetry("password");
+        registerRequest.setPassword("Test@1234");
+        registerRequest.setPasswordRetry("Test@1234");
         registerRequest.setEmail("test@example.com");
         registerRequest.setAcceptTerms(true);
         registerRequest.setFirstName("Test");
         registerRequest.setLastName("User");
 
         loginRequest = new UserLoginDTOIU();
-        loginRequest.setUsername("testuser");
-        loginRequest.setPassword("password");
+        loginRequest.setUsernameOrEmail(registerRequest.getEmail());
+        loginRequest.setPassword("Test@1234");
 
         role = new Role();
         role.setName("USER");
@@ -101,6 +105,7 @@ public class UserServiceTest {
         when(roleRepository.findByName("USER")).thenReturn(Optional.of(role));
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
         when(userRepository.save(any(User.class))).thenReturn(user);
+        when(n8NProperties.getBaseUrl()).thenReturn("http://localhost:5678/");
 
         UserRegisterDTO result = userService.registerUser(registerRequest);
 
@@ -120,11 +125,11 @@ public class UserServiceTest {
 
     @Test
     void login_Success() {
-        when(userRepository.findByUsernameOrEmail(anyString(), any())).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
         when(jwtGenerator.generateRefreshToken(anyString(), anyList(), anyString()))
                 .thenReturn("refreshToken");
-        when(jwtGenerator.generateAccessToken(anyString(), anyString()))
+        when(jwtGenerator.generateAccessTokenForLogin(anyString(), anyString()))
                 .thenReturn(
                         Map.of(
                                 "accessToken", "accessToken",
@@ -139,7 +144,8 @@ public class UserServiceTest {
 
     @Test
     void login_UserNotFound() {
-        when(userRepository.findByUsernameOrEmail(anyString(), any())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> userService.login(loginRequest, FAKE_IP_ADDRESS));
     }

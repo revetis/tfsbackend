@@ -22,4 +22,6 @@ public class OrderItemDTOIU {
 
     private Long orderId;
 
+    private com.example.apps.products.enums.ProductSize size;
+
 }

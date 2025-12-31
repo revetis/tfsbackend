@@ -8,4 +8,5 @@ public class OrderReturnRequestDTO {
     private Long orderId;
     private List<Long> orderItemIds;
     private String returnReason;
+    private boolean restoreStock = true; // Default to true for backward compatibility logic if instantiated manually
 }

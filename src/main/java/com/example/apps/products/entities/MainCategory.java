@@ -30,6 +30,9 @@ public class MainCategory extends BaseEntity {
     @Column(nullable = true)
     private String description;
 
+    @Column(nullable = true)
+    private String imageUrl;
+
     @Column(nullable = false)
     @Builder.Default
     private Boolean enable = true;

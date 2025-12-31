@@ -5,25 +5,31 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.scheduling.annotation.EnableAsync;
 
-import com.example.apps.shipments.Configurations.GeliverConfiguration;
+import com.example.apps.shipments.configurations.GeliverConfiguration;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+
+import org.springframework.data.web.config.EnableSpringDataWebSupport;
+import org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode;
 
 @Configuration
+@EnableSpringDataWebSupport(pageSerializationMode = PageSerializationMode.VIA_DTO)
+@EnableAsync
 public class AppConfiguration {
+
     @Bean
     public ObjectMapper objectMapper() {
         ObjectMapper mapper = new ObjectMapper();
 
-        // Efendim, OffsetDateTime hatasını bitiren o asil modül
+        // OffsetDateTime hatasını bitiren modül
         mapper.registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
 
         // Tarihlerin [2025,12,21] şeklinde liste olarak değil, ISO-8601 string olarak
         // dönmesini sağlar
         mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-        // Sizin sisteminizde bilinmeyen alanlar gelirse patlamasın diye ek koruma
+        // Bilinmeyen alanlar gelirse patlamasın diye ek koruma
         // kalkanı
         mapper.configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
@@ -43,6 +49,11 @@ public class AppConfiguration {
     @Bean
     public WebClient.Builder webClientBuilder() {
         return WebClient.builder();
+    }
+
+    @Bean
+    public WebClient webClient() {
+        return WebClient.builder().build();
     }
 
     @Bean

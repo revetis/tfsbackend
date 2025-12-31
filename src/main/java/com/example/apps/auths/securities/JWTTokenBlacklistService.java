@@ -7,23 +7,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class JWTTokenBlacklistService {
 
-    @CachePut(value = "accessTokenBlacklist", key = "#accessToken")
-    public String accessTokenBlacklist(String accessToken) {
-        return accessToken;
+    @CachePut(value = "v2_accessTokenBlacklist", key = "#accessToken")
+    public Boolean accessTokenBlacklist(String accessToken) {
+        return true;
     }
 
-    @CachePut(value = "refreshTokenBlacklist", key = "#refreshToken")
-    public String refreshTokenBlacklist(String refreshToken) {
-        return refreshToken;
+    @CachePut(value = "v2_refreshTokenBlacklist", key = "#refreshToken")
+    public Boolean refreshTokenBlacklist(String refreshToken) {
+        return true;
     }
 
-    @Cacheable(value = "accessTokenBlacklist", key = "#accessToken")
-    public boolean isAccessTokenBlacklisted(String accessToken) {
+    @Cacheable(value = "v2_accessTokenBlacklist", key = "#accessToken")
+    public Boolean isAccessTokenBlacklisted(String accessToken) {
         return false;
     }
 
-    @Cacheable(value = "refreshTokenBlacklist", key = "#refreshToken")
-    public boolean isRefreshTokenBlacklisted(String refreshToken) {
+    @Cacheable(value = "v2_refreshTokenBlacklist", key = "#refreshToken")
+    public Boolean isRefreshTokenBlacklisted(String refreshToken) {
         return false;
     }
 }

@@ -22,13 +22,13 @@ public class ProductVariantDTOIU {
 
     @NotNull(message = "Price is required")
     @Min(value = 0, message = "Price must be greater than or equal to 0")
-    private Long price;
+    private java.math.BigDecimal price;
 
     @Min(value = 0, message = "Discount ratio must be greater than or equal to 0")
     private Long discountRatio;
 
-    @NotNull(message = "Stock is required")
-    private ProductVariantStockDTOIU stock;
+    @NotNull(message = "Stocks are required")
+    private List<ProductVariantStockDTOIU> stocks;
 
     @NotNull(message = "Color is required")
     private ProductVariantColorDTOIU color;
@@ -36,8 +36,8 @@ public class ProductVariantDTOIU {
     @NotNull(message = "Enable is required")
     private Boolean enable;
 
-    @NotNull(message = "Images are required")
-    @Size(min = 1, message = "At least one image is required")
-    private List<ProductVariantImageDTOIU> images;
+    @Builder.Default
+    private List<ProductVariantImageDTOIU> images = new java.util.ArrayList<>();
 
+    private Long productId;
 }

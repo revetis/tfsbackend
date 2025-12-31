@@ -36,6 +36,33 @@ public class StorageService {
         }
     }
 
+    public String store(MultipartFile file, String folder) {
+        try {
+            // Generate unique filename
+            String originalFilename = file.getOriginalFilename();
+            String extension = "";
+            if (originalFilename != null && originalFilename.contains(".")) {
+                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+            }
+            String filename = System.currentTimeMillis() + "_" + Math.random() + extension;
+
+            // Create upload directory
+            Path uploadPath = Paths.get(applicationProperties.getSTATIC_PATH() + "/uploads/" + folder);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            // Save file
+            Files.copy(file.getInputStream(), uploadPath.resolve(filename));
+            log.info("File uploaded successfully: " + filename);
+
+            return filename;
+        } catch (Exception e) {
+            log.error("Error storing file: " + e.getMessage());
+            throw new RuntimeException("Could not store file: " + e.getMessage());
+        }
+    }
+
     public Boolean deleteFile(String filePath) {
         try {
             Path fileToDelete = Paths.get(applicationProperties.getSTATIC_PATH(), filePath.replaceFirst("^/", ""));

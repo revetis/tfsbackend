@@ -1,6 +1,7 @@
 package com.example.tfs;
 
 import com.example.tfs.maindto.ApiErrorTemplate;
+import io.sentry.Sentry;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,11 @@ public class GlobalExceptionHandler {
 
                 String path = request.getDescription(false).replace("uri=", "");
 
+                // Send to Sentry/GlitchTip
+                Sentry.getContext().addTag("exception_type", "IllegalFormatConversionException");
+                Sentry.getContext().addTag("path", path);
+                Sentry.capture(ex);
+
                 // Efendim, burada hatanın hangi karakterden (%d, %s vb.) kaynaklandığını da
                 // kullanıcıya raporluyoruz
                 String detailedMessage = String.format(
@@ -50,6 +56,11 @@ public class GlobalExceptionHandler {
 
                 log.error("Shipment Operation Failed: {}", ex.getMessage());
                 String path = request.getDescription(false).replace("uri=", "");
+
+                // Send to Sentry/GlitchTip
+                Sentry.getContext().addTag("exception_type", "ShipmentException");
+                Sentry.getContext().addTag("path", path);
+                Sentry.capture(ex);
 
                 return ResponseEntity
                                 .status(HttpStatus.BAD_REQUEST)
@@ -82,6 +93,17 @@ public class GlobalExceptionHandler {
                 HttpStatus status = resolveHttpStatus(ex);
                 String message = resolveMessage(ex);
                 String path = request.getDescription(false).replace("uri=", "");
+
+                // Send to Sentry/GlitchTip with context
+                try {
+                        Sentry.getContext().addTag("exception_type", ex.getClass().getSimpleName());
+                        Sentry.getContext().addTag("http_status", String.valueOf(status.value()));
+                        Sentry.getContext().addTag("path", path);
+                        Sentry.getContext().addExtra("error_message", message);
+                        Sentry.capture(ex);
+                } catch (Exception sentryException) {
+                        log.warn("Failed to send exception to Sentry", sentryException);
+                }
 
                 return ResponseEntity
                                 .status(status)

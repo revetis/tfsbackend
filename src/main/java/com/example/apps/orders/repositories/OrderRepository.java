@@ -15,6 +15,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findBypaymentConversationId(String paymentConversationId);
 
-    Collection<OrderItemDTO> findAllByUserId(Long userId);
+    java.util.List<Order> findAllByUserIdOrderByCreatedAtDesc(Long userId);
 
 }

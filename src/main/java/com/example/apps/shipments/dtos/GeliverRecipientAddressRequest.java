@@ -32,6 +32,8 @@ public class GeliverRecipientAddressRequest {
     @NotBlank(message = "City code is required")
     private String cityCode;
 
+    private String zipCode;
+
     @NotBlank(message = "District name is required")
     private String districtName;
 }

@@ -22,6 +22,7 @@ import com.example.apps.carts.repositories.CartItemRepository;
 import com.example.apps.carts.repositories.CartRepository;
 import com.example.apps.carts.services.ICartService;
 import com.example.apps.products.entities.ProductVariant;
+import com.example.apps.products.entities.ProductVariantStock;
 import com.example.apps.products.exceptions.ProductVariantException;
 import com.example.apps.products.repositories.ProductVariantRepository;
 
@@ -37,16 +38,16 @@ public class CartServiceImpl implements ICartService {
 
     @Override
     public CartDTO getCartByUserId(Long userId, Long actualUserId) {
-        Cart cart = cartRepository.findCartByUserId(userId).orElseThrow(() -> new CartException("Cart not found"));
+        Cart cart = cartRepository.findCartByUserId(userId).orElseGet(() -> {
+            Cart newCart = Cart.builder().userId(userId).items(new java.util.ArrayList<>()).build();
+            return cartRepository.save(newCart);
+        });
 
         if (!cart.getUserId().equals(actualUserId))
             throw new AccessDeniedException("You are not authorized to access this cart.");
 
         return CartDTO.builder().id(cart.getId()).userId(cart.getUserId())
-                .items(cart.getItems().stream()
-                        .map(item -> CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
-                                .quantity(item.getQuantity()).build())
-                        .collect(Collectors.toList()))
+                .items(mapToCartItemDTOs(cart.getItems()))
                 .build();
     }
 
@@ -54,27 +55,64 @@ public class CartServiceImpl implements ICartService {
     @Transactional
     @CacheEvict(value = "cartCheckoutCache", key = "#userId")
     public CartDTO addItemToCart(Long userId, CartItemDTOIU cartItemDTOIU, Long actualUserId) {
-        Cart cart = cartRepository.findCartByUserId(userId).orElseThrow(() -> new CartException("Cart not found"));
+        Cart cart = cartRepository.findCartByUserId(userId).orElseGet(() -> {
+            Cart newCart = Cart.builder().userId(userId).items(new java.util.ArrayList<>()).build();
+            return cartRepository.save(newCart);
+        });
         if (!cart.getUserId().equals(actualUserId))
             throw new AccessDeniedException("You are not authorized to access this cart.");
 
         ProductVariant variant = productVariantRepository.findById(cartItemDTOIU.getProductVariantId())
                 .orElseThrow(() -> new ProductVariantException("Product variant not found"));
 
-        CartItem newCartItem = CartItem.builder()
-                .productVariantId(variant.getId())
-                .quantity(cartItemDTOIU.getQuantity())
-                .cart(cart)
-                .build();
+        ProductVariantStock stock = findStockBySize(variant, cartItemDTOIU.getSize());
 
-        cartItemRepository.save(newCartItem);
-        cart.getItems().add(newCartItem);
+        // Check if item already exists
+        java.util.Optional<CartItem> existingItemOpt = cart.getItems().stream()
+                .filter(i -> i.getProductVariantId().equals(variant.getId())
+                        && (i.getSize() == cartItemDTOIU.getSize()
+                                || (i.getSize() != null && i.getSize().equals(cartItemDTOIU.getSize()))))
+                .findFirst();
+
+        if (existingItemOpt.isPresent()) {
+            CartItem existingItem = existingItemOpt.get();
+            int newQuantity = existingItem.getQuantity() + cartItemDTOIU.getQuantity();
+
+            if (stock.getQuantity() <= 0) {
+                throw new CartException("Ürün stokta bulunmamaktadır.");
+            }
+            // If requested more than available, clamp to available
+            if (newQuantity > stock.getQuantity()) {
+                newQuantity = stock.getQuantity().intValue();
+                // We could inform user, but for now silent capping is better than error
+            }
+
+            existingItem.setQuantity(newQuantity);
+            cartItemRepository.save(existingItem);
+        } else {
+            if (stock.getQuantity() <= 0) {
+                throw new CartException("Ürün stokta bulunmamaktadır.");
+            }
+
+            Integer quantityToAdd = cartItemDTOIU.getQuantity();
+            // If requested more than available, clamp to available
+            if (stock.getQuantity() < quantityToAdd) {
+                quantityToAdd = stock.getQuantity().intValue();
+            }
+
+            CartItem newCartItem = CartItem.builder()
+                    .productVariantId(variant.getId())
+                    .quantity(quantityToAdd)
+                    .size(cartItemDTOIU.getSize())
+                    .cart(cart)
+                    .build();
+
+            cartItemRepository.save(newCartItem);
+            cart.getItems().add(newCartItem);
+        }
         cartRepository.save(cart);
         return CartDTO.builder().id(cart.getId()).userId(cart.getUserId())
-                .items(cart.getItems().stream()
-                        .map(item -> CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
-                                .quantity(item.getQuantity()).build())
-                        .collect(Collectors.toList()))
+                .items(mapToCartItemDTOs(cart.getItems()))
                 .build();
     }
 
@@ -100,10 +138,7 @@ public class CartServiceImpl implements ICartService {
                 .orElseThrow(() -> new CartException("Cart not found after item removal"));
 
         return CartDTO.builder().id(updatedCart.getId()).userId(updatedCart.getUserId())
-                .items(updatedCart.getItems().stream()
-                        .map(item -> CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
-                                .quantity(item.getQuantity()).build())
-                        .collect(Collectors.toList()))
+                .items(mapToCartItemDTOs(updatedCart.getItems()))
                 .build();
     }
 
@@ -138,14 +173,19 @@ public class CartServiceImpl implements ICartService {
         if (!cartItem.getCart().getId().equals(cart.getId()))
             throw new CartException("Cart item does not belong to the user's cart.");
 
+        ProductVariant variant = productVariantRepository.findById(cartItem.getProductVariantId())
+                .orElseThrow(() -> new ProductVariantException("Product variant not found"));
+        ProductVariantStock stock = findStockBySize(variant, cartItem.getSize());
+
+        if (stock.getQuantity() < quantity) {
+            throw new CartException("Insufficient stock. Available: " + stock.getQuantity());
+        }
+
         cartItem.setQuantity(quantity);
         cartItemRepository.save(cartItem);
 
         return CartDTO.builder().id(cart.getId()).userId(cart.getUserId())
-                .items(cart.getItems().stream()
-                        .map(item -> CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
-                                .quantity(item.getQuantity()).build())
-                        .collect(Collectors.toList()))
+                .items(mapToCartItemDTOs(cart.getItems()))
                 .build();
     }
 
@@ -164,11 +204,8 @@ public class CartServiceImpl implements ICartService {
         Map<Long, ProductVariant> variantMap = variants.stream()
                 .collect(Collectors.toMap(ProductVariant::getId, v -> v));
 
-        CartCheckoutDTO checkout = CartCheckoutDTO.builder().validatedItems(cart.getItems().stream().map(item -> {
-            CartItemDTO itemDTO = CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
-                    .quantity(item.getQuantity()).build();
-            return itemDTO;
-        }).collect(Collectors.toList())).subTotal(calculateCartSubtotal(cart, variantMap))
+        CartCheckoutDTO checkout = CartCheckoutDTO.builder().validatedItems(mapToCartItemDTOs(cart.getItems()))
+                .subTotal(calculateCartSubtotal(cart, variantMap))
                 .totalDiscount(calculateCartTotalDiscount(cart, variantMap)).shippingFee(shippingCost)
                 .taxAmount(calculateTaxAmount(cart, variantMap)).finalAmount(calculateFinalAmount(cart, variantMap))
                 .isStockAvailable(isStockAvailable(cart, variantMap)).checkoutToken(generateCheckoutToken())
@@ -189,11 +226,28 @@ public class CartServiceImpl implements ICartService {
             if (variant == null) {
                 throw new ProductVariantException("Product variant not found for cart item.");
             }
-            if (variant.getStock().getQuantity() < item.getQuantity()) {
+            ProductVariantStock stock = findStockBySize(variant, item.getSize());
+            if (stock.getQuantity() < item.getQuantity()) {
                 return false;
             }
         }
         return true;
+    }
+
+    private ProductVariantStock findStockBySize(ProductVariant variant,
+            com.example.apps.products.enums.ProductSize size) {
+        if (variant.getStocks() == null || variant.getStocks().isEmpty()) {
+            throw new ProductVariantException("No stock records found for this variant.");
+        }
+
+        if (size == null) {
+            return variant.getStocks().get(0);
+        }
+
+        return variant.getStocks().stream()
+                .filter(s -> s.getSize() != null && s.getSize() == size)
+                .findFirst()
+                .orElseThrow(() -> new ProductVariantException("Stock not found for size: " + size));
     }
 
     private Double calculateFinalAmount(Cart cart, Map<Long, ProductVariant> variants) {
@@ -259,11 +313,61 @@ public class CartServiceImpl implements ICartService {
     public Page<CartDTO> getAllCarts(int page, int size) {
         Page<Cart> cartsPage = cartRepository.findAll(org.springframework.data.domain.PageRequest.of(page, size));
         return cartsPage.map(cart -> CartDTO.builder().id(cart.getId()).userId(cart.getUserId())
-                .items(cart.getItems().stream()
-                        .map(item -> CartItemDTO.builder().id(item.getId()).productVariantId(item.getProductVariantId())
-                                .quantity(item.getQuantity()).build())
-                        .collect(Collectors.toList()))
+                .items(mapToCartItemDTOs(cart.getItems()))
+                .createdAt(cart.getCreatedAt())
+                .updatedAt(cart.getUpdatedAt())
                 .build());
+    }
+
+    @Override
+    public CartDTO getCartById(Long id) {
+        Cart cart = cartRepository.findById(id).orElseThrow(() -> new CartException("Cart not found"));
+        return CartDTO.builder().id(cart.getId()).userId(cart.getUserId())
+                .items(mapToCartItemDTOs(cart.getItems()))
+                .createdAt(cart.getCreatedAt())
+                .updatedAt(cart.getUpdatedAt())
+                .build();
+    }
+
+    private List<CartItemDTO> mapToCartItemDTOs(List<CartItem> items) {
+        if (items.isEmpty())
+            return new java.util.ArrayList<>();
+
+        List<Long> variantIds = items.stream().map(CartItem::getProductVariantId).collect(Collectors.toList());
+        List<ProductVariant> variants = productVariantRepository.findAllById(variantIds);
+        Map<Long, ProductVariant> variantMap = variants.stream()
+                .collect(Collectors.toMap(ProductVariant::getId, v -> v));
+
+        return items.stream().map(item -> {
+            ProductVariant variant = variantMap.get(item.getProductVariantId());
+            String imageUrl = null;
+            if (variant != null && variant.getImages() != null && !variant.getImages().isEmpty()) {
+                imageUrl = variant.getImages().get(0).getUrl();
+            }
+
+            Integer stockQty = 0;
+            if (variant != null) {
+                try {
+                    stockQty = findStockBySize(variant, item.getSize()).getQuantity().intValue();
+                } catch (Exception e) {
+                }
+            }
+
+            String pName = (variant != null && variant.getProduct() != null) ? variant.getProduct().getName()
+                    : "Unknown";
+
+            return CartItemDTO.builder()
+                    .id(item.getId())
+                    .productVariantId(item.getProductVariantId())
+                    .quantity(item.getQuantity())
+                    .size(item.getSize())
+                    .productName(pName)
+                    .variantName(variant != null ? variant.getName() : null)
+                    .price(variant != null ? variant.getPrice() : java.math.BigDecimal.ZERO)
+                    .imageUrl(imageUrl)
+                    .stockQuantity(stockQty)
+                    .build();
+        }).collect(Collectors.toList());
     }
 
 }

@@ -23,7 +23,7 @@ services:
     container_name: es_container
     environment:
       - discovery.type=single-node
-      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ES_JAVA_OPTS=-Xms2g -Xmx2g
       # 7.x sürümünde güvenlik ayarları biraz farklıdır ama development için bu yeterli:
       - xpack.security.enabled=false
     ports:
@@ -33,6 +33,11 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:9200"]
       interval: 10s
       retries: 5
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+
+volumes:
+  es-data:
 
 
 # The commented out section below is an example of how to define a PostgreSQL

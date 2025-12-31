@@ -2,7 +2,6 @@ package com.example.apps.payments.gateways.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,6 +93,15 @@ public class IyzicoGateway implements IGateway {
             buyer.setCountry(request.getBuyer().getCountry());
             buyer.setZipCode(request.getBuyer().getZipCode());
             buyer.setIp(request.getBuyer().getIp());
+            // Set registration and last login dates for fraud detection
+            if (request.getBuyer().getRegistrationDate() != null) {
+                buyer.setRegistrationDate(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                        .format(request.getBuyer().getRegistrationDate()));
+            }
+            if (request.getBuyer().getLastLoginDate() != null) {
+                buyer.setLastLoginDate(new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                        .format(request.getBuyer().getLastLoginDate()));
+            }
             iyzicoRequest.setBuyer(buyer);
             Address shippingAddress = new Address();
             shippingAddress.setContactName(request.getShippingAddress().getContactName());
@@ -169,20 +177,27 @@ public class IyzicoGateway implements IGateway {
                     null,
                     res.getErrorMessage());
         }
-        return new GatewayResult(PaymentStatus.SUCCESS, res.getPosOrderId(), null);
+
+        // Critical Fix: Check the actual payment status, not just the API request
+        // status
+        if (!"SUCCESS".equalsIgnoreCase(res.getPaymentStatus())) {
+            return new GatewayResult(
+                    PaymentStatus.FAILED,
+                    res.getPaymentId(),
+                    res.getErrorMessage() != null ? res.getErrorMessage()
+                            : "Payment failed with status: " + res.getPaymentStatus());
+        }
+
+        return new GatewayResult(PaymentStatus.SUCCESS, res.getPaymentId(), null, res.getBinNumber(),
+                res.getCardAssociation(), res.getCardFamily(), res.getCardType());
+
     }
 
     @Override
     public GatewayResult cancelPayment(String paymentId, String conversationId, String ip) {
 
-        Payment payment = paymentRepository.findByPaymentId(paymentId)
-                .orElseThrow(() -> new IyzicoPaymentException("Payment record not found"));
-
-        Boolean sameDay = payment.getCreatedAt().toLocalDate().equals(LocalDate.now());
-
-        if (!sameDay) {
-            throw new IyzicoPaymentException("Only orders placed on the same day can be returned.");
-        }
+        // Validations are handled in Service layer
+        // Payment payment = paymentRepository.findByPaymentId(paymentId)...
 
         CreateCancelRequest request = new CreateCancelRequest();
         request.setLocale(Locale.TR.getValue());
@@ -208,13 +223,8 @@ public class IyzicoGateway implements IGateway {
 
     @Override
     public GatewayResult refundPayment(String paymentId, String conversationId, String ip, BigDecimal amount) {
-        Payment payment = paymentRepository.findByPaymentId(paymentId)
-                .orElseThrow(() -> new IyzicoPaymentException("Payment record not found"));
-        Boolean sameDay = payment.getCreatedAt().toLocalDate().equals(LocalDate.now());
-
-        if (sameDay) {
-            throw new IyzicoPaymentException("Orders placed on the same day should be cancelled, not refunded.");
-        }
+        // Validations are handled in Service layer
+        // Payment payment = paymentRepository.findByPaymentId(paymentId)...
 
         CreateRefundV2Request request = new CreateRefundV2Request();
         request.setLocale(Locale.TR.getValue());

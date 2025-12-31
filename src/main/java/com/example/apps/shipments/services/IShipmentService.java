@@ -6,6 +6,13 @@ import com.example.apps.shipments.dtos.GeliverMainResponse;
 import com.example.apps.shipments.dtos.GeliverShipmentCreateRequest;
 import com.example.apps.shipments.dtos.GeliverTransactionCreateRequest;
 import com.example.apps.shipments.dtos.GeliverTransactionMainResponse;
+import com.example.apps.shipments.dtos.GeliverWebhookRequest;
+import com.example.apps.shipments.dtos.GeliverReturnRequest;
+import com.example.apps.shipments.dtos.ShipmentDTO;
+import com.example.apps.shipments.dtos.ShipmentEventDTO;
+
+import javax.resource.NotSupportedException;
+import java.util.List;
 
 /**
  * Service Interface for Geliver API Operations.
@@ -22,9 +29,34 @@ public interface IShipmentService {
     /** Initiates a shipment creation to receive available offers. */
     GeliverMainResponse createShipment(GeliverShipmentCreateRequest request);
 
+    /** Initiates a return shipment creation. */
+    GeliverTransactionMainResponse createReturnShipment(String originalShipmentId, GeliverReturnRequest request);
+
     /** Completes the purchase transaction for a specific shipping offer. */
     GeliverTransactionMainResponse offerPurchase(GeliverTransactionCreateRequest request);
 
+    /** Cancel shipment based on the provided shipment ID. */
+    GeliverMainResponse cancelShipmentByID(String shipmentID);
+
+    /** Cancel shipment based on the provided order number. */
+    GeliverMainResponse cancelShipment(String orderNumber) throws NotSupportedException;
+
     /** Lists shipment details based on the provided order number. */
     GeliverMainResponse listShipment(String orderNumber);
+
+    List<ShipmentDTO> getAllShipments();
+
+    ShipmentDTO getShipmentById(Long id);
+
+    /** Processes incoming tracking webhook from Geliver. */
+    void processTrackingWebhook(GeliverWebhookRequest request);
+
+    /** Gets all events for a shipment by shipment ID. */
+    List<ShipmentEventDTO> getShipmentEvents(Long shipmentId);
+
+    /** Gets all events for a shipment by order number. */
+    List<ShipmentEventDTO> getShipmentEventsByOrderNumber(String orderNumber);
+
+    /** Retrieves shipment details by order number. Returns null if not found. */
+    ShipmentDTO getShipmentByOrderNumber(String orderNumber);
 }

@@ -16,12 +16,16 @@ public class AddressDTOIU {
     @Size(max = 255, message = "Full address must be less than 255 characters")
     @NotBlank(message = "Full address is required")
     private String fullAddress;
+    @NotBlank(message = "Contact name is required")
+    private String contactName;
     @Size(max = 255, message = "Street must be less than 255 characters")
     @NotBlank(message = "Street is required")
     private String street;
     @Size(max = 255, message = "City must be less than 255 characters")
     @NotBlank(message = "City is required")
     private String city;
+    @Size(max = 20, message = "City code must be less than 20 characters")
+    private String cityCode;
     @Size(max = 255, message = "State must be less than 255 characters")
     @NotBlank(message = "State is required")
     private String state;

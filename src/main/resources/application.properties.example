@@ -54,6 +54,10 @@ n8n.webhook.shipment-created=/shipment-created
 n8n.webhook.shipment-delivered=/shipment-delivered
 n8n.webhook.order-cancelled=/order-cancelled
 n8n.webhook.refund-processed=/refund-processed
+n8n.webhook.refund-processed=/refund-processed
+n8n.webhook.contact-reply=/contact-reply
+# Header Auth is handled via api-key automatically by N8NService (sends X-Webhook-Secret)
+# tfs.n8n.api-key=your-secret-key
 
 # Actuator & Prometheus Configuration
 management.endpoints.web.exposure.include=health,metrics,prometheus

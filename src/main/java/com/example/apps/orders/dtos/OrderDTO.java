@@ -33,4 +33,32 @@ public class OrderDTO {
     private OrderAddressDTO shippingAddress;
     private OrderAddressDTO billingAddress;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private String customerName;
+    private String customerFirstName;
+    private String customerLastName;
+    private String customerPhone;
+    private String customerEmail;
+
+    // Discount fields
+    private String couponCode;
+    private BigDecimal discountAmount;
+    private Long campaignId;
+    private String campaignName;
+
+    // Extra fields
+    private com.example.apps.shipments.dtos.ShipmentDTO shipment;
+
+    // Shipping selection fields
+    private String selectedShippingOfferId;
+    private BigDecimal shippingCost;
+    private String shippingProvider;
+
+    private String trackingNumber;
+    private String trackingUrl;
+    private String labelUrl;
+    private String barcode;
+
+    // Return status flag
+    private Boolean hasActiveReturn;
 }

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.apps.auths.dtos.UserDTO;
 import com.example.apps.auths.dtos.UserDTOCreate;
@@ -109,4 +111,22 @@ public class UserAdminController {
                                                 "User disabled successfully."));
         }
 
+        @PutMapping(path = "/reset-password/{userId}")
+        public ResponseEntity<ApiTemplate<Void, String>> resetPassword(@PathVariable("userId") Long userId,
+                        @RequestBody @Valid com.example.apps.auths.dtos.AdminResetPasswordDTOIU request,
+                        HttpServletRequest servletRequest) {
+                userService.adminResetPassword(userId, request.getNewPassword());
+                return ResponseEntity
+                                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                "Password reset successfully."));
+        }
+
+        @PostMapping(path = "/{userId}/avatar")
+        public ResponseEntity<?> uploadUserAvatar(@PathVariable Long userId, @RequestParam("file") MultipartFile file,
+                        HttpServletRequest servletRequest) {
+                userService.avatar(file, userId);
+                return ResponseEntity.ok(
+                                ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                "Avatar uploaded successfully"));
+        }
 }

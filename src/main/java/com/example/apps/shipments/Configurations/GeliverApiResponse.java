@@ -1,4 +1,4 @@
-package com.example.apps.shipments.Configurations;
+package com.example.apps.shipments.configurations;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

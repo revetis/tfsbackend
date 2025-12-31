@@ -72,6 +72,9 @@ public class Payment extends BaseEntity {
     @Column(name = "card_family")
     private String cardFamily;
 
+    @Column(name = "card_type")
+    private String cardType;
+
     @Column(name = "ip_address")
     private String ipAddress;
 

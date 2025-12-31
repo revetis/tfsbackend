@@ -25,7 +25,7 @@ public class SecurityUtils {
                 }).orElseThrow(() -> new IllegalStateException("User not authenticated"));
     }
 
-    public Long getCurrentUserId() {
+    public static Long getCurrentUserId() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (principal instanceof CustomUserDetails) {

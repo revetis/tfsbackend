@@ -13,6 +13,7 @@ public class MainCategoryDTO {
     private Long id;
     private String name;
     private String description;
+    private String imageUrl;
     private Boolean enable;
     private java.time.LocalDateTime createdAt;
     private java.time.LocalDateTime updatedAt;

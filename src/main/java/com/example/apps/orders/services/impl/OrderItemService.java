@@ -16,7 +16,11 @@ import com.example.apps.orders.repositories.OrderItemRepository;
 import com.example.apps.orders.services.IOrderItemService;
 import com.example.apps.products.entities.ProductVariant;
 import com.example.apps.products.exceptions.ProductVariantException;
+import com.example.apps.products.entities.ProductVariantStock;
 import com.example.apps.products.repositories.ProductVariantRepository;
+import com.example.apps.products.entities.Product;
+import com.example.apps.products.entities.SubCategory;
+import com.example.apps.products.entities.MainCategory;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,26 +36,67 @@ public class OrderItemService implements IOrderItemService {
 
     @Override
     @Transactional
-    public OrderItemDTO create(OrderItemDTOIU orderItemDTOIU, Order order) {
-
+    public OrderItem create(OrderItemDTOIU orderItemDTOIU, Order order) {
         ProductVariant productVariant = productVariantRepository.findById(orderItemDTOIU.getProductVariantId())
-                .orElseThrow(() -> new ProductVariantException("Product Variant not found for OrderItem"));
-        if (productVariant.getStock().getQuantity() < orderItemDTOIU.getQuantity()) {
-            throw new ProductVariantException("Not enough stock for OrderItem");
+                .orElseThrow(() -> new ProductVariantException("Ürün varyantı bulunamadı."));
+
+        ProductVariantStock stock = findStockBySize(productVariant, orderItemDTOIU.getSize());
+
+        if (stock.getQuantity() < orderItemDTOIU.getQuantity()) {
+            throw new ProductVariantException("Yetersiz stok ("
+                    + (orderItemDTOIU.getSize() != null ? orderItemDTOIU.getSize() : "varsayılan") + ").");
         }
 
         OrderItem newOrderItem = new OrderItem();
         newOrderItem.setProductVariantId(productVariant.getId());
-        newOrderItem.setOrder(order);
         newOrderItem.setProductVariantName(productVariant.getName());
         newOrderItem.setQuantity(orderItemDTOIU.getQuantity());
         newOrderItem.setPrice(productVariant.getPrice());
-        orderItemRepository.save(newOrderItem);
+        newOrderItem.setSize(orderItemDTOIU.getSize());
 
-        OrderItemDTO response = new OrderItemDTO();
-        BeanUtils.copyProperties(newOrderItem, response);
-        return response;
+        // Populate missing fields for DB constraints
+        if (productVariant.getProduct() != null && productVariant.getProduct().getSubCategory() != null) {
+            newOrderItem.setSubCategory(productVariant.getProduct().getSubCategory().getName());
+            if (productVariant.getProduct().getSubCategory().getMainCategory() != null) {
+                newOrderItem.setMainCategory(productVariant.getProduct().getSubCategory().getMainCategory().getName());
+            } else {
+                newOrderItem.setMainCategory("Genel");
+            }
+        } else {
+            newOrderItem.setSubCategory("Genel");
+            newOrderItem.setMainCategory("Genel");
+        }
 
+        // Populate details (Color, Gender)
+        if (productVariant.getColor() != null) {
+            newOrderItem.setColor(productVariant.getColor().getName());
+        }
+        if (productVariant.getProduct() != null && productVariant.getProduct().getGender() != null) {
+            newOrderItem.setGender(productVariant.getProduct().getGender().name());
+        }
+
+        newOrderItem.setItemType("PHYSICAL"); // Default item type
+        newOrderItem.setPaidPrice(productVariant.getPrice()); // Default to unit price for now
+
+        newOrderItem.setOrder(order);
+
+        return newOrderItem;
+    }
+
+    private ProductVariantStock findStockBySize(ProductVariant variant,
+            com.example.apps.products.enums.ProductSize size) {
+        if (variant.getStocks() == null || variant.getStocks().isEmpty()) {
+            throw new ProductVariantException("Bu varyant için stok kaydı bulunamadı.");
+        }
+
+        if (size == null) {
+            return variant.getStocks().get(0);
+        }
+
+        return variant.getStocks().stream()
+                .filter(s -> s.getSize() != null && s.getSize() == size)
+                .findFirst()
+                .orElseThrow(() -> new ProductVariantException("Belirtilen beden için stok bulunamadı: " + size));
     }
 
     @Override
@@ -75,6 +120,17 @@ public class OrderItemService implements IOrderItemService {
         return orderItems.stream().map(orderItem -> {
             OrderItemDTO orderItemDTO = new OrderItemDTO();
             BeanUtils.copyProperties(orderItem, orderItemDTO);
+
+            // Fetch ProductVariant to get productId and imageUrl
+            productVariantRepository.findById(orderItem.getProductVariantId())
+                    .ifPresent(variant -> {
+                        orderItemDTO.setProductId(variant.getProduct().getId());
+                        // Get first image URL if available
+                        if (variant.getImages() != null && !variant.getImages().isEmpty()) {
+                            orderItemDTO.setImageUrl(variant.getImages().get(0).getUrl());
+                        }
+                    });
+
             return orderItemDTO;
         }).toList();
 

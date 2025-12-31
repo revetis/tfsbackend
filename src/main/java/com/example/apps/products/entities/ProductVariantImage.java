@@ -1,7 +1,5 @@
 package com.example.apps.products.entities;
 
-import org.hibernate.validator.constraints.URL;
-
 import com.example.tfs.entities.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -23,14 +21,13 @@ import lombok.Setter;
 public class ProductVariantImage extends BaseEntity {
 
     @Column(nullable = false)
-    @URL
     private String url;
 
     @ManyToOne
     @JoinColumn(name = "product_variant_id", nullable = false)
     private ProductVariant productVariant;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String alt;
 
 }

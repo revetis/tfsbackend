@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import com.example.apps.products.enums.ProductSize;
 
 import com.example.apps.products.dtos.ProductDTO;
 import com.example.apps.products.dtos.ProductDTOIU;
@@ -34,6 +35,41 @@ public class ProductController {
 
         @Autowired
         private IProductService productService;
+
+        @PostMapping("/upload-image")
+        public ResponseEntity<?> uploadImage(
+                        @RequestParam("file") MultipartFile file) {
+
+                if (file.isEmpty()) {
+                        return ResponseEntity.badRequest()
+                                        .body(ApiTemplate.apiTemplateGenerator(
+                                                        false,
+                                                        HttpStatus.BAD_REQUEST.value(),
+                                                        "/rest/api/admin/products/upload-image",
+                                                        "File is empty",
+                                                        null));
+                }
+
+                String url = productService.uploadImage(file);
+
+                if (url == null) {
+                        return ResponseEntity.internalServerError()
+                                        .body(ApiTemplate.apiTemplateGenerator(
+                                                        false,
+                                                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                                        "/rest/api/admin/products/upload-image",
+                                                        "Failed to upload image",
+                                                        null));
+                }
+
+                return ResponseEntity.ok(
+                                ApiTemplate.apiTemplateGenerator(
+                                                true,
+                                                HttpStatus.OK.value(),
+                                                "/rest/api/admin/products/upload-image",
+                                                null,
+                                                url));
+        }
 
         @PostMapping("/create")
         public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDTOIU request) {
@@ -103,6 +139,23 @@ public class ProductController {
                                                 true,
                                                 HttpStatus.CREATED.value(),
                                                 "/rest/api/admin/products/" + productId + "/variants",
+                                                null,
+                                                response));
+        }
+
+        @GetMapping("/variants/{variantId}")
+        public ResponseEntity<?> getVariantById(@PathVariable Long variantId) {
+                ProductVariantDTO response = productService.getVariantById(variantId);
+
+                if (response == null) {
+                        return ResponseEntity.notFound().build();
+                }
+
+                return ResponseEntity.ok(
+                                ApiTemplate.apiTemplateGenerator(
+                                                true,
+                                                HttpStatus.OK.value(),
+                                                "/rest/api/admin/products/variants/" + variantId,
                                                 null,
                                                 response));
         }
@@ -251,7 +304,8 @@ public class ProductController {
         @PutMapping("/variants/{variantId}/stock/decrease")
         public ResponseEntity<?> decreaseStock(
                         @PathVariable Long variantId,
-                        @RequestParam Long quantity) {
+                        @RequestParam Long quantity,
+                        @RequestParam(required = false) ProductSize size) {
 
                 return ResponseEntity.ok(
                                 ApiTemplate.apiTemplateGenerator(
@@ -259,13 +313,14 @@ public class ProductController {
                                                 HttpStatus.OK.value(),
                                                 "/rest/api/admin/products/variants/" + variantId + "/stock/decrease",
                                                 null,
-                                                productService.decreaseStock(variantId, quantity)));
+                                                productService.decreaseStock(variantId, quantity, size)));
         }
 
         @PutMapping("/variants/{variantId}/stock/increase")
         public ResponseEntity<?> increaseStock(
                         @PathVariable Long variantId,
-                        @RequestParam Long quantity) {
+                        @RequestParam Long quantity,
+                        @RequestParam(required = false) ProductSize size) {
 
                 return ResponseEntity.ok(
                                 ApiTemplate.apiTemplateGenerator(
@@ -273,7 +328,7 @@ public class ProductController {
                                                 HttpStatus.OK.value(),
                                                 "/rest/api/admin/products/variants/" + variantId + "/stock/increase",
                                                 null,
-                                                productService.increaseStock(variantId, quantity)));
+                                                productService.increaseStock(variantId, quantity, size)));
         }
 
         @GetMapping("/{productId}")
@@ -312,7 +367,35 @@ public class ProductController {
                                                 productService.getAllProducts(page, size)));
         }
 
+        @GetMapping("/variants")
+        public ResponseEntity<?> getAllVariants(
+                        @RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "10") int size) {
+
+                return ResponseEntity.ok(
+                                ApiTemplate.apiTemplateGenerator(
+                                                true,
+                                                HttpStatus.OK.value(),
+                                                "/rest/api/admin/products/variants",
+                                                null,
+                                                productService.getAllVariants(page, size)));
+        }
+
+        @PostMapping("/variants")
+        public ResponseEntity<?> createVariant(@Valid @RequestBody ProductVariantDTOIU request) {
+                ProductVariantDTO response = productService.createVariant(request);
+
+                return ResponseEntity.ok(
+                                ApiTemplate.apiTemplateGenerator(
+                                                true,
+                                                HttpStatus.CREATED.value(),
+                                                "/rest/api/admin/products/variants",
+                                                null,
+                                                response));
+        }
+
         @GetMapping("/variants/{productVariantId}/discount-price")
+
         public ResponseEntity<?> calculateDiscountPrice(
                         @PathVariable Long productVariantId) {
 

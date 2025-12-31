@@ -25,5 +25,6 @@ public class N8NProperties {
         private String shipmentFailed;
         private String orderCancelled;
         private String refundProcessed;
+        private String contactReply;
     }
 }

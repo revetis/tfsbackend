@@ -2,19 +2,8 @@ package com.example.apps.auths.services;
 
 import java.security.Principal;
 
+import com.example.apps.auths.dtos.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.example.apps.auths.dtos.ForgotPasswordDTOIU;
-import com.example.apps.auths.dtos.ForgotPasswordSetNewPasswordDTOIU;
-import com.example.apps.auths.dtos.ResetPasswordDTOIU;
-import com.example.apps.auths.dtos.UserDTO;
-import com.example.apps.auths.dtos.UserDTOCreate;
-import com.example.apps.auths.dtos.UserDTOUpdate;
-import com.example.apps.auths.dtos.UserLoginDTO;
-import com.example.apps.auths.dtos.UserLoginDTOIU;
-import com.example.apps.auths.dtos.UserRegisterDTO;
-import com.example.apps.auths.dtos.UserRegisterDTOIU;
-import com.example.apps.auths.dtos.UserUpdateDTOIU;
 
 import java.util.List;
 
@@ -45,6 +34,8 @@ public interface IUserService {
 
     public UserDTO getUserById(Long userId);
 
+    public UserDTO getUserByUsernameOrEmail(String usernameOrEmail);
+
     public void deleteUser(Long userId);
 
     public UserDTO updateUser(Long userId, UserDTOUpdate request);
@@ -59,4 +50,9 @@ public interface IUserService {
 
     public void disableUser(Long userId);
 
+    public AccessCheckDTO accessCheck(String refreshToken, String accessToken, String ipAddress);
+
+    void adminResetPassword(Long userId, String newPassword);
+
+    public com.example.apps.auths.entities.User getById(Long id);
 }

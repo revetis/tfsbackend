@@ -1,26 +1,21 @@
 package com.example.apps.auths.controllers;
 
+import com.example.apps.auths.dtos.*;
+import com.example.tfs.maindto.ApiErrorTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.example.apps.auths.dtos.ForgotPasswordDTOIU;
-import com.example.apps.auths.dtos.ForgotPasswordSetNewPasswordDTOIU;
-import com.example.apps.auths.dtos.UserLoginDTO;
-import com.example.apps.auths.dtos.UserLoginDTOIU;
-import com.example.apps.auths.dtos.UserRegisterDTO;
-import com.example.apps.auths.dtos.UserRegisterDTOIU;
 import com.example.apps.auths.services.IUserService;
 import com.example.tfs.maindto.ApiTemplate;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" })
 @RestController
 @RequestMapping("/rest/api/public/auth")
 public class UserController {
@@ -39,7 +34,7 @@ public class UserController {
         }
 
         @PostMapping(path = "/login")
-        public ResponseEntity<ApiTemplate<Void, UserLoginDTO>> login(@RequestBody @Valid UserLoginDTOIU request,
+        public ResponseEntity<?> login(@RequestBody @Valid UserLoginDTOIU request,
                         HttpServletRequest servletRequest) {
                 String ipAddress = servletRequest.getHeader("X-Forwarded-For");
                 if (ipAddress != null && ipAddress.contains(",")) {
@@ -50,9 +45,17 @@ public class UserController {
                 }
 
                 UserLoginDTO loggedInUser = userService.login(request, ipAddress);
-                return ResponseEntity.ok(
-                                ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
-                                                loggedInUser));
+
+                ResponseCookie accessCookie = ResponseCookie.from("accessToken", loggedInUser.getAccessToken())
+                                .httpOnly(true)
+                                .secure(false).path("/").sameSite("Lax").maxAge(60 * 60).build();
+                ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", loggedInUser.getRefreshToken())
+                                .httpOnly(true).secure(false).path("/").sameSite("Lax").maxAge(7 * 24 * 60 * 60)
+                                .build();
+                return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                                .body(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                userService.getUserByUsernameOrEmail(request.getUsernameOrEmail())));
         }
 
         @PostMapping(path = "/forgot-password")
@@ -78,6 +81,40 @@ public class UserController {
                 return ResponseEntity
                                 .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
                                                 "Password reset successfully"));
+        }
+
+        @GetMapping("/access-check")
+        public ResponseEntity<?> accessCheck(
+                        @CookieValue(name = "refreshToken") String refreshToken,
+                        @CookieValue(name = "accessToken", required = false) String accessToken,
+                        HttpServletRequest servletRequest) {
+
+                String ipAddress = servletRequest.getHeader("X-Forwarded-For");
+                if (ipAddress != null && ipAddress.contains(",")) {
+                        ipAddress = ipAddress.split(",")[0];
+                }
+                if (ipAddress == null) {
+                        ipAddress = servletRequest.getRemoteAddr();
+                }
+
+                AccessCheckDTO access = userService.accessCheck(refreshToken, accessToken, ipAddress);
+
+                if (!access.getIsPermitted()) {
+                        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                                        .body(ApiErrorTemplate.apiErrorTemplateGenerator(
+                                                        false,
+                                                        HttpStatus.FORBIDDEN.value(),
+                                                        "/access-check",
+                                                        "Not authorized"));
+                }
+
+                return ResponseEntity.ok(
+                                ApiTemplate.apiTemplateGenerator(
+                                                true,
+                                                HttpStatus.OK.value(),
+                                                servletRequest.getRequestURI(),
+                                                null,
+                                                "Authorized"));
         }
 
 }

@@ -93,12 +93,33 @@ public class WishlistService implements IWishlistService {
     private WishlistProductDTO convertToProductDTO(Wishlist wishlist) {
         Product product = productRepository.findById(wishlist.getProductId()).orElse(null);
 
+        java.math.BigDecimal price = java.math.BigDecimal.ZERO;
+        java.math.BigDecimal discountPrice = null;
+        String mainImageUrl = null;
+        Integer stockQuantity = 0;
+
+        if (product != null && product.getVariants() != null && !product.getVariants().isEmpty()) {
+            com.example.apps.products.entities.ProductVariant variant = product.getVariants().get(0);
+
+            price = variant.getPrice();
+            discountPrice = variant.getDiscountPrice();
+
+            if (variant.getImages() != null && !variant.getImages().isEmpty()) {
+                mainImageUrl = variant.getImages().get(0).getUrl();
+            }
+        }
+
         return WishlistProductDTO.builder()
                 .id(wishlist.getId())
+                .productId(wishlist.getProductId())
                 .productName(product != null ? product.getName() : "Unknown Product")
+                .mainImageUrl(mainImageUrl)
+                .price(price)
+                .discountPrice(discountPrice)
+                .stockQuantity(stockQuantity)
                 .isAvailable(product != null)
-                .addedAt(wishlist.getCreatedAt() != null ? wishlist.getCreatedAt().toString() : null)
-
+                .createdAt(wishlist.getCreatedAt())
+                .updatedAt(wishlist.getUpdatedAt())
                 .build();
     }
 
@@ -122,5 +143,12 @@ public class WishlistService implements IWishlistService {
         }
 
         throw new WishlistException("Product not found in wishlist");
+    }
+
+    @Override
+    public WishlistProductDTO getWishlistItemById(Long id) {
+        Wishlist wishlist = wishlistRepository.findById(id)
+                .orElseThrow(() -> new WishlistException("Wishlist item not found"));
+        return convertToProductDTO(wishlist);
     }
 }

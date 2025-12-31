@@ -28,7 +28,8 @@ public class JWTGenerator {
 
     public JWTGenerator(ApplicationProperties appProperties) {
         this.SECRET_KEY_STR = appProperties.getSECRET_KEY();
-        this.SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_STR.getBytes());
+        byte[] keyBytes = io.jsonwebtoken.io.Decoders.BASE64.decode(SECRET_KEY_STR);
+        this.SECRET_KEY = Keys.hmacShaKeyFor(keyBytes);
     }
 
     @Autowired
@@ -47,6 +48,63 @@ public class JWTGenerator {
                 .setExpiration(new Date(System.currentTimeMillis() + 7L * 24 * 60 * 60 * 1000))
                 .signWith(SECRET_KEY)
                 .compact();
+    }
+
+    public Map<String, String> generateAccessTokenForLogin(String refreshToken, String ipAddress) {
+        Claims claims;
+        try {
+            claims = Jwts.parserBuilder()
+                    .setSigningKey(SECRET_KEY)
+                    .build()
+                    .parseClaimsJws(refreshToken)
+                    .getBody();
+        } catch (Exception e) {
+            throw new TokenBlacklistException("Refresh token is invalid or malformed");
+        }
+
+        String currentUsername = claims.getSubject();
+        String tokenType = claims.get("type", String.class);
+        String tokenIp = claims.get("ipAddress", String.class);
+
+        if (!"refresh".equals(tokenType)) {
+            throw new TokenBlacklistException("Invalid token type for this endpoint");
+        }
+        if (tokenIp == null || tokenIp.isBlank() || !tokenIp.equals(ipAddress)) {
+            throw new TokenBlacklistException("This token is not valid for this IP address");
+        }
+
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new UserNotFoundException("Log in first"));
+        if (user.getRefreshToken() == null)
+            throw new TokenBlacklistException("User Token is null");
+
+        if (!user.getRefreshToken().equals(refreshToken)
+                || jwtTokenBlacklistService.isRefreshTokenBlacklisted(refreshToken)) {
+            throw new TokenBlacklistException("Refresh token is invalid or blacklisted, please log in again");
+        }
+
+        List<String> roles = (List<String>) claims.get("roles", List.class);
+
+        // Yeni access token üretimi
+        Map<String, String> tokens = new HashMap<>();
+
+        String accessToken = Jwts.builder()
+                .setSubject(currentUsername)
+                .claim("roles", roles)
+                .claim("id", user.getId())
+                .claim("type", "access")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .signWith(SECRET_KEY)
+                .compact();
+
+        user.setRefreshToken(refreshToken);
+        userRepository.save(user);
+
+        tokens.put("accessToken", accessToken);
+        tokens.put("refreshToken", refreshToken);
+
+        return tokens;
     }
 
     public Map<String, String> generateAccessToken(String refreshToken, String ipAddress) {
@@ -74,6 +132,8 @@ public class JWTGenerator {
 
         User user = userRepository.findByUsername(currentUsername)
                 .orElseThrow(() -> new UserNotFoundException("Log in first"));
+        if (user.getRefreshToken() == null)
+            throw new TokenBlacklistException("User Token is null");
 
         if (!user.getRefreshToken().equals(refreshToken)
                 || jwtTokenBlacklistService.isRefreshTokenBlacklisted(refreshToken)) {
@@ -92,6 +152,7 @@ public class JWTGenerator {
         String accessToken = Jwts.builder()
                 .setSubject(currentUsername)
                 .claim("roles", roles)
+                .claim("id", user.getId())
                 .claim("type", "access")
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))

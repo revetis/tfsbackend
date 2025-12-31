@@ -97,7 +97,7 @@ public class RoleServiceTest {
 
     @Test
     void getAllRoles_Success() {
-        when(roleRepository.findAll()).thenReturn(List.of(role));
+        when(roleRepository.findAll(any(org.springframework.data.domain.Sort.class))).thenReturn(List.of(role));
 
         List<RoleDTO> result = roleService.getAllRoles();
 

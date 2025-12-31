@@ -24,6 +24,9 @@ public class GeliverShipmentDataResponse {
     private List<GeliverItemResponse> items;
 
     private String statusCode;
+    private String labelURL;
+    private String barcode;
+    private GeliverShipmentDataResponse shipment; // Nested shipment in some responses
     private boolean hasError;
     private int organizationShipmentID;
 }

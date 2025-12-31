@@ -23,8 +23,7 @@ public class RoleService implements IRoleService {
 
         roleRepository.save(role);
         RoleDTO response = new RoleDTO();
-        response.setId(role.getId());
-        response.setName(role.getName());
+        org.springframework.beans.BeanUtils.copyProperties(role, response);
         return response;
     }
 
@@ -35,8 +34,7 @@ public class RoleService implements IRoleService {
         role.setName(request.getName());
         roleRepository.save(role);
         RoleDTO response = new RoleDTO();
-        response.setId(role.getId());
-        response.setName(role.getName());
+        org.springframework.beans.BeanUtils.copyProperties(role, response);
         return response;
 
     }
@@ -53,20 +51,18 @@ public class RoleService implements IRoleService {
         Role role = roleRepository.findById(roleId)
                 .orElseThrow(() -> new RuntimeException("Role not found"));
         RoleDTO response = new RoleDTO();
-        response.setId(role.getId());
-        response.setName(role.getName());
+        org.springframework.beans.BeanUtils.copyProperties(role, response);
         return response;
 
     }
 
     @Override
     public List<RoleDTO> getAllRoles() {
-        List<Role> roles = roleRepository.findAll();
+        List<Role> roles = roleRepository.findAll(org.springframework.data.domain.Sort.by("createdAt").descending());
         return roles.stream()
                 .map(role -> {
                     RoleDTO roleDTO = new RoleDTO();
-                    roleDTO.setId(role.getId());
-                    roleDTO.setName(role.getName());
+                    org.springframework.beans.BeanUtils.copyProperties(role, roleDTO);
                     return roleDTO;
                 })
                 .toList();

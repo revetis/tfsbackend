@@ -19,9 +19,11 @@ import lombok.Setter;
 public class Address extends BaseEntity {
 
     private String title;
+    private String contactName;
     private String fullAddress;
     private String street;
     private String city;
+    private String cityCode;
     private String state;
     private String country;
     private String postalCode;

@@ -27,6 +27,9 @@ public class CartItem extends BaseEntity {
 
     private Integer quantity;
 
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    private com.example.apps.products.enums.ProductSize size;
+
     @ManyToOne
     @JoinColumn(name = "cart_id", nullable = false)
     private Cart cart;

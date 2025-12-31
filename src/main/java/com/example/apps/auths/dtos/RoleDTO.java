@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class RoleDTO {
     private Long id;
     private String name;
+    private java.time.LocalDateTime createdAt;
+    private java.time.LocalDateTime updatedAt;
 }

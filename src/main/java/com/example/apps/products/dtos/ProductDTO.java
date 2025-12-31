@@ -22,6 +22,14 @@ public class ProductDTO {
     private ProductMaterialDTO material;
     private SubCategoryDTO subCategory;
     private Double taxRatio;
+    private String gender;
+    private String sizeChart;
+    private String brand;
+    private String careInstructions;
+    private String origin;
+    private String quality;
+    private String style;
+    private String season;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

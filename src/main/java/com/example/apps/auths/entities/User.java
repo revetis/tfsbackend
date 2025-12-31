@@ -38,7 +38,8 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    String refreshToken;
+    @Column(name = "refresh_token", length = 1000)
+    private String refreshToken;
 
     private String firstName;
     private String lastName;
@@ -73,7 +74,7 @@ public class User extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = jakarta.persistence.CascadeType.ALL)
     private VerifyEmailToken verifyEmailToken;
 
-    @OneToOne(mappedBy = "user", cascade = jakarta.persistence.CascadeType.ALL)
+    @OneToOne(mappedBy = "user", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
     private ForgotPasswordToken forgotPasswordToken;
 
 }

@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class WishlistProductDTO {
 
     private Long id;
+    private Long productId;
 
     private String productName;
     private String mainImageUrl;
@@ -23,7 +24,6 @@ public class WishlistProductDTO {
 
     private Integer stockQuantity;
     private Boolean isAvailable;
-
-    private String addedAt;
-
+    private java.time.LocalDateTime createdAt;
+    private java.time.LocalDateTime updatedAt;
 }

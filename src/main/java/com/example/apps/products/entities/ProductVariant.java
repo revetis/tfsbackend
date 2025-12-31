@@ -36,10 +36,10 @@ public class ProductVariant extends BaseEntity {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @OneToOne(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
-    private ProductVariantStock stock;
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductVariantStock> stocks;
 
-    @OneToMany(mappedBy = "productVariant")
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariantStockMovement> stockMovements;
 
     @Column(nullable = false)
@@ -50,7 +50,7 @@ public class ProductVariant extends BaseEntity {
     private Long discountRatio = 0L;
 
     @Column(name = "discount_price")
-    private BigDecimal discountPrice = BigDecimal.ZERO;
+    private BigDecimal discountPrice;
 
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductVariantImage> images;
