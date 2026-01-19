@@ -38,7 +38,7 @@ public class CartPrivateController {
         Long actualUserId = securityUtils.getCurrentUserId();
 
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpStatus.SC_ACCEPTED,
-                "/rest/api/admin/carts/user/" + userId, null, cartService.getCartByUserId(userId, actualUserId)));
+                "/rest/api/private/carts/user/" + userId, null, cartService.getCartByUserId(userId, actualUserId)));
     }
 
     @PostMapping("/user/{userId}/add-item")
@@ -86,12 +86,13 @@ public class CartPrivateController {
     @GetMapping("/user/{userId}/checkout-validation")
     @PreAuthorize("#userId == authentication.principal.id")
     public ResponseEntity<?> validateCartForCheckout(@PathVariable Long userId,
-            @RequestParam(defaultValue = "90.0") Double shippingCost) {
+            @RequestParam(defaultValue = "90.0") Double shippingCost,
+            @RequestParam(required = false) String couponCode) {
         Long actualUserId = securityUtils.getCurrentUserId();
 
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, HttpStatus.SC_ACCEPTED,
                 "/rest/api/private/carts/user/" + userId + "/checkout-validation", null,
-                cartService.validateCartForCheckout(userId, actualUserId, shippingCost)));
+                cartService.validateCartForCheckout(userId, actualUserId, shippingCost, couponCode)));
     }
 
 }

@@ -23,6 +23,7 @@ public class ApplicationProperties {
     private String URL;
 
     private String FRONTEND_URL;
+    private String BACKEND_URL;
 
     private String IYZICO_API_KEY;
     private String IYZICO_SECRET_KEY;

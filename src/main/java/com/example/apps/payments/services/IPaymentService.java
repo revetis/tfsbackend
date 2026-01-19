@@ -20,7 +20,15 @@ public interface IPaymentService {
 
     List<PaymentAdminDTO> getAllPayments();
 
+    // Paginated version with filtering
+    PaymentPageResult getAllPayments(int start, int end, String sortField, String sortOrder, String search,
+            String status);
+
     PaymentAdminDTO getPaymentById(Long id);
 
     void purchaseShipmentForOrder(String orderNumber);
+
+    // Result record for paginated payments
+    record PaymentPageResult(List<PaymentAdminDTO> data, long totalCount) {
+    }
 }

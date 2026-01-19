@@ -29,8 +29,11 @@ public class ReturnRequest {
     @Column(nullable = false)
     private Long orderId;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Long userId;
+
+    @Column(nullable = true)
+    private String initiator; // e.g. "GUEST:email" or "USER:123"
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -50,8 +53,10 @@ public class ReturnRequest {
     private BigDecimal refundAmount;
 
     // Shipping Info
+    private String barcode; // Barcode from Geliver
     private String shippingCode; // Code from Geliver (barcode)
     private String shippingProvider; // Courier name (e.g., Surat Kargo)
+    private String trackingUrl; // Tracking URL
     private String labelUrl; // PDF URL from Geliver
     private String geliverReturnShipmentId;
 

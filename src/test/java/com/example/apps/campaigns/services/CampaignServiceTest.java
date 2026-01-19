@@ -1,3 +1,4 @@
+// Verified imports matching project structure
 package com.example.apps.campaigns.services;
 
 import com.example.apps.campaigns.dtos.CampaignDTO;
@@ -374,7 +375,8 @@ class CampaignServiceTest {
                 .thenReturn(Arrays.asList(campaign2, campaign1));
 
         // When
-        CampaignDTO result = campaignService.findBestCampaign(BigDecimal.valueOf(200), Arrays.asList(1L, 2L));
+        CampaignDTO result = campaignService.findBestCampaign(BigDecimal.valueOf(200), Arrays.asList(1L, 2L),
+                java.util.Collections.emptyList());
 
         // Then
         assertNotNull(result);

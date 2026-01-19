@@ -52,14 +52,27 @@ public class PaymentAdminController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<ApiTemplate<Void, List<PaymentAdminDTO>>> getAllPayments(HttpServletRequest servletRequest) {
-        List<PaymentAdminDTO> payments = paymentService.getAllPayments();
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                true,
-                200,
-                servletRequest.getRequestURI(),
-                null,
-                payments));
+    public ResponseEntity<ApiTemplate<Void, List<PaymentAdminDTO>>> getAllPayments(
+            @RequestParam(name = "_start", defaultValue = "0") int start,
+            @RequestParam(name = "_end", defaultValue = "10") int end,
+            @RequestParam(name = "_sort", defaultValue = "createdAt") String sortField,
+            @RequestParam(name = "_order", defaultValue = "DESC") String sortOrder,
+            @RequestParam(name = "q", required = false) String search,
+            @RequestParam(name = "status", required = false) String status,
+            HttpServletRequest servletRequest) {
+
+        var result = paymentService.getAllPayments(start, end, sortField, sortOrder, search, status);
+
+        var response = ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(result.totalCount()))
+                .header("Access-Control-Expose-Headers", "X-Total-Count")
+                .body(ApiTemplate.<Void, List<PaymentAdminDTO>>apiTemplateGenerator(
+                        true,
+                        200,
+                        servletRequest.getRequestURI(),
+                        null,
+                        result.data()));
+        return response;
     }
 
     @GetMapping("/{id}")

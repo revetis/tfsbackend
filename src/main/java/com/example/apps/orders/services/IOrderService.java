@@ -14,11 +14,16 @@ public interface IOrderService {
 
     List<OrderDTO> getByUserId(Long userId);
 
+    org.springframework.data.domain.Page<OrderDTO> getByUserId(Long userId, int page, int size);
+
+    org.springframework.data.domain.Page<OrderDTO> getAll(int page, int size, String sort, String direction,
+            String keyword, String status, String paymentStatus, Long userId);
+
     List<OrderDTO> getAll();
 
     void cancel(Long orderId, Long userId);
 
-    OrderDTO returnOrder(Long orderId);
+    OrderDTO returnOrder(Long orderId, Long userId);
 
     OrderDTO updateStatus(Long orderId, OrderStatus status);
 
@@ -26,5 +31,5 @@ public interface IOrderService {
 
     OrderDTO trackOrder(String orderNumber, String email);
 
-    OrderDTO getByOrderNumber(String orderNumber);
+    OrderDTO getByOrderNumber(String orderNumber, Long userId);
 }

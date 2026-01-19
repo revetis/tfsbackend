@@ -22,7 +22,7 @@ public interface IProductService {
 
     ProductDTO getProductById(Long id);
 
-    Page<ProductDTO> getAllProducts(int page, int size);
+    Page<ProductDTO> getAllProducts(int page, int size, String sort, String direction, String keyword, Boolean enable);
 
     ProductVariantDTO addVariant(Long productId, ProductVariantDTOIU variantDTOIU);
 
@@ -32,7 +32,7 @@ public interface IProductService {
 
     ProductVariantDTO getVariantById(Long variantId);
 
-    Page<ProductVariantDTO> getAllVariants(int page, int size);
+    Page<ProductVariantDTO> getAllVariants(int page, int size, String sort, String direction, String keyword);
 
     ProductVariantDTO createVariant(ProductVariantDTOIU variantDTOIU);
 
@@ -56,7 +56,7 @@ public interface IProductService {
 
     ProductMaterialDTO getProductMaterialById(Long id);
 
-    Page<ProductMaterialDTO> getAllProductMaterials(int page, int size);
+    Page<ProductMaterialDTO> getAllProductMaterials(int page, int size, String sort, String direction, String keyword);
 
     String uploadImage(MultipartFile file);
 }

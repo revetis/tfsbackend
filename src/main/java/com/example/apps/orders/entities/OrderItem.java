@@ -26,6 +26,12 @@ public class OrderItem extends BaseEntity {
     @Column(name = "product_variant_id", nullable = false)
     private Long productVariantId;
 
+    @Column(name = "product_id", nullable = true)
+    private Long productId;
+
+    @Column(name = "category_id", nullable = true)
+    private Long categoryId;
+
     @Column(name = "product_variant_name", nullable = false)
     private String productVariantName;
 
@@ -63,5 +69,25 @@ public class OrderItem extends BaseEntity {
 
     @Column(name = "gender")
     private String gender;
+
+    @Column(name = "sku", nullable = true)
+    private String sku;
+
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @Column(name = "applied_discount_type")
+    private com.example.apps.orders.enums.AppliedDiscountType appliedDiscountType = com.example.apps.orders.enums.AppliedDiscountType.NONE;
+
+    // ============= Tax Fields (Fatura için) =============
+    @Column(name = "tax_ratio")
+    private Double taxRatio;
+
+    @Column(name = "tax_amount", precision = 10, scale = 2)
+    private BigDecimal taxAmount;
+
+    @Column(name = "unit_price_without_tax", precision = 10, scale = 2)
+    private BigDecimal unitPriceWithoutTax;
+
+    @Column(name = "unit_price_with_tax", precision = 10, scale = 2)
+    private BigDecimal unitPriceWithTax;
 
 }

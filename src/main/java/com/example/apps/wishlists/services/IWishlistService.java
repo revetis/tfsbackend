@@ -24,4 +24,12 @@ public interface IWishlistService {
     Boolean moveToCart(Long userId, Long productId);
 
     public WishlistProductDTO getWishlistItemById(Long id);
+
+    // Paginated version with filtering
+    WishlistPageResult getAllWishlists(int start, int end, String sortField, String sortOrder, String search,
+            Long userId, Long productId);
+
+    // Result record for paginated wishlists
+    record WishlistPageResult(List<WishlistProductDTO> data, long totalCount) {
+    }
 }

@@ -38,13 +38,22 @@ public class StorageService {
 
     public String store(MultipartFile file, String folder) {
         try {
-            // Generate unique filename
+            // Validate Image Magic Bytes
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             if (originalFilename != null && originalFilename.contains(".")) {
-                extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
             }
-            String filename = System.currentTimeMillis() + "_" + Math.random() + extension;
+
+            if (isImageExtension(extension)) {
+                if (!isValidImage(file)) {
+                    throw new RuntimeException(
+                            "Invalid image file format (Magic Bytes check failed). Only authentic JPG/PNG files are allowed.");
+                }
+            }
+
+            // Generate unique filename
+            String filename = System.currentTimeMillis() + "_" + java.util.UUID.randomUUID().toString() + extension;
 
             // Create upload directory
             Path uploadPath = Paths.get(applicationProperties.getSTATIC_PATH() + "/uploads/" + folder);
@@ -60,6 +69,32 @@ public class StorageService {
         } catch (Exception e) {
             log.error("Error storing file: " + e.getMessage());
             throw new RuntimeException("Could not store file: " + e.getMessage());
+        }
+    }
+
+    private boolean isImageExtension(String extension) {
+        return extension.equals(".jpg") || extension.equals(".jpeg") || extension.equals(".png");
+    }
+
+    private boolean isValidImage(MultipartFile file) {
+        try (java.io.InputStream is = file.getInputStream()) {
+            byte[] header = new byte[8];
+            int read = is.read(header);
+            if (read < 4)
+                return false;
+
+            // Check PEG (FF D8 FF)
+            if (header[0] == (byte) 0xFF && header[1] == (byte) 0xD8 && header[2] == (byte) 0xFF) {
+                return true;
+            }
+            // Check PNG (89 50 4E 47 0D 0A 1A 0A)
+            if (header[0] == (byte) 0x89 && header[1] == (byte) 0x50 && header[2] == (byte) 0x4E
+                    && header[3] == (byte) 0x47) {
+                return true;
+            }
+            return false;
+        } catch (java.io.IOException e) {
+            return false;
         }
     }
 

@@ -10,6 +10,7 @@ public enum OrderStatus {
     PROCESSING,
     SHIPPED,
     DELIVERED,
+    WAITING_FOR_INVOICE,
     COMPLETED,
     RETURNED,
     CANCELLED;

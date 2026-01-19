@@ -1,5 +1,6 @@
 package com.example.apps.settings.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
@@ -26,7 +27,10 @@ public class PageDTO {
     private String metaTitle;
     private String metaDescription;
     private String metaKeywords;
+    @JsonProperty("active")
     private Boolean active;
+
+    @JsonProperty("showInFooter")
     private Boolean showInFooter;
     private Integer displayOrder;
 }

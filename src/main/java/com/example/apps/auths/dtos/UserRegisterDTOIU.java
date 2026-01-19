@@ -19,22 +19,24 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserRegisterDTOIU {
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+    @NotBlank(message = "Kullanıcı adı zorunludur")
+    @Size(min = 3, max = 20, message = "Kullanıcı adı 3 ile 20 karakter arasında olmalıdır")
     private String username;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @NotBlank(message = "Şifre zorunludur")
+    @Size(min = 8, message = "Şifre en az 8 karakter olmalıdır")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).{8,}$", message = "Şifre en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter içermelidir")
     private String password;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
+    @NotBlank(message = "Şifre tekrarı zorunludur")
     private String passwordRetry;
 
-    @NotBlank(message = "First name is required")
+    @NotBlank(message = "Ad zorunludur")
+    @Size(min = 2, max = 50, message = "Ad 2 ile 50 karakter arasında olmalıdır")
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
+    @NotBlank(message = "Soyad zorunludur")
+    @Size(min = 2, max = 50, message = "Soyad 2 ile 50 karakter arasında olmalıdır")
     private String lastName;
 
     @Past(message = "Birth of date must be in the past")
@@ -48,8 +50,8 @@ public class UserRegisterDTOIU {
     @NotNull(message = "Accept terms is required")
     private Boolean acceptTerms = false;
 
-    @Size(min = 10, max = 20, message = "Phone number must be between 10 and 20 characters")
-    @Pattern(regexp = "^\\d+$", message = "Phone number must contain only digits")
+    @Size(min = 10, max = 10, message = "Telefon numarası başında 0 olmadan 10 haneli olmalıdır (Örn: 5551234567)")
+    @Pattern(regexp = "^[1-9]\\d*$", message = "Telefon numarası geçerli formatta değil")
     private String phoneNumber;
 
     @NotNull(message = "Gender is required")
@@ -57,4 +59,6 @@ public class UserRegisterDTOIU {
 
     @Pattern(regexp = "^(http|https)://.*$", message = "Avatar URL must be a valid URL")
     private String avatarUrl;
+
+    private Boolean isSubscribedToNewsletter = false;
 }

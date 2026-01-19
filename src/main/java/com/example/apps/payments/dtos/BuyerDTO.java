@@ -39,7 +39,6 @@ public class BuyerDTO {
     @NotBlank(message = "Zip code is required.")
     private String zipCode;
 
-    @NotBlank(message = "IP address is required.")
     private String ip;
 
     @com.fasterxml.jackson.annotation.JsonFormat(shape = com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

@@ -10,15 +10,27 @@ import com.example.apps.notifications.utils.N8NProperties;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import jakarta.persistence.criteria.Predicate;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class ContactService {
+    public record ContactPageResult(List<ContactMessage> data, long totalCount) {
+    }
+
     private final ContactRepository contactRepository;
     private final IN8NService n8nService;
     private final N8NProperties n8NProperties;
@@ -35,6 +47,35 @@ public class ContactService {
 
     public Page<ContactMessage> getMessages(Pageable pageable) {
         return contactRepository.findAll(pageable);
+    }
+
+    public ContactPageResult getAllContactMessages(int page, int size, String sortField, String sortOrder,
+            String search, String status) {
+        Sort.Direction direction = Sort.Direction.fromString(sortOrder);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
+
+        Specification<ContactMessage> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (StringUtils.hasText(search)) {
+                String searchLike = "%" + search.toLowerCase() + "%";
+                Predicate subjectPredicate = cb.like(cb.lower(root.get("subject")), searchLike);
+                Predicate messagePredicate = cb.like(cb.lower(root.get("message")), searchLike);
+                Predicate emailPredicate = cb.like(cb.lower(root.get("email")), searchLike);
+                predicates.add(cb.or(subjectPredicate, messagePredicate, emailPredicate));
+            }
+            if (StringUtils.hasText(status)) {
+                try {
+                    MessageStatus messageStatus = MessageStatus.valueOf(status);
+                    predicates.add(cb.equal(root.get("status"), messageStatus));
+                } catch (IllegalArgumentException e) {
+                    // Ignore invalid status or handle error
+                }
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<ContactMessage> messagePage = contactRepository.findAll(spec, pageable);
+        return new ContactPageResult(messagePage.getContent(), messagePage.getTotalElements());
     }
 
     public ContactMessage getMessage(Long id) {

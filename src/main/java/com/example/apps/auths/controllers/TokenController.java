@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.apps.auths.dtos.RefreshAccessTokenDTOIU;
 import com.example.apps.auths.services.ITokenService;
@@ -27,6 +24,7 @@ public class TokenController {
         @PostMapping("/refresh")
         public ResponseEntity<?> refreshAccessToken(
                         @RequestBody(required = false) RefreshAccessTokenDTOIU request,
+                        @CookieValue(name = "accessToken", required = false) String accessToken,
                         HttpServletRequest servletRequest) {
 
                 String refreshToken = null;
@@ -57,7 +55,7 @@ public class TokenController {
                         ipAddress = servletRequest.getRemoteAddr();
                 }
 
-                Map<String, String> tokens = tokenService.refreshAccessToken(refreshToken, ipAddress);
+                Map<String, String> tokens = tokenService.refreshAccessToken(refreshToken, accessToken, ipAddress);
 
                 ResponseCookie accessCookie = ResponseCookie.from("accessToken", tokens.get("accessToken"))
                                 .httpOnly(true)

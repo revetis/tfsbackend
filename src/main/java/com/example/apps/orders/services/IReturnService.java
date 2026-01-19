@@ -8,19 +8,34 @@ import java.util.List;
 
 public interface IReturnService {
 
-    ReturnRequestResponseDTO createReturnRequest(Long userId, CreateReturnRequestDTO request);
+        ReturnRequestResponseDTO createReturnRequest(Long userId, CreateReturnRequestDTO request);
 
-    ReturnRequestResponseDTO getReturnRequestById(Long id);
+        ReturnRequestResponseDTO createGuestReturnRequest(String orderNumber, String initiatorEmail,
+                        CreateReturnRequestDTO request);
 
-    List<ReturnRequestResponseDTO> getUserReturnRequests(Long userId);
+        ReturnRequestResponseDTO getReturnRequestById(Long id, Long userId);
 
-    List<ReturnRequestResponseDTO> getAllReturnRequests();
+        List<ReturnRequestResponseDTO> getUserReturnRequests(Long userId);
 
-    List<ReturnRequestResponseDTO> getReturnRequestsByStatus(ReturnRequestStatus status);
+        org.springframework.data.domain.Page<ReturnRequestResponseDTO> getUserReturnRequests(Long userId, int page,
+                        int size);
 
-    ReturnRequestResponseDTO markAsReceived(Long requestId);
+        List<ReturnRequestResponseDTO> getAllReturnRequests();
 
-    ReturnRequestResponseDTO approveReturnRequest(Long requestId, boolean restockItems);
+        List<ReturnRequestResponseDTO> getReturnRequestsByStatus(ReturnRequestStatus status);
 
-    ReturnRequestResponseDTO rejectReturnRequest(Long requestId, String reason);
+        ReturnRequestResponseDTO markAsReceived(Long requestId);
+
+        ReturnRequestResponseDTO approveReturnRequest(Long requestId, boolean restockItems);
+
+        ReturnRequestResponseDTO rejectReturnRequest(Long requestId, String reason);
+
+        ReturnRequestResponseDTO cancelReturnRequest(Long userId, Long requestId);
+
+        // Admin methods with pagination and filtering
+        ReturnPageResult getAllReturns(int page, int size, String sortField, String sortOrder, Long userId,
+                        ReturnRequestStatus status);
+
+        record ReturnPageResult(java.util.List<ReturnRequestResponseDTO> data, long totalCount) {
+        }
 }

@@ -37,6 +37,8 @@ import com.example.apps.orders.enums.OrderStatus;
 import com.example.apps.orders.repositories.OrderRepository;
 import com.example.apps.notifications.services.IN8NService;
 import com.example.apps.notifications.utils.N8NProperties;
+import com.example.apps.payments.services.IPaymentService;
+import org.springframework.context.annotation.Lazy;
 
 @Service
 @Slf4j
@@ -49,13 +51,15 @@ public class GeliverServiceImpl implements IShipmentService {
     private final OrderRepository orderRepository;
     private final IN8NService n8nService;
     private final N8NProperties n8NProperties;
+    private final IPaymentService paymentService;
 
     public GeliverServiceImpl(WebClient geliverWebClient, GeliverConfiguration geliverConfiguration,
             GeliverShipmentEntityRepository geliverShipmentEntityRepository,
             ShipmentEventRepository shipmentEventRepository,
             OrderRepository orderRepository,
             IN8NService n8nService,
-            N8NProperties n8NProperties) {
+            N8NProperties n8NProperties,
+            @Lazy IPaymentService paymentService) {
         this.geliverWebClient = geliverWebClient;
         this.geliverConfiguration = geliverConfiguration;
         this.geliverShipmentEntityRepository = geliverShipmentEntityRepository;
@@ -63,6 +67,7 @@ public class GeliverServiceImpl implements IShipmentService {
         this.orderRepository = orderRepository;
         this.n8nService = n8nService;
         this.n8NProperties = n8NProperties;
+        this.paymentService = paymentService;
     }
 
     @Override
@@ -267,10 +272,71 @@ public class GeliverServiceImpl implements IShipmentService {
     }
 
     @Override
+    public ShipmentPageResult getAllShipments(int page, int size, String sortField, String sortOrder, String search,
+            String status, Long userId) {
+        // Build sort
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+                sortOrder.equalsIgnoreCase("ASC") ? org.springframework.data.domain.Sort.Direction.ASC
+                        : org.springframework.data.domain.Sort.Direction.DESC,
+                sortField);
+
+        // Get all shipments and filter in memory (matching existing pattern in this
+        // service)
+        List<GeliverShipmentEntity> allShipments = geliverShipmentEntityRepository.findAll(sort);
+
+        // Apply filters
+        java.util.stream.Stream<GeliverShipmentEntity> stream = allShipments.stream();
+
+        if (userId != null) {
+            List<String> userOrderNumbers = orderRepository.findAllByUserIdOrderByCreatedAtDesc(userId)
+                    .stream()
+                    .map(Order::getOrderNumber)
+                    .collect(Collectors.toList());
+            stream = stream.filter(s -> userOrderNumbers.contains(s.getOrderNumber()));
+        }
+
+        if (search != null && !search.isBlank()) {
+            String searchLower = search.toLowerCase();
+            stream = stream.filter(s -> (s.getOrderNumber() != null
+                    && s.getOrderNumber().toLowerCase().contains(searchLower)) ||
+                    (s.getTrackingNumber() != null && s.getTrackingNumber().toLowerCase().contains(searchLower)) ||
+                    (s.getGeliverShipmentId() != null && s.getGeliverShipmentId().toLowerCase().contains(searchLower)));
+        }
+
+        if (status != null && !status.isBlank()) {
+            try {
+                ShipmentStatus statusEnum = ShipmentStatus.valueOf(status);
+                stream = stream.filter(s -> s.getStatus() == statusEnum);
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        List<GeliverShipmentEntity> filteredShipments = stream.collect(Collectors.toList());
+        long totalCount = filteredShipments.size();
+
+        // Apply pagination
+        int fromIndex = Math.min(page * size, filteredShipments.size());
+        int toIndex = Math.min((page + 1) * size, filteredShipments.size());
+        List<GeliverShipmentEntity> pagedShipments = filteredShipments.subList(fromIndex, toIndex);
+
+        // Map to DTOs
+        List<ShipmentDTO> dtos = pagedShipments.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        return new ShipmentPageResult(dtos, totalCount);
+    }
+
+    @Override
     public ShipmentDTO getShipmentById(Long id) {
         return geliverShipmentEntityRepository.findById(id)
                 .map(this::toDTO)
                 .orElseThrow(() -> new ShipmentException("Shipment not found"));
+    }
+
+    @Override
+    public void deleteShipmentById(Long id) {
+        geliverShipmentEntityRepository.deleteById(id);
     }
 
     @Override
@@ -281,12 +347,25 @@ public class GeliverServiceImpl implements IShipmentService {
             return;
         }
 
-        String geliverStatus = request.getData().getStatusCode();
+        String geliverStatus = null;
+        String subStatusCode = null;
+
+        if (request.getData().getTrackingStatus() != null) {
+            geliverStatus = request.getData().getTrackingStatus().getTrackingStatusCode();
+            subStatusCode = request.getData().getTrackingStatus().getTrackingSubStatusCode();
+        }
+
+        // Fallback to statusCode if trackingStatusCode is not available
+        if (geliverStatus == null || geliverStatus.isBlank()) {
+            geliverStatus = request.getData().getStatusCode();
+        }
+
         String orderNumber = request.getData().getOrderNumber();
         String shipmentId = request.getData().getId();
 
-        log.info("Processing Geliver tracking webhook for order: {}, shipmentId: {}, status: {}", orderNumber,
-                shipmentId, geliverStatus);
+        log.info(
+                "Processing Geliver tracking webhook for order: {}, shipmentId: {}, trackingStatusCode: {}, subStatus: {}, rawStatusCode: {}",
+                orderNumber, shipmentId, geliverStatus, subStatusCode, request.getData().getStatusCode());
 
         if ((shipmentId == null || shipmentId.isBlank()) && (orderNumber == null || orderNumber.isBlank())) {
             log.info("Geliver webhook received with no shipment identification. Likely a test request.");
@@ -308,7 +387,11 @@ public class GeliverServiceImpl implements IShipmentService {
         }
 
         GeliverShipmentEntity shipment = shipmentOpt.get();
+        ShipmentStatus previousStatus = shipment.getStatus(); // Store previous status
         ShipmentStatus internalStatus = mapToInternalStatus(geliverStatus);
+
+        // Check if status actually changed
+        boolean statusChanged = previousStatus != internalStatus;
 
         shipment.setStatus(internalStatus);
         if (request.getData().getTrackingNumber() != null) {
@@ -319,15 +402,58 @@ public class GeliverServiceImpl implements IShipmentService {
         }
         geliverShipmentEntityRepository.save(shipment);
 
-        // Save shipment event
+        // Save shipment event (always save for tracking history)
         saveShipmentEvent(shipment, request.getData());
 
-        // Update Order status if necessary
+        // Update Order status and send email ONLY if status actually changed
         orderRepository.findByOrderNumber(shipment.getOrderNumber()).ifPresent(order -> {
-            updateOrderStatus(order, internalStatus);
-            orderRepository.save(order);
-            triggerN8NEmail(order, shipment, internalStatus, request.getData());
+            if (statusChanged) {
+                log.info("Shipment status changed from {} to {} for order: {}", previousStatus, internalStatus,
+                        order.getOrderNumber());
+                updateOrderStatus(order, internalStatus);
+                orderRepository.save(order);
+                triggerN8NEmail(order, shipment, internalStatus, request.getData());
+
+                // Gönderi iptal, iade veya teslimat başarısız olduysa otomatik para iadesi yap
+                if (internalStatus == ShipmentStatus.CANCELLED || internalStatus == ShipmentStatus.RETURNED
+                        || internalStatus == ShipmentStatus.FAILED) {
+                    handleShipmentCancellation(order);
+                }
+            } else {
+                log.info("Shipment status unchanged ({}) for order: {}, skipping email", internalStatus,
+                        order.getOrderNumber());
+            }
         });
+    }
+
+    /**
+     * Geliver gönderi iptal edildiğinde siparişi iptal edip para iadesi başlatır
+     */
+    private void handleShipmentCancellation(Order order) {
+        try {
+            // Ödeme zaten iade edilmişse tekrar işlem yapma
+            if (order.getPaymentStatus() == com.example.apps.payments.enums.PaymentStatus.REFUNDED) {
+                log.info("Order {} payment is already refunded, skipping duplicate refund", order.getOrderNumber());
+                return;
+            }
+
+            log.info("Shipment cancelled by Geliver for order: {}. Initiating automatic refund.",
+                    order.getOrderNumber());
+
+            // Sipariş durumunu CANCELLED yap
+            order.setStatus(OrderStatus.CANCELLED);
+            orderRepository.save(order);
+
+            // Iyzico üzerinden para iadesi başlat
+            paymentService.returnPayment(order.getOrderNumber());
+
+            log.info("Automatic refund initiated successfully for cancelled shipment. Order: {}",
+                    order.getOrderNumber());
+        } catch (Exception e) {
+            log.error("Failed to process automatic refund for cancelled shipment. Order: {}, Error: {}",
+                    order.getOrderNumber(), e.getMessage(), e);
+            // Hata olsa bile log'a yazıp devam et, manuel müdahale gerekebilir
+        }
     }
 
     private void saveShipmentEvent(GeliverShipmentEntity shipment,
@@ -367,12 +493,24 @@ public class GeliverServiceImpl implements IShipmentService {
             return ShipmentStatus.PENDING;
 
         return switch (geliverStatus.toUpperCase()) {
-            case "TRACKING_CODE_CREATED", "CREATED" -> ShipmentStatus.CREATED;
-            case "PICKED_UP", "IN_TRANSIT", "SHIPPED" -> ShipmentStatus.SHIPPED;
+            // PRE_TRANSIT: Kargo henüz yola çıkmadı
+            case "PRE_TRANSIT", "TRACKING_CODE_CREATED", "CREATED" -> ShipmentStatus.CREATED;
+            // TRANSIT: Kargo yolda (tüm ara durumlar dahil - aktarma, dağıtımda vs.)
+            case "TRANSIT", "SHIPPED", "PICKED_UP", "IN_TRANSIT", "OUT_FOR_DELIVERY" -> ShipmentStatus.SHIPPED;
+            // DELIVERED: Teslim edildi
             case "DELIVERED" -> ShipmentStatus.DELIVERED;
+            // RETURNED: İade edildi
             case "RETURNED" -> ShipmentStatus.RETURNED;
-            case "CANCELLED" -> ShipmentStatus.CANCELLED;
-            default -> ShipmentStatus.PENDING;
+            // CANCELED: İptal edildi
+            case "CANCELED", "CANCELLED" -> ShipmentStatus.CANCELLED;
+            // FAILURE: Teslimat başarısız (kayıp, dağıtılamıyor vs.)
+            case "FAILURE" -> ShipmentStatus.FAILED;
+            // UNKNOWN: Bilinmeyen durum
+            case "UNKNOWN" -> ShipmentStatus.PENDING;
+            default -> {
+                log.warn("Unknown Geliver status code: '{}', defaulting to PENDING", geliverStatus);
+                yield ShipmentStatus.PENDING;
+            }
         };
     }
 
@@ -381,7 +519,7 @@ public class GeliverServiceImpl implements IShipmentService {
             case SHIPPED -> order.setStatus(OrderStatus.SHIPPED);
             case DELIVERED -> order.setStatus(OrderStatus.DELIVERED);
             case RETURNED -> order.setStatus(OrderStatus.RETURNED);
-            case CANCELLED -> order.setStatus(OrderStatus.CANCELLED);
+            case CANCELLED, FAILED -> order.setStatus(OrderStatus.CANCELLED);
             default -> {
                 /* Keep current status */ }
         }
@@ -395,25 +533,57 @@ public class GeliverServiceImpl implements IShipmentService {
         payload.put("name", order.getCustomerName());
         payload.put("orderNumber", order.getOrderNumber());
         payload.put("trackingNumber", shipment.getTrackingNumber());
-        payload.put("carrier", data.getCarrier());
-        payload.put("trackingUrl", data.getTrackingUrl());
+        // Use carrier from webhook, fallback to order's shipping provider
+        String carrier = data.getCarrier();
+        if (carrier == null || carrier.isBlank()) {
+            carrier = order.getShippingProvider();
+        }
+        payload.put("carrier", carrier);
+        // Use tracking URL from order first (has correct carrier-specific URL),
+        // then fallback to shipment's stored URL, then webhook data
+        String trackingUrl = order.getTrackingUrl();
+        if (trackingUrl == null || trackingUrl.isBlank() || trackingUrl.contains("example.com")) {
+            trackingUrl = shipment.getTrackingUrl();
+        }
+        if (trackingUrl == null || trackingUrl.isBlank() || trackingUrl.contains("example.com")) {
+            trackingUrl = data.getTrackingUrl();
+        }
+        payload.put("trackingUrl", trackingUrl);
         payload.put("labelUrl", shipment.getLabelUrl());
 
         switch (status) {
-            case CREATED -> webhookUrl = n8NProperties.getWebhook().getShipmentCreated();
+            case CREATED -> {
+                // No email for CREATED - just tracking code generated, not shipped yet
+                log.info("Shipment created for order: {}, no email sent (waiting for SHIPPED)", order.getOrderNumber());
+            }
             case SHIPPED -> webhookUrl = n8NProperties.getWebhook().getShipmentShipped();
             case DELIVERED -> {
                 webhookUrl = n8NProperties.getWebhook().getShipmentDelivered();
-                payload.put("deliveryDate", data.getDeliveryDate());
+                String deliveryDate = data.getDeliveryDate();
+                if (deliveryDate == null || deliveryDate.isBlank()) {
+                    deliveryDate = java.time.LocalDateTime.now()
+                            .format(java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy, HH:mm",
+                                    java.util.Locale.of("tr", "TR")));
+                }
+                payload.put("deliveryDate", deliveryDate);
             }
             case RETURNED -> {
                 webhookUrl = n8NProperties.getWebhook().getShipmentReturned();
                 payload.put("returnDetails", data.getReturnDetails());
             }
             default -> {
-                if (data.getStatusCode() != null && data.getStatusCode().contains("FAILED")) {
+                // FAILURE durumu için e-posta gönder
+                String rawStatus = data.getStatusCode();
+                if (rawStatus != null && (rawStatus.equalsIgnoreCase("FAILURE") || rawStatus.contains("FAILED"))) {
                     webhookUrl = n8NProperties.getWebhook().getShipmentFailed();
                     payload.put("failureReason", data.getFailureReason());
+                    // Alt durum kodunu da ekle (package_lost, package_undeliverable vs.)
+                    if (data.getTrackingStatus() != null
+                            && data.getTrackingStatus().getTrackingSubStatusCode() != null) {
+                        payload.put("failureType", data.getTrackingStatus().getTrackingSubStatusCode());
+                    }
+                    log.info("Shipment failure detected for order: {}, reason: {}", order.getOrderNumber(),
+                            data.getFailureReason());
                 }
             }
         }

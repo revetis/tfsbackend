@@ -39,6 +39,9 @@ public class Campaign extends BaseEntity {
     @Column(name = "max_discount_amount")
     private BigDecimal maxDiscountAmount;
 
+    @Column(name = "min_quantity")
+    private Integer minQuantity;
+
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
 

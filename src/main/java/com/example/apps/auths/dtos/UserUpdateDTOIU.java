@@ -39,4 +39,6 @@ public class UserUpdateDTOIU {
 
     @NotNull(message = "Gender is required")
     private Genders gender;
+
+    private Boolean isSubscribedToNewsletter = false;
 }

@@ -135,18 +135,42 @@ public class JWTGenerator {
         if (user.getRefreshToken() == null)
             throw new TokenBlacklistException("User Token is null");
 
+        List<String> roles = (List<String>) claims.get("roles", List.class);
+
         if (!user.getRefreshToken().equals(refreshToken)
                 || jwtTokenBlacklistService.isRefreshTokenBlacklisted(refreshToken)) {
+
+            // RACE CONDITION / GRACE PERIOD CHECK
+            Long blacklistedAt = jwtTokenBlacklistService.getRefreshTokenBlacklistedTime(refreshToken);
+            if (blacklistedAt != null && (System.currentTimeMillis() - blacklistedAt < 30000)) {
+                // Within 30 seconds grace period. Return current valid tokens.
+                Map<String, String> tokens = new HashMap<>();
+
+                String currentAccessToken = Jwts.builder()
+                        .setSubject(currentUsername)
+                        .claim("roles", roles)
+                        .claim("id", user.getId())
+                        .claim("type", "access")
+                        .setIssuedAt(new Date())
+                        .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                        .signWith(SECRET_KEY)
+                        .compact();
+
+                tokens.put("accessToken", currentAccessToken);
+                tokens.put("refreshToken", user.getRefreshToken());
+                return tokens;
+            }
+
+            // Actual reuse or invalid token - Security Action: Logout all
+            user.setRefreshToken(null);
+            userRepository.save(user);
             jwtTokenBlacklistService.refreshTokenBlacklist(refreshToken);
             throw new TokenBlacklistException("Refresh token is invalid or blacklisted, please log in again");
         }
 
-        List<String> roles = (List<String>) claims.get("roles", List.class);
-
-        // Eski refresh token blacklist'e ekleniyor
+        // Normal rotation
         jwtTokenBlacklistService.refreshTokenBlacklist(refreshToken);
 
-        // Yeni access ve refresh token üretimi
         Map<String, String> tokens = new HashMap<>();
 
         String accessToken = Jwts.builder()
@@ -176,5 +200,36 @@ public class JWTGenerator {
         tokens.put("refreshToken", newRefreshToken);
 
         return tokens;
+    }
+
+    public String generateGuestActionToken(String orderNumber, String email, String action) {
+        return Jwts.builder()
+                .setSubject(orderNumber)
+                .claim("email", email)
+                .claim("action", action)
+                .claim("jti", java.util.UUID.randomUUID().toString())
+                .claim("type", "guest_action")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 24L * 60 * 60 * 1000)) // 24 hours
+                .signWith(SECRET_KEY)
+                .compact();
+    }
+
+    public Claims validateGuestToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(SECRET_KEY)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String type = claims.get("type", String.class);
+            if (!"guest_action".equals(type)) {
+                throw new TokenBlacklistException("Invalid token type");
+            }
+            return claims;
+        } catch (Exception e) {
+            throw new TokenBlacklistException("Invalid or expired guest token");
+        }
     }
 }

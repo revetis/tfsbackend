@@ -25,7 +25,7 @@ public class ProductSyncController {
     private final ProductMapper productMapper;
 
     @PostMapping
-    @Transactional(readOnly = true)
+    @Transactional
     public ResponseEntity<String> syncAll() {
         List<Product> products = productRepository.findAll();
         List<ProductDocument> documents = products.stream()

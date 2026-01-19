@@ -29,26 +29,25 @@ public class ReturnController {
 
     @GetMapping
     @Operation(summary = "Get my return requests")
-    public ResponseEntity<List<ReturnRequestResponseDTO>> getMyReturns() {
+    public ResponseEntity<?> getMyReturns(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         Long userId = SecurityUtils.getCurrentUserId();
-        return ResponseEntity.ok(returnService.getUserReturnRequests(userId));
+        return ResponseEntity.ok(returnService.getUserReturnRequests(userId, page, size));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get return request details")
     public ResponseEntity<ReturnRequestResponseDTO> getReturnRequest(@PathVariable Long id) {
-        // TODO: Add security check to ensure user owns this request
-        // Implementing basic check in service or here? service checked creation
-        // ownership.
-        // Assuming secure by ID lookup for now or relying on service/repository
-        // filtering.
-        // Actually service `getReturnRequestById` is generic. Ideally we check userId
-        // match here.
-        ReturnRequestResponseDTO dto = returnService.getReturnRequestById(id);
         Long userId = SecurityUtils.getCurrentUserId();
-        if (!dto.getUserId().equals(userId)) {
-            throw new RuntimeException("Access Denied");
-        }
+        ReturnRequestResponseDTO dto = returnService.getReturnRequestById(id, userId);
         return ResponseEntity.ok(dto);
+    }
+
+    @PostMapping("/{id}/cancel")
+    @Operation(summary = "Cancel a return request")
+    public ResponseEntity<ReturnRequestResponseDTO> cancelReturnRequest(@PathVariable Long id) {
+        Long userId = SecurityUtils.getCurrentUserId();
+        return ResponseEntity.ok(returnService.cancelReturnRequest(userId, id));
     }
 }

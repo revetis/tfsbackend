@@ -24,13 +24,21 @@ public class OrderAdminController {
     private IOrderService orderService;
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllOrders() {
+    public ResponseEntity<?> getAllOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(defaultValue = "DESC") String direction,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String paymentStatus,
+            @RequestParam(required = false) Long userId) {
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
                 HttpStatus.SC_OK,
                 "/rest/api/admin/orders/all",
                 null,
-                orderService.getAll()));
+                orderService.getAll(page, size, sort, direction, q, status, paymentStatus, userId)));
     }
 
     @PostMapping
@@ -50,7 +58,7 @@ public class OrderAdminController {
                 HttpStatus.SC_OK,
                 "/rest/api/admin/orders/" + orderId + "/return",
                 null,
-                orderService.returnOrder(orderId)));
+                orderService.returnOrder(orderId, null)));
     }
 
     @PostMapping("/{orderId}/cancel")

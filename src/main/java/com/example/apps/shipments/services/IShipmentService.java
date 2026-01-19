@@ -46,6 +46,10 @@ public interface IShipmentService {
 
     List<ShipmentDTO> getAllShipments();
 
+    // Paginated version with filtering
+    ShipmentPageResult getAllShipments(int page, int size, String sortField, String sortOrder, String search,
+            String status, Long userId);
+
     ShipmentDTO getShipmentById(Long id);
 
     /** Processes incoming tracking webhook from Geliver. */
@@ -59,4 +63,10 @@ public interface IShipmentService {
 
     /** Retrieves shipment details by order number. Returns null if not found. */
     ShipmentDTO getShipmentByOrderNumber(String orderNumber);
+
+    void deleteShipmentById(Long id);
+
+    // Result record for paginated shipments
+    record ShipmentPageResult(List<ShipmentDTO> data, long totalCount) {
+    }
 }

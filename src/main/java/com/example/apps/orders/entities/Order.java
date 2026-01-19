@@ -1,6 +1,7 @@
 package com.example.apps.orders.entities;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +37,9 @@ public class Order extends BaseEntity {
 
     @Column(name = "order_number", nullable = false, unique = true)
     private String orderNumber;
+
+    @Column(name = "basket_number")
+    private String basketNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = true)
@@ -137,6 +141,44 @@ public class Order extends BaseEntity {
 
     @Column(name = "barcode")
     private String barcode;
+
+    // ============= Invoice Fields =============
+    @Column(name = "subtotal", precision = 10, scale = 2)
+    private BigDecimal subtotal;
+
+    @Column(name = "tax_amount", precision = 10, scale = 2)
+    private BigDecimal taxAmount;
+
+    @Column(name = "invoice_number")
+    private String invoiceNumber;
+
+    @Column(name = "invoice_url")
+    private String invoiceUrl;
+
+    @Column(name = "invoice_generated_at")
+    private LocalDateTime invoiceGeneratedAt;
+
+    @Column(name = "invoice_uploaded_at")
+    private LocalDateTime invoiceUploadedAt;
+
+    @Column(name = "invoice_pdf_url")
+    private String invoicePdfUrl;
+
+    // ============= Invoice Snapshot Fields (Değişmezlik için) =============
+    @Column(name = "invoice_company_name")
+    private String invoiceCompanyName;
+
+    @Column(name = "invoice_company_address", columnDefinition = "TEXT")
+    private String invoiceCompanyAddress;
+
+    @Column(name = "invoice_company_tax_number")
+    private String invoiceCompanyTaxNumber;
+
+    @Column(name = "invoice_bank_info", columnDefinition = "TEXT")
+    private String invoiceBankInfo;
+
+    @Column(name = "invoice_footer_text")
+    private String invoiceFooterText;
 
     // ------------------------------
     public void addOrderItem(OrderItem item) {

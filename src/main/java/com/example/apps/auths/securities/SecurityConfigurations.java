@@ -114,6 +114,20 @@ public class SecurityConfigurations {
                                                                 .maxAgeInSeconds(31536000)
                                                                 .includeSubDomains(true));
                                         }
+                                        // Content Security Policy
+                                        headers.contentSecurityPolicy(csp -> csp
+                                                        .policyDirectives("default-src 'self'; " +
+                                                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com; "
+                                                                        +
+                                                                        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                                                                        +
+                                                                        "font-src 'self' https://fonts.gstatic.com data:; "
+                                                                        +
+                                                                        "img-src 'self' data: https://*.iyzipay.com https://*.geliver.io; "
+                                                                        +
+                                                                        "connect-src 'self' https://*.iyzipay.com https://*.geliver.io ws://localhost:* http://localhost:*; "
+                                                                        +
+                                                                        "frame-src 'self' https://*.iyzipay.com;"));
                                 })
                                 .authorizeHttpRequests(auth -> auth
                                                 .requestMatchers("/rest/api/public/auth/**").permitAll()

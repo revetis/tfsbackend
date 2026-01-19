@@ -41,6 +41,58 @@ public class WishlistService implements IWishlistService {
     }
 
     @Override
+    public WishlistPageResult getAllWishlists(int start, int end, String sortField, String sortOrder, String search,
+            Long userId, Long productId) {
+        // Map frontend fields to backend entity fields if necessary
+        String sortFieldMapped = sortField;
+        if ("id".equals(sortField))
+            sortFieldMapped = "id";
+
+        // Build sort
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+                sortOrder.equalsIgnoreCase("ASC") ? org.springframework.data.domain.Sort.Direction.ASC
+                        : org.springframework.data.domain.Sort.Direction.DESC,
+                sortFieldMapped);
+
+        // Get all wishlists and filter in memory
+        List<Wishlist> allWishlists = wishlistRepository.findAll(sort);
+
+        // Apply filters
+        java.util.stream.Stream<Wishlist> stream = allWishlists.stream();
+
+        if (userId != null) {
+            stream = stream.filter(w -> w.getUserId() != null && w.getUserId().equals(userId));
+        }
+
+        if (productId != null) {
+            stream = stream.filter(w -> w.getProductId() != null && w.getProductId().equals(productId));
+        }
+
+        if (search != null && !search.isBlank()) {
+            String searchLower = search.toLowerCase();
+            // Search by userId string or productId string as a fallback since there's no
+            // name in Wishlist entity
+            stream = stream.filter(w -> (w.getUserId() != null && w.getUserId().toString().contains(searchLower)) ||
+                    (w.getProductId() != null && w.getProductId().toString().contains(searchLower)));
+        }
+
+        List<Wishlist> filteredWishlists = stream.collect(java.util.stream.Collectors.toList());
+        long totalCount = filteredWishlists.size();
+
+        // Apply pagination
+        int fromIndex = Math.min(start, filteredWishlists.size());
+        int toIndex = Math.min(end, filteredWishlists.size());
+        List<Wishlist> pagedWishlists = filteredWishlists.subList(fromIndex, toIndex);
+
+        // Map to DTOs
+        List<WishlistProductDTO> dtos = pagedWishlists.stream()
+                .map(this::convertToProductDTO)
+                .collect(java.util.stream.Collectors.toList());
+
+        return new WishlistPageResult(dtos, totalCount);
+    }
+
+    @Override
     public List<WishlistProductDTO> getWishlistById(Long userId) {
         return wishlistRepository.findAllByUserId(userId).stream()
                 .map(this::convertToProductDTO)
@@ -112,6 +164,7 @@ public class WishlistService implements IWishlistService {
         return WishlistProductDTO.builder()
                 .id(wishlist.getId())
                 .productId(wishlist.getProductId())
+                .userId(wishlist.getUserId())
                 .productName(product != null ? product.getName() : "Unknown Product")
                 .mainImageUrl(mainImageUrl)
                 .price(price)

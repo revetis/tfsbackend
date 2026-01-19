@@ -50,4 +50,6 @@ public class UserDTOCreate {
     private Genders gender;
 
     private List<Long> roleIds;
+
+    private Boolean isSubscribedToNewsletter = false;
 }

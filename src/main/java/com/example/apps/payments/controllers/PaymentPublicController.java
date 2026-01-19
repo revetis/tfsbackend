@@ -26,9 +26,6 @@ public class PaymentPublicController {
     private IPaymentService paymentService;
 
     @Autowired
-    private GatewayUtils gatewayUtils;
-
-    @Autowired
     private com.example.apps.orders.services.IOrderService orderService;
 
     @PostMapping("/purchase-shipment/{orderNumber}")
@@ -37,7 +34,7 @@ public class PaymentPublicController {
         paymentService.purchaseShipmentForOrder(orderNumber);
 
         // Fetch updated order details to return
-        var updatedOrder = orderService.getByOrderNumber(orderNumber);
+        var updatedOrder = orderService.getByOrderNumber(orderNumber, null);
 
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
@@ -48,8 +45,24 @@ public class PaymentPublicController {
     }
 
     @PostMapping("/initialize")
-    public ResponseEntity<?> initializePayment(@Valid @RequestBody PaymentRequestDTO requestDTO) {
+    public ResponseEntity<?> initializePayment(
+            @Valid @RequestBody PaymentRequestDTO requestDTO,
+            jakarta.servlet.http.HttpServletRequest request) {
         log.info("Payment initialization requested for order: {}", requestDTO.getOrderNumber());
+
+        // Capture real client IP
+        String clientIp = request.getHeader("X-Forwarded-For");
+        if (clientIp == null || clientIp.isEmpty() || "unknown".equalsIgnoreCase(clientIp)) {
+            clientIp = request.getRemoteAddr();
+        }
+        // If it's a list, take the first one
+        if (clientIp != null && clientIp.contains(",")) {
+            clientIp = clientIp.split(",")[0].trim();
+        }
+
+        if (requestDTO.getBuyer() != null) {
+            requestDTO.getBuyer().setIp(clientIp);
+        }
 
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,

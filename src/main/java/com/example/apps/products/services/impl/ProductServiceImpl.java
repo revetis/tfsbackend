@@ -14,6 +14,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Predicate;
+import java.util.ArrayList;
 
 import com.example.apps.products.dtos.MainCategoryDTO;
 import com.example.apps.products.dtos.ProductDTO;
@@ -85,6 +88,9 @@ public class ProductServiceImpl implements IProductService {
 
     @Autowired
     private ProductMapper productMapper;
+
+    @Autowired
+    private com.example.apps.campaigns.services.ICampaignService campaignService;
 
     private void syncToElasticsearch(Product product) {
         if (product == null)
@@ -223,6 +229,44 @@ public class ProductServiceImpl implements IProductService {
         variantDTO.setPrice(variant.getPrice());
         variantDTO.setDiscountPrice(variant.getDiscountPrice());
 
+        // Calculate campaign discount price
+        try {
+            if (variant.getProduct() != null && variant.getPrice() != null) {
+                java.util.List<Long> productIds = java.util.List.of(variant.getProduct().getId());
+                java.util.List<Long> categoryIds = new java.util.ArrayList<>();
+                if (variant.getProduct().getSubCategory() != null) {
+                    categoryIds.add(variant.getProduct().getSubCategory().getId());
+                    if (variant.getProduct().getSubCategory().getMainCategory() != null) {
+                        categoryIds.add(variant.getProduct().getSubCategory().getMainCategory().getId());
+                    }
+                }
+
+                var bestCampaign = campaignService.findBestCampaign(
+                        variant.getPrice(), productIds, categoryIds);
+
+                if (bestCampaign != null) {
+                    java.math.BigDecimal campaignDiscount = campaignService.calculateCampaignDiscount(
+                            bestCampaign, variant.getPrice());
+                    java.math.BigDecimal campaignPrice = variant.getPrice().subtract(campaignDiscount);
+                    variantDTO.setCampaignDiscountPrice(campaignPrice);
+                    variantDTO.setCampaignName(bestCampaign.getName());
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to calculate campaign price for variant {}: {}", variant.getId(), e.getMessage());
+        }
+
+        // Calculate final price (min of variant discount and campaign price)
+        java.math.BigDecimal effectivePrice = variant.getPrice();
+        if (variant.getDiscountPrice() != null && variant.getDiscountPrice().compareTo(java.math.BigDecimal.ZERO) > 0) {
+            effectivePrice = variant.getDiscountPrice();
+        }
+        if (variantDTO.getCampaignDiscountPrice() != null
+                && variantDTO.getCampaignDiscountPrice().compareTo(effectivePrice) < 0) {
+            effectivePrice = variantDTO.getCampaignDiscountPrice();
+        }
+        variantDTO.setFinalPrice(effectivePrice);
+
         if (variant.getProduct() != null) {
             variantDTO.setProductId(variant.getProduct().getId());
             variantDTO.setProductName(variant.getProduct().getName());
@@ -266,9 +310,22 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public Page<ProductVariantDTO> getAllVariants(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<ProductVariant> variantsPage = productVariantRepository.findAll(pageable);
+    public Page<ProductVariantDTO> getAllVariants(int page, int size, String sort, String direction, String keyword) {
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction.toUpperCase());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        Specification<ProductVariant> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String likePattern = "%" + keyword.toLowerCase() + "%";
+                predicates.add(cb.or(
+                        cb.like(cb.lower(root.get("name")), likePattern),
+                        cb.like(cb.lower(root.join("product").get("name")), likePattern)));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<ProductVariant> variantsPage = productVariantRepository.findAll(spec, pageable);
         return variantsPage.map(this::convertVariantToDTO);
     }
 
@@ -320,9 +377,24 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public Page<ProductDTO> getAllProducts(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<Product> productsPage = productRepository.findAll(pageable);
+    public Page<ProductDTO> getAllProducts(int page, int size, String sort, String direction, String keyword,
+            Boolean enable) {
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction.toUpperCase());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        Specification<Product> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String likePattern = "%" + keyword.toLowerCase() + "%";
+                predicates.add(cb.like(cb.lower(root.get("name")), likePattern));
+            }
+            if (enable != null) {
+                predicates.add(cb.equal(root.get("enable"), enable));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<Product> productsPage = productRepository.findAll(spec, pageable);
         if (productsPage.isEmpty()) {
             return Page.empty();
         }
@@ -757,9 +829,21 @@ public class ProductServiceImpl implements IProductService {
     }
 
     @Override
-    public Page<ProductMaterialDTO> getAllProductMaterials(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<ProductMaterial> materialsPage = productMaterialRepository.findAll(pageable);
+    public Page<ProductMaterialDTO> getAllProductMaterials(int page, int size, String sort, String direction,
+            String keyword) {
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction.toUpperCase());
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortDirection, sort));
+
+        Specification<ProductMaterial> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            if (keyword != null && !keyword.trim().isEmpty()) {
+                String likePattern = "%" + keyword.toLowerCase() + "%";
+                predicates.add(cb.like(cb.lower(root.get("name")), likePattern));
+            }
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        Page<ProductMaterial> materialsPage = productMaterialRepository.findAll(spec, pageable);
         if (materialsPage.isEmpty()) {
             return Page.empty();
         }

@@ -23,6 +23,8 @@ public class OrderDTOIU {
 
     private Long userId;
 
+    private String basketNumber;
+
     @NotEmpty(message = "Order must contain at least one item")
     @Valid
     private List<OrderItemDTOIU> items;

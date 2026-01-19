@@ -125,7 +125,8 @@ public class IyzicoGateway implements IGateway {
             for (BasketItemDTO basketItem : basketItems) {
                 for (int i = 0; i < basketItem.getQuantity(); i++) {
                     BasketItem item = new BasketItem();
-                    item.setId(basketItem.getId().toString() + "-" + i);
+                    // Format: OrderNumber_ProductVariantId-Index (örn: TFS20260101-123456_6-0)
+                    item.setId(request.getOrderNumber() + "_" + basketItem.getId().toString() + "-" + i);
                     item.setName(basketItem.getName());
                     item.setCategory1(basketItem.getMainCategory());
                     item.setCategory2(basketItem.getSubCategory());
@@ -137,6 +138,12 @@ public class IyzicoGateway implements IGateway {
             iyzicoRequest.setBasketItems(basketItemForIyzico);
 
             PayWithIyzicoInitialize payWithIyzicoInitialize = PayWithIyzicoInitialize.create(iyzicoRequest, options);
+
+            if ("failure".equalsIgnoreCase(payWithIyzicoInitialize.getStatus())) {
+                log.error("Iyzico initialization failed. Error: {}, Code: {}",
+                        payWithIyzicoInitialize.getErrorMessage(), payWithIyzicoInitialize.getErrorCode());
+                throw new IyzicoPaymentCreateException(payWithIyzicoInitialize.getErrorMessage());
+            }
 
             Order order = orderRepository.findByOrderNumber(request.getOrderNumber()).orElseThrow(
                     () -> new OrderException("Order not found for: " + request.getOrderNumber()));

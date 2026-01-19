@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -54,8 +55,35 @@ public class ReturnServiceImpl implements IReturnService {
             throw new OrderException("You are not authorized to return this order.");
         }
 
+        return createReturnRequestInternal(order, userId, "USER:" + userId, request);
+    }
+
+    @Override
+    @Transactional
+    public ReturnRequestResponseDTO createGuestReturnRequest(String orderNumber, String initiatorEmail,
+            CreateReturnRequestDTO request) {
+        Order order = orderRepository.findByOrderNumber(orderNumber)
+                .orElseThrow(() -> new OrderException("Order not found"));
+
+        // Double check email matches for safety (though token should have handled it)
+        if (!order.getCustomerEmail().equalsIgnoreCase(initiatorEmail)) {
+            log.warn("Guest return email mismatch. Order: {}, Request: {}", order.getCustomerEmail(), initiatorEmail);
+            // We can proceed if token is valid, or block. Let's block for extra safety.
+            throw new OrderException("Email mismatch for this order.");
+        }
+
+        return createReturnRequestInternal(order, null, "GUEST:" + initiatorEmail, request);
+    }
+
+    private ReturnRequestResponseDTO createReturnRequestInternal(Order order, Long userId, String initiator,
+            CreateReturnRequestDTO request) {
         if (order.getStatus() != OrderStatus.DELIVERED) {
-            throw new OrderException("Only delivered orders can be returned.");
+            throw new OrderException("Sadece teslim edilmiş siparişler iade edilebilir.");
+        }
+
+        // 30 Days Return Policy
+        if (order.getCreatedAt().isBefore(java.time.LocalDateTime.now().minusDays(30))) {
+            throw new OrderException("Sipariş tarihi üzerinden 30 gün geçtiği için iade kabul edilememektedir.");
         }
 
         // Check if an active (non-rejected) return request already exists for this
@@ -127,6 +155,7 @@ public class ReturnServiceImpl implements IReturnService {
         ReturnRequest returnRequest = ReturnRequest.builder()
                 .orderId(order.getId())
                 .userId(userId)
+                .initiator(initiator)
                 .status(ReturnRequestStatus.PENDING)
                 .returnReason(request.getReturnReason())
                 .description(request.getDescription())
@@ -136,7 +165,10 @@ public class ReturnServiceImpl implements IReturnService {
 
         returnItems.forEach(i -> i.setReturnRequest(returnRequest));
 
-        // GELIVER INTEGRATION
+        // SAVE FIRST to validate DB constraints before calling external APIs
+        ReturnRequest saved = returnRepository.save(returnRequest);
+
+        // GELIVER INTEGRATION (only after successful DB save)
         try {
             String originalShipmentId = order.getGeliverShipmentId();
             log.info("Order {} has geliverShipmentId: {}", order.getOrderNumber(), originalShipmentId);
@@ -170,17 +202,84 @@ public class ReturnServiceImpl implements IReturnService {
                             .countryCode("TR") // Geliver requires ISO country code, not country name
                             .build();
 
-                    GeliverReturnRequest geliverRequest = GeliverReturnRequest.builder()
-                            .isReturn(true)
-                            .willAccept(true)
-                            .providerServiceCode(geliverConfiguration.getReturnProviderCode())
-                            .count(1)
-                            .senderAddress(senderAddress)
-                            .build();
+                    // List of providers to try
+                    java.util.List<String> providersToTry = new java.util.ArrayList<>();
 
-                    log.info("Calling Geliver createReturnShipment for original ID: {}", originalShipmentId);
-                    GeliverTransactionMainResponse response = shipmentService
-                            .createReturnShipment(originalShipmentId, geliverRequest);
+                    // 1. Try Original Provider from Order
+                    String originalProviderName = order.getShippingProvider();
+                    if (originalProviderName != null) {
+                        String mappedCode = switch (originalProviderName) {
+                            case "Sürat Kargo" -> "SURAT_STANDART";
+                            case "Yurtiçi Kargo" -> "YURTICI_STANDART";
+                            case "PTT Kargo" -> "PTT_STANDART";
+                            case "Aras Kargo" -> "ARAS_STANDART";
+                            case "Geliver Kargo" -> "GELIVER_STANDART";
+                            case "DHL Ecommerce" -> "DHL_STANDART";
+                            case "hepsiJET" -> "HEPSIJET_STANDART";
+                            case "Kolay Gelsin" -> "KOLAYGELSIN_STANDART";
+                            case "Paket Taxi" -> "PAKETTAXI_STANDART";
+                            default -> null; // Unknown friendly name
+                        };
+                        if (mappedCode != null) {
+                            log.info("Prioritizing original provider for return: {} ({})", originalProviderName,
+                                    mappedCode);
+                            providersToTry.add(mappedCode);
+                        }
+                    }
+
+                    // 2. Configured Default
+                    String configuredProvider = geliverConfiguration.getReturnProviderCode();
+                    if (configuredProvider != null && !configuredProvider.isBlank()
+                            && !providersToTry.contains(configuredProvider)) {
+                        providersToTry.add(configuredProvider);
+                    }
+
+                    // 3. Fallbacks (Best coverage providers)
+                    if (!providersToTry.contains("PTT_STANDART"))
+                        providersToTry.add("PTT_STANDART");
+                    if (!providersToTry.contains("YURTICI_STANDART"))
+                        providersToTry.add("YURTICI_STANDART");
+                    if (!providersToTry.contains("ARAS_STANDART"))
+                        providersToTry.add("ARAS_STANDART");
+                    if (!providersToTry.contains("GELIVER_STANDART"))
+                        providersToTry.add("GELIVER_STANDART");
+
+                    GeliverTransactionMainResponse response = null;
+                    Exception lastException = null;
+
+                    for (String providerCode : providersToTry) {
+                        try {
+                            log.info("Attempting Geliver return with provider: {}", providerCode);
+
+                            // Create a new request object/builder for each attempt provided the
+                            // providerCode is immutable in the builder?
+                            // builder pattern is safe to reuse? No, better rebuild to be safe
+                            GeliverReturnRequest attemptRequest = GeliverReturnRequest.builder()
+                                    .isReturn(true)
+                                    .willAccept(true)
+                                    .providerServiceCode(providerCode)
+                                    .count(1)
+                                    .senderAddress(senderAddress)
+                                    .build();
+
+                            response = shipmentService.createReturnShipment(originalShipmentId, attemptRequest);
+
+                            if (response != null && response.getData() != null) {
+                                log.info("Success with provider: {}", providerCode);
+                                break; // Success!
+                            }
+                        } catch (Exception e) {
+                            log.warn("Failed with provider {}: {}", providerCode, e.getMessage());
+                            lastException = e;
+                            // Continue to next provider
+                        }
+                    }
+
+                    if (response == null) {
+                        if (lastException != null)
+                            throw lastException; // Throw the last relevant exception
+                        throw new OrderException("Kargo iade servisi yanıt vermedi.");
+                    }
 
                     if (response != null && response.getData() != null) {
                         log.info("Geliver return response received: {}", response);
@@ -215,17 +314,22 @@ public class ReturnServiceImpl implements IReturnService {
                                 default -> providerService != null ? providerService : "Kargo";
                             };
 
-                            returnRequest.setShippingCode(barcode != null ? barcode : geliverId);
-                            returnRequest.setShippingProvider(friendlyProvider);
-                            returnRequest.setLabelUrl(labelUrl);
-                            returnRequest.setGeliverReturnShipmentId(geliverId);
+                            saved.setBarcode(barcode != null ? barcode : geliverId); // Set explicit barcode field
+                            saved.setShippingCode(barcode != null ? barcode : geliverId);
+                            saved.setShippingProvider(friendlyProvider);
+                            saved.setLabelUrl(labelUrl);
+                            saved.setGeliverReturnShipmentId(geliverId);
+
+                            // Update the saved entity with Geliver info
+                            saved = returnRepository.save(saved);
 
                             log.info(
                                     "Geliver return shipment (transaction) created. Barcode: {}, Label: {}, Provider: {}",
                                     barcode, labelUrl, friendlyProvider);
                         } else {
                             // Fallback if no shipment object but transaction created
-                            returnRequest.setGeliverReturnShipmentId(data.getId());
+                            saved.setGeliverReturnShipmentId(data.getId());
+                            saved = returnRepository.save(saved);
                         }
                     } else {
                         throw new OrderException(
@@ -249,14 +353,17 @@ public class ReturnServiceImpl implements IReturnService {
             throw new OrderException("İade işlemi sırasında bir hata oluştu: " + e.getMessage());
         }
 
-        ReturnRequest saved = returnRepository.save(returnRequest);
         return mapToDTO(saved);
     }
 
     @Override
-    public ReturnRequestResponseDTO getReturnRequestById(Long id) {
+    public ReturnRequestResponseDTO getReturnRequestById(Long id, Long userId) {
         ReturnRequest request = returnRepository.findById(id)
                 .orElseThrow(() -> new OrderException("Return request not found"));
+
+        if (userId != null && !request.getUserId().equals(userId)) {
+            throw new org.springframework.security.access.AccessDeniedException("Access denied");
+        }
         return mapToDTO(request);
     }
 
@@ -264,6 +371,16 @@ public class ReturnServiceImpl implements IReturnService {
     public List<ReturnRequestResponseDTO> getUserReturnRequests(Long userId) {
         return returnRepository.findByUserIdOrderByCreatedAtDesc(userId).stream().map(this::mapToDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<ReturnRequestResponseDTO> getUserReturnRequests(Long userId, int page,
+            int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                page, size, org.springframework.data.domain.Sort.by("createdAt").descending());
+        org.springframework.data.domain.Page<ReturnRequest> returnsPage = returnRepository
+                .findByUserIdOrderByCreatedAtDesc(userId, pageable);
+        return returnsPage.map(this::mapToDTO);
     }
 
     @Override
@@ -308,6 +425,7 @@ public class ReturnServiceImpl implements IReturnService {
                 .collect(Collectors.toList());
         paymentRefundRequest.setOrderItemIds(itemIds);
         paymentRefundRequest.setRestoreStock(restockItems);
+        paymentRefundRequest.setRefundAmount(request.getRefundAmount()); // Pass calculated (discounted) amount
 
         paymentService.refundPartialPayment(paymentRefundRequest);
 
@@ -356,6 +474,68 @@ public class ReturnServiceImpl implements IReturnService {
         return mapToDTO(request);
     }
 
+    @Override
+    @Transactional
+    public ReturnRequestResponseDTO cancelReturnRequest(Long userId, Long requestId) {
+        ReturnRequest request = returnRepository.findById(requestId)
+                .orElseThrow(() -> new OrderException("Request not found"));
+
+        if (!request.getUserId().equals(userId)) {
+            throw new OrderException("You are not authorized to cancel this return request.");
+        }
+
+        if (request.getStatus() != ReturnRequestStatus.PENDING) {
+            throw new OrderException("Only PENDING return requests can be cancelled.");
+        }
+
+        // Cancel Geliver shipment if one was created
+        if (request.getGeliverReturnShipmentId() != null && !request.getGeliverReturnShipmentId().isBlank()) {
+            try {
+                log.info("Cancelling associated Geliver return shipment: {}", request.getGeliverReturnShipmentId());
+                shipmentService.cancelShipmentByID(request.getGeliverReturnShipmentId());
+            } catch (Exception e) {
+                // Log but continue, or throw?
+                // Since this is user-facing cancel, maybe we should warn but allow internal
+                // cancel?
+                // Or if it fails, maybe user shouldn't be able to cancel?
+                // Let's log error but proceed to cancel internal request so user isn't stuck.
+                log.error("Failed to cancel Geliver return shipment: {}", e.getMessage());
+                // Optional: throw new OrderException("Kargo iptal edilemedi, lütfen desteğe
+                // başvurun.");
+            }
+        }
+
+        request.setStatus(ReturnRequestStatus.CANCELLED);
+        returnRepository.save(request);
+        return mapToDTO(request);
+    }
+
+    @Override
+    public ReturnPageResult getAllReturns(int page, int size, String sortField, String sortOrder, Long userId,
+            ReturnRequestStatus status) {
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+                sortOrder.equalsIgnoreCase("ASC") ? org.springframework.data.domain.Sort.Direction.ASC
+                        : org.springframework.data.domain.Sort.Direction.DESC,
+                sortField);
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size,
+                sort);
+
+        Specification<ReturnRequest> spec = (root, query, cb) -> cb.conjunction();
+
+        if (userId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("userId"), userId));
+        }
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+
+        org.springframework.data.domain.Page<ReturnRequest> returnsPage = returnRepository.findAll(spec, pageable);
+        List<ReturnRequestResponseDTO> dtos = returnsPage.getContent().stream().map(this::mapToDTO).toList();
+
+        return new ReturnPageResult(dtos, returnsPage.getTotalElements());
+    }
+
     private ReturnRequestResponseDTO mapToDTO(ReturnRequest entity) {
         // Fetch order to get orderNumber
         String orderNumber = null;
@@ -385,8 +565,10 @@ public class ReturnServiceImpl implements IReturnService {
                 .description(entity.getDescription())
                 .adminNote(entity.getAdminNote())
                 .refundAmount(entity.getRefundAmount())
+                .barcode(entity.getBarcode())
                 .shippingCode(entity.getShippingCode())
                 .shippingProvider(entity.getShippingProvider())
+                .trackingUrl(entity.getTrackingUrl())
                 .labelUrl(entity.getLabelUrl())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
@@ -398,6 +580,8 @@ public class ReturnServiceImpl implements IReturnService {
                             .productName(orderItem != null ? orderItem.getProductVariantName() : null)
                             .variantName(orderItem != null && orderItem.getSize() != null ? orderItem.getSize().name()
                                     : null)
+                            .size(orderItem != null && orderItem.getSize() != null ? orderItem.getSize().name() : null)
+                            .price(orderItem != null ? orderItem.getPrice() : null)
                             .build();
                 }).collect(Collectors.toList()))
                 .build();

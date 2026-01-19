@@ -40,6 +40,7 @@ import com.example.apps.payments.dtos.PaymentAdminDTO;
 import com.example.apps.products.services.IProductService;
 import com.example.apps.products.enums.ProductSize;
 import com.example.apps.carts.services.ICartService;
+import com.example.apps.invoices.services.IInvoiceService;
 import com.example.tfs.ApplicationProperties;
 
 import lombok.extern.slf4j.Slf4j;
@@ -68,11 +69,13 @@ public class PaymentServiceImpl implements IPaymentService {
 
     private final ICartService cartService;
 
+    private final IInvoiceService invoiceService;
+
     public PaymentServiceImpl(List<IGateway> gatewayList, PaymentRepository paymentRepository,
             OrderRepository orderRepository, IN8NService n8nService, ApplicationProperties applicationProperties,
             PaymentTransactionRepository paymentTransactionRepository, N8NProperties n8NProperties,
             IProductService productService, com.example.apps.shipments.services.IShipmentService shipmentService,
-            ICartService cartService) {
+            ICartService cartService, @org.springframework.context.annotation.Lazy IInvoiceService invoiceService) {
         this.n8nService = n8nService;
         this.productService = productService;
         this.n8NProperties = n8NProperties;
@@ -82,6 +85,7 @@ public class PaymentServiceImpl implements IPaymentService {
         this.paymentRepository = paymentRepository;
         this.shipmentService = shipmentService;
         this.cartService = cartService;
+        this.invoiceService = invoiceService;
         this.gateways = gatewayList.stream()
                 .collect(Collectors.toMap(IGateway::getGatewayName, g -> g));
     }
@@ -89,16 +93,104 @@ public class PaymentServiceImpl implements IPaymentService {
     @Override
     @Transactional
     public PaymentResponseDTO createPayment(PaymentRequestDTO request) {
+        // SECURITY FIX: Server-Side Price Validation
+        // Fetch valid order from DB to get the TRUE price
+        Order order = orderRepository.findByOrderNumber(request.getOrderNumber())
+                .orElseThrow(() -> new OrderException("Order not found or invalid: " + request.getOrderNumber()));
+
+        // Override client-provided prices with DB values to prevent manipulation
+        request.setPrice(order.getTotalAmount());
+        request.setPaidPrice(order.getTotalAmount()); // Assuming no partial payment logic yet
+        // High priority: Use the dedicated Basket Number if available, otherwise
+        // fallback to Order ID
+        String basketId = (order.getBasketNumber() != null && !order.getBasketNumber().isEmpty())
+                ? order.getBasketNumber()
+                : String.format("TFS%06d", order.getId());
+        request.setBasketId(basketId);
+
+        // Re-validate that price is positive
+        if (order.getTotalAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalStateException("Invalid order amount: " + order.getTotalAmount());
+        }
+
+        // SECURITY & ACCURACY: Reconstruct Basket Items from DB Order
+        // 1. Calculate discount distribution ratio
+        BigDecimal orderSubtotal = order.getOrderItems().stream()
+                .map(item -> item.getPrice().multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal discountAmount = order.getDiscountAmount() != null ? order.getDiscountAmount() : BigDecimal.ZERO;
+        BigDecimal totalAfterDiscount = orderSubtotal.subtract(discountAmount);
+
+        // Distribution Ratio
+        BigDecimal ratio = orderSubtotal.compareTo(BigDecimal.ZERO) > 0
+                ? totalAfterDiscount.divide(orderSubtotal, 10, java.math.RoundingMode.HALF_UP)
+                : BigDecimal.ONE;
+
+        List<com.example.apps.payments.dtos.BasketItemDTO> secureBasketItems = new java.util.ArrayList<>();
+        BigDecimal distributedSum = BigDecimal.ZERO;
+
+        // Flatten items to handle rounding per unit if necessary
+        List<OrderItem> allUnits = new java.util.ArrayList<>();
+        for (OrderItem item : order.getOrderItems()) {
+            for (int j = 0; j < item.getQuantity(); j++) {
+                allUnits.add(item);
+            }
+        }
+
+        for (int i = 0; i < allUnits.size(); i++) {
+            OrderItem orderItem = allUnits.get(i);
+            com.example.apps.payments.dtos.BasketItemDTO dto = new com.example.apps.payments.dtos.BasketItemDTO();
+            dto.setId(orderItem.getProductVariantId());
+            dto.setName(orderItem.getProductVariantName());
+            dto.setMainCategory(orderItem.getMainCategory() != null ? orderItem.getMainCategory() : "Giyim");
+            dto.setSubCategory(orderItem.getSubCategory() != null ? orderItem.getSubCategory() : "Genel");
+            dto.setItemType(orderItem.getItemType() != null ? orderItem.getItemType() : "PHYSICAL");
+            dto.setQuantity(1); // Set to 1 to manage rounding per unit
+
+            // Calculate discounted price for this single unit
+            BigDecimal discountedPrice = orderItem.getPrice().multiply(ratio).setScale(2,
+                    java.math.RoundingMode.HALF_UP);
+
+            // If it's the absolute last unit, adjust to fix rounding remainders
+            if (i == allUnits.size() - 1) {
+                BigDecimal remainingNeeded = totalAfterDiscount.subtract(distributedSum);
+                dto.setPrice(remainingNeeded);
+            } else {
+                dto.setPrice(discountedPrice);
+                distributedSum = distributedSum.add(discountedPrice);
+            }
+            secureBasketItems.add(dto);
+        }
+
+        // 2. Add Shipping as a separate Basket Item
+        if (order.getShippingCost() != null && order.getShippingCost().compareTo(BigDecimal.ZERO) > 0) {
+            com.example.apps.payments.dtos.BasketItemDTO shippingItem = new com.example.apps.payments.dtos.BasketItemDTO();
+            shippingItem.setId(0L);
+            shippingItem.setName("Kargo Ücreti ("
+                    + (order.getShippingProvider() != null ? order.getShippingProvider() : "Kargo") + ")");
+            shippingItem.setMainCategory("Lojistik");
+            shippingItem.setSubCategory("Kargo");
+            shippingItem.setItemType("VIRTUAL");
+            shippingItem.setPrice(order.getShippingCost());
+            shippingItem.setQuantity(1);
+            secureBasketItems.add(shippingItem);
+        }
+
+        request.setBasketItems(secureBasketItems);
+
         IGateway selectedGateway = gateways.get(request.getSelectedGateway());
         if (selectedGateway == null) {
             throw new NoPaymentGatewayFoundException("No payment gateway found for: " + request.getSelectedGateway());
         }
-        log.info("Creating payment for order number: {}", request.getOrderNumber());
+        log.info("Creating payment for order: {} | Total: {} (Subtotal: {}, Discount: {}, Shipping: {})",
+                request.getOrderNumber(), order.getTotalAmount(), orderSubtotal, discountAmount,
+                order.getShippingCost());
 
         Payment payment = new Payment();
         payment.setOrderNumber(request.getOrderNumber());
-        payment.setTotalPrice(request.getPrice());
-        payment.setPaidPrice(request.getPaidPrice());
+        payment.setTotalPrice(order.getTotalAmount());
+        payment.setPaidPrice(order.getTotalAmount());
         payment.setCurrency(request.getCurrency());
         payment.setInstallments(request.getInstallment());
         payment.setStatus(PaymentStatus.PENDING);
@@ -112,6 +204,8 @@ public class PaymentServiceImpl implements IPaymentService {
         buyer.setIdentityNumber(request.getBuyer().getIdentityNumber());
         buyer.setGsmNumber(request.getBuyer().getGsmNumber());
         buyer.setIp(request.getBuyer().getIp());
+        buyer.setRegistrationDate(request.getBuyer().getRegistrationDate());
+        buyer.setLastLoginDate(request.getBuyer().getLastLoginDate());
         payment.setBuyer(buyer);
 
         payment.setShippingAddress(mapAddress(request.getShippingAddress()));
@@ -131,6 +225,8 @@ public class PaymentServiceImpl implements IPaymentService {
         }).collect(Collectors.toList());
         payment.setBasketItems(basketItems);
 
+        // Gateway uses the 'request' object, which we have now secured by overriding
+        // prices
         PaymentResponseDTO gatewayResponse = selectedGateway.initializePayment(request);
 
         payment.setToken(gatewayResponse.getToken());
@@ -173,24 +269,60 @@ public class PaymentServiceImpl implements IPaymentService {
 
         if (result.status() == PaymentStatus.SUCCESS) {
 
-            order.setPaymentStatus(PaymentStatus.SUCCESS);
-            order.setStatus(OrderStatus.PROCESSING);
+            try {
+                order.setPaymentStatus(PaymentStatus.SUCCESS);
+                order.setPaymentId(result.paymentId()); // Save Iyzico Payment ID to Order
+                order.setStatus(OrderStatus.WAITING_FOR_INVOICE); // Modified as per Asynchronous Invoice Requirement
 
-            // Auto-purchase logic moved to explicit frontend call
-            // purchaseShipmentOffer(order);
-
-            // Clear cart if user is authenticated
-            if (order.getUser() != null) {
-                try {
-                    cartService.clearCart(order.getUser().getId(), order.getUser().getId());
-                    log.info("Cart cleared for user ID: {}", order.getUser().getId());
-                } catch (Exception e) {
-                    log.warn("Failed to clear cart for user {}: {}", order.getUser().getId(), e.getMessage());
+                // Clear cart if user is authenticated
+                if (order.getUser() != null) {
+                    try {
+                        cartService.clearCart(order.getUser().getId(), order.getUser().getId());
+                        log.info("Cart cleared for user ID: {}", order.getUser().getId());
+                    } catch (Exception e) {
+                        log.warn("Failed to clear cart for user {}: {}", order.getUser().getId(), e.getMessage());
+                    }
                 }
-            }
 
-            sendPaymentSuccessMail(payment, transactionId);
-            sendOrderMailOnce(order);
+                sendPaymentSuccessMail(payment, transactionId);
+                sendOrderMailOnce(order);
+
+                // Otomatik fatura (Receipt) oluştur
+                try {
+                    invoiceService.createInvoiceForOrder(order.getId());
+                    log.info("Receipt/Invoice data created for order: {}", order.getOrderNumber());
+                    sendReceiptMail(order); // Trigger N8N Receipt Workflow
+                } catch (Exception e) {
+                    log.error("Failed to create invoice data for order: {}", order.getOrderNumber(), e);
+                    // Non-critical error, do not fail entire order
+                }
+
+            } catch (Exception e) {
+                log.error(
+                        "CRITICAL: Order completion failed after successful payment for Order: {}. Initiating Auto-Refund.",
+                        order.getOrderNumber(), e);
+
+                // --- AUTO REFUND LOGIC ---
+                try {
+                    returnPayment(order.getOrderNumber());
+                    order.setPaymentStatus(PaymentStatus.REFUNDED);
+                    order.setStatus(OrderStatus.CANCELLED);
+                    log.info("Auto-refund successful for Order: {}", order.getOrderNumber());
+                } catch (Exception refundEx) {
+                    log.error("FATAL: Auto-refund FAILED for Order: {}. Manual intervention required!",
+                            order.getOrderNumber(), refundEx);
+                    // We might want to save a special status or alert admin
+                    order.setPaymentStatus(PaymentStatus.SUCCESS); // Payment is still at success state in gateway
+                                                                   // technically
+                    order.setStatus(OrderStatus.CANCELLED);
+                }
+
+                // Re-throw to inform controller/user -> but wait, completePayment returns DTO
+                orderRepository.save(order);
+                throw new RuntimeException(
+                        "Ödeme alındı ancak sipariş oluşturulurken beklenmedik bir hata oluştu ve ödemeniz iade edildi. Lütfen tekrar deneyin.",
+                        e);
+            }
 
         } else {
 
@@ -312,9 +444,17 @@ public class PaymentServiceImpl implements IPaymentService {
             throw new OrderException("No valid items found for refund.");
         }
 
-        BigDecimal totalRefundAmount = itemsToReturn.stream()
-                .map(item -> item.getPrice().multiply(new BigDecimal(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal totalRefundAmount;
+        if (returnRequest.getRefundAmount() != null) {
+            totalRefundAmount = returnRequest.getRefundAmount();
+            log.info("Using provided refund amount (validated from return request): {}", totalRefundAmount);
+        } else {
+            // Fallback for legacy calls or manual API usage
+            totalRefundAmount = itemsToReturn.stream()
+                    .map(item -> item.getPrice().multiply(new BigDecimal(item.getQuantity())))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            log.warn("Refund amount calculated from raw item prices (ignoring discounts): {}", totalRefundAmount);
+        }
 
         log.info("Total net refund amount to be sent to gateway: {}", totalRefundAmount);
 
@@ -371,6 +511,12 @@ public class PaymentServiceImpl implements IPaymentService {
         payload.put("amount", payment.getPaidPrice());
         payload.put("transactionId", transactionId);
 
+        // Add customer info for email
+        if (payment.getBuyer() != null) {
+            payload.put("email", payment.getBuyer().getEmail());
+            payload.put("name", payment.getBuyer().getName() + " " + payment.getBuyer().getSurname());
+        }
+
         n8nService.triggerWorkflow(n8NProperties.getWebhook().getPaymentSuccess(), payload);
     }
 
@@ -380,6 +526,23 @@ public class PaymentServiceImpl implements IPaymentService {
         payload.put("reason", reason); // HTML'deki {{$json.body.reason}} alanını doldurur
 
         n8nService.triggerWorkflow(n8NProperties.getWebhook().getOrderCancelled(), payload);
+    }
+
+    private void sendReceiptMail(Order order) {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("orderNumber", order.getOrderNumber());
+        payload.put("customerName", order.getCustomerName());
+        payload.put("customerEmail", order.getCustomerEmail());
+        payload.put("totalAmount", order.getTotalAmount());
+        payload.put("orderDate", order.getCreatedAt());
+
+        // Receipt PDF URL (Generated by our backend)
+        String receiptUrl = applicationProperties.getBACKEND_URL() + "/api/public/invoices/" + order.getOrderNumber()
+                + "/pdf";
+        payload.put("receiptUrl", receiptUrl);
+
+        n8nService.triggerWorkflow(n8NProperties.getWebhook().getReceipt(), payload);
+        log.info("N8N Receipt Workflow triggered for order: {}", order.getOrderNumber());
     }
 
     private void sendRefundProcessedMail(Order order, BigDecimal refundAmount, String reason) {
@@ -531,8 +694,16 @@ public class PaymentServiceImpl implements IPaymentService {
                                 "https://esube.kolaygelsin.com/shipments?trackingId=" + trackingCode;
                             case "PAKETTAXI_STANDART" -> "https://takip.pakettaxi.com/?orderId=" + trackingCode;
                             case "ARAS_STANDART" -> "https://www.araskargo.com.tr/kargo-takip/" + trackingCode;
+                            case "MNG_STANDART" -> "https://kargotakip.mngkargo.com.tr/?b=" + trackingCode;
+                            case "UPS_STANDART" -> "https://www.ups.com/track?tracknum=" + trackingCode;
+                            case "SENDEO_STANDART" ->
+                                "https://kargotakip.sendeo.com.tr/kargo-takip-sonuc?trackingNumber=" + trackingCode;
                             case "GELIVER_STANDART" -> "https://app.geliver.io/tracking/" + shipmentId;
-                            default -> shipmentDetail.getTrackingUrl(); // Use Geliver's URL as fallback
+                            default -> shipmentDetail.getTrackingUrl() != null
+                                    && !shipmentDetail.getTrackingUrl().contains("example.com")
+                                            ? shipmentDetail.getTrackingUrl()
+                                            : "https://www.google.com/search?q=" + providerCode + "+kargo+takip+"
+                                                    + trackingCode;
                         };
                         order.setTrackingUrl(trackingUrl);
                     }
@@ -572,6 +743,13 @@ public class PaymentServiceImpl implements IPaymentService {
         Order order = orderRepository.findByOrderNumber(orderNumber)
                 .orElseThrow(() -> new OrderException("Order not found: " + orderNumber));
 
+        // SECURITY CHECK: Ensure payment is successful before purchasing shipment
+        if (order.getPaymentStatus() != PaymentStatus.SUCCESS) {
+            log.error("Attempted to purchase shipment for unpaid order: {}", orderNumber);
+            throw new IllegalStateException(
+                    "Cannot purchase shipment for unpaid order. Payment Status: " + order.getPaymentStatus());
+        }
+
         purchaseShipmentOffer(order);
     }
 
@@ -587,13 +765,25 @@ public class PaymentServiceImpl implements IPaymentService {
         payload.put("faviconURL",
                 applicationProperties.getFRONTEND_URL() + "favicon.ico");
         payload.put("firstName", order.getCustomerName());
+        payload.put("email", order.getCustomerEmail()); // Required for n8n to send email
+        payload.put("name", order.getCustomerName());
         payload.put("orderNumber", order.getOrderNumber());
         payload.put("orderDate", order.getCreatedAt());
         payload.put("totalAmount", order.getTotalAmount());
-        payload.put("shippingAddress", order.getShippingAddress());
+        // Format address as readable string instead of object
+        String formattedAddress = "";
+        if (order.getShippingAddress() != null) {
+            var addr = order.getShippingAddress();
+            formattedAddress = String.join(", ",
+                    addr.getAddressLine() != null ? addr.getAddressLine() : "",
+                    addr.getDistrictName() != null ? addr.getDistrictName() : "",
+                    addr.getCity() != null ? addr.getCity() : "").replaceAll("^,\\s*|,\\s*$", "")
+                    .replaceAll(",\\s*,", ",");
+        }
+        payload.put("shippingAddress", formattedAddress);
         payload.put("orderDetailUrl",
                 applicationProperties.getFRONTEND_URL()
-                        + "order-detail?orderNumber=" + order.getOrderNumber());
+                        + "track-order?orderNumber=" + order.getOrderNumber());
 
         n8nService.triggerWorkflow(
                 n8NProperties.getWebhook().getOrderConfirmation(),
@@ -634,9 +824,93 @@ public class PaymentServiceImpl implements IPaymentService {
     }
 
     @Override
+    public PaymentPageResult getAllPayments(int start, int end, String sortField, String sortOrder, String search,
+            String status) {
+        // Build sort
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+                sortOrder.equalsIgnoreCase("ASC") ? org.springframework.data.domain.Sort.Direction.ASC
+                        : org.springframework.data.domain.Sort.Direction.DESC,
+                sortField);
+
+        // Get all payments and filter in memory (simple approach for now)
+        List<Payment> allPayments = paymentRepository.findAll(sort);
+
+        // Apply filters
+        java.util.stream.Stream<Payment> stream = allPayments.stream();
+
+        if (search != null && !search.isBlank()) {
+            String searchLower = search.toLowerCase();
+            stream = stream.filter(
+                    p -> (p.getOrderNumber() != null && p.getOrderNumber().toLowerCase().contains(searchLower)) ||
+                            (p.getPaymentId() != null && p.getPaymentId().toLowerCase().contains(searchLower)) ||
+                            (p.getBuyer() != null && p.getBuyer().getEmail() != null
+                                    && p.getBuyer().getEmail().toLowerCase().contains(searchLower)));
+        }
+
+        if (status != null && !status.isBlank()) {
+            try {
+                com.example.apps.payments.enums.PaymentStatus statusEnum = com.example.apps.payments.enums.PaymentStatus
+                        .valueOf(status);
+                stream = stream.filter(p -> p.getStatus() == statusEnum);
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        List<Payment> filteredPayments = stream.collect(Collectors.toList());
+        long totalCount = filteredPayments.size();
+
+        // Apply pagination
+        int fromIndex = Math.min(start, filteredPayments.size());
+        int toIndex = Math.min(end, filteredPayments.size());
+        List<Payment> pagedPayments = filteredPayments.subList(fromIndex, toIndex);
+
+        // Map to DTOs
+        List<PaymentAdminDTO> dtos = pagedPayments.stream()
+                .map(payment -> PaymentAdminDTO.builder()
+                        .id(payment.getId())
+                        .orderNumber(payment.getOrderNumber())
+                        .token(payment.getToken())
+                        .paymentId(payment.getPaymentId())
+                        .totalPrice(payment.getTotalPrice())
+                        .paidPrice(payment.getPaidPrice())
+                        .currency(payment.getCurrency())
+                        .status(payment.getStatus())
+                        .selectedGateway(payment.getSelectedGateway())
+                        .createdAt(payment.getCreatedAt())
+                        .updatedAt(payment.getUpdatedAt())
+                        .customerEmail(payment.getBuyer() != null ? payment.getBuyer().getEmail() : null)
+                        .customerName(payment.getBuyer() != null
+                                ? payment.getBuyer().getName() + " " + payment.getBuyer().getSurname()
+                                : null)
+                        .binNumber(payment.getBinNumber())
+                        .cardAssociation(payment.getCardAssociation())
+                        .cardFamily(payment.getCardFamily())
+                        .cardType(payment.getCardType())
+                        .build())
+                .collect(Collectors.toList());
+
+        return new PaymentPageResult(dtos, totalCount);
+    }
+
+    @Override
     public PaymentAdminDTO getPaymentById(Long id) {
         com.example.apps.payments.entities.Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Payment not found"));
+
+        // Map transactions
+        java.util.List<PaymentAdminDTO.TransactionDTO> transactionDTOs = null;
+        if (payment.getTransactions() != null) {
+            transactionDTOs = payment.getTransactions().stream()
+                    .map(t -> PaymentAdminDTO.TransactionDTO.builder()
+                            .id(t.getId())
+                            .transactionId(t.getTransactionId())
+                            .status(t.getStatus())
+                            .paidPrice(payment.getPaidPrice())
+                            .createdAt(t.getCreatedAt())
+                            .build())
+                    .collect(Collectors.toList());
+        }
+
         return PaymentAdminDTO.builder()
                 .id(payment.getId())
                 .orderNumber(payment.getOrderNumber())
@@ -657,6 +931,11 @@ public class PaymentServiceImpl implements IPaymentService {
                 .cardAssociation(payment.getCardAssociation())
                 .cardFamily(payment.getCardFamily())
                 .cardType(payment.getCardType())
+                // New fields
+                .conversationId(payment.getConversationId())
+                .basketId(payment.getBasketId())
+                .ipAddress(payment.getBuyer() != null ? payment.getBuyer().getIp() : null)
+                .transactions(transactionDTOs)
                 .build();
     }
 

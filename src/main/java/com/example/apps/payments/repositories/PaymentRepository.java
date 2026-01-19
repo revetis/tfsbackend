@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.example.apps.payments.entities.Payment;
+import com.example.apps.payments.enums.PaymentStatus;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
@@ -16,4 +17,5 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByPaymentId(String paymentId);
 
+    long countByStatus(PaymentStatus status);
 }

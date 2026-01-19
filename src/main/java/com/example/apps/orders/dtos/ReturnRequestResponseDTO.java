@@ -21,8 +21,10 @@ public class ReturnRequestResponseDTO {
     private String description;
     private String adminNote;
     private BigDecimal refundAmount;
+    private String barcode;
     private String shippingCode;
     private String shippingProvider;
+    private String trackingUrl;
     private String labelUrl;
     private List<ReturnItemResponseDTO> items;
     private LocalDateTime createdAt;

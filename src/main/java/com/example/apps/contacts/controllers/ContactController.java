@@ -28,9 +28,20 @@ public class ContactController {
 
     @GetMapping("/admin/contacts")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> getMessages(Pageable pageable) {
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(true, 200, "/rest/api/admin/contacts", null,
-                contactService.getMessages(pageable)));
+    public ResponseEntity<?> getMessages(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "id") String sortField,
+            @RequestParam(name = "direction", defaultValue = "DESC") String sortOrder,
+            @RequestParam(name = "q", required = false) String search,
+            @RequestParam(name = "status", required = false) String status,
+            jakarta.servlet.http.HttpServletRequest servletRequest) {
+        var result = contactService.getAllContactMessages(page, size, sortField, sortOrder, search, status);
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(result.totalCount()))
+                .header("Access-Control-Expose-Headers", "X-Total-Count")
+                .body(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                        result.data()));
     }
 
     @GetMapping("/admin/contacts/{id}")

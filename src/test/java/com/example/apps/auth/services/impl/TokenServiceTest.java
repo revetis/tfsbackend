@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
 
 import com.example.apps.auths.securities.JWTGenerator;
 import com.example.apps.auths.services.impl.TokenService;
@@ -65,9 +66,29 @@ public class TokenServiceTest {
         when(applicationProperties.getJwtSigningKey()).thenReturn(secretKey);
         when(jwtGenerator.generateAccessToken(validRefreshToken, FAKE_IP_ADDRESS)).thenReturn(expectedAccessToken);
 
-        Map<String, String> result = tokenService.refreshAccessToken(validRefreshToken, FAKE_IP_ADDRESS);
+        // passing null as accessToken is fine (optional)
+        Map<String, String> result = tokenService.refreshAccessToken(validRefreshToken, null, FAKE_IP_ADDRESS);
 
         assertEquals(expectedAccessToken, result);
         verify(jwtGenerator).generateAccessToken(validRefreshToken, FAKE_IP_ADDRESS);
+    }
+
+    @Test
+    void refreshAccessToken_Failure_UserMismatch() {
+        // Create an access token for a DIFFERENT user
+        String mismatchedAccessToken = Jwts.builder()
+                .setSubject("otheruser")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 3600000))
+                .signWith(secretKey)
+                .compact();
+
+        when(applicationProperties.getJwtSigningKey()).thenReturn(secretKey);
+
+        assertThrows(AccessDeniedException.class, () -> {
+            tokenService.refreshAccessToken(validRefreshToken, mismatchedAccessToken, FAKE_IP_ADDRESS);
+        });
+
+        verify(jwtGenerator, never()).generateAccessToken(anyString(), anyString());
     }
 }

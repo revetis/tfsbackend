@@ -38,6 +38,8 @@ public class UserDTO {
     private Date birthOfDate; // Doğum günü bilgisi
 
     private Boolean enabled;
+    private Boolean twoFactorEnabled;
+    private Boolean isSubscribedToNewsletter;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

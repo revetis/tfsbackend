@@ -33,11 +33,24 @@ public class UserAdminController {
         private IUserService userService;
 
         @GetMapping(path = "/all")
-        public ResponseEntity<ApiTemplate<Void, List<UserDTO>>> getAllUsers(HttpServletRequest servletRequest) {
-                List<UserDTO> users = userService.getAllUsers();
+        public ResponseEntity<?> getAllUsers(
+                        @RequestParam(name = "page", defaultValue = "0") int page,
+                        @RequestParam(name = "size", defaultValue = "10") int size,
+                        @RequestParam(name = "sort", defaultValue = "createdAt") String sortField,
+                        @RequestParam(name = "direction", defaultValue = "DESC") String sortOrder,
+                        @RequestParam(name = "q", required = false) String search,
+                        @RequestParam(name = "username", required = false) String username,
+                        @RequestParam(name = "email", required = false) String email,
+                        @RequestParam(name = "roleId", required = false) Long roleId,
+                        HttpServletRequest servletRequest) {
+                var result = userService.getAllUsers(page * size, (page + 1) * size, sortField, sortOrder, search,
+                                username, email, roleId);
                 return ResponseEntity
-                                .ok(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
-                                                users));
+                                .ok()
+                                .header("X-Total-Count", String.valueOf(result.totalCount()))
+                                .header("Access-Control-Expose-Headers", "X-Total-Count")
+                                .body(ApiTemplate.apiTemplateGenerator(true, 200, servletRequest.getRequestURI(), null,
+                                                result.data()));
         }
 
         @GetMapping(path = "/{userId}")
@@ -48,7 +61,7 @@ public class UserAdminController {
                                 null, user));
         }
 
-        @DeleteMapping(path = "/delete/{userId}")
+        @DeleteMapping(path = "/{userId}")
         public ResponseEntity<ApiTemplate<Void, String>> deleteUser(@PathVariable("userId") Long userId,
                         HttpServletRequest servletRequest) {
                 userService.deleteUser(userId);

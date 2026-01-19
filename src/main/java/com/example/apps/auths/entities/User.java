@@ -52,6 +52,9 @@ public class User extends BaseEntity {
     @Column(name = "accept_terms", nullable = false)
     private Boolean acceptTerms = false;
 
+    @Column(name = "two_factor_enabled")
+    private Boolean twoFactorEnabled = false;
+
     @OneToMany(mappedBy = "user", cascade = jakarta.persistence.CascadeType.ALL)
     private List<Order> orders;
 
@@ -73,6 +76,9 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user", cascade = jakarta.persistence.CascadeType.ALL)
     private VerifyEmailToken verifyEmailToken;
+
+    @Column(name = "is_subscribed_to_newsletter")
+    private Boolean isSubscribedToNewsletter = false;
 
     @OneToOne(mappedBy = "user", cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
     private ForgotPasswordToken forgotPasswordToken;

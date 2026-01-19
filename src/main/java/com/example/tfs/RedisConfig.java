@@ -28,39 +28,24 @@ public class RedisConfig {
         public RedisCacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
                 RedisSerializer<Object> valueSerializer = RedisSerializer.json();
 
-                Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
-
-                cacheConfigs.put("accessTokenBlacklist",
-                                RedisCacheConfiguration.defaultCacheConfig()
-                                                .serializeKeysWith(RedisSerializationContext.SerializationPair
-                                                                .fromSerializer(new StringRedisSerializer()))
-                                                .serializeValuesWith(RedisSerializationContext.SerializationPair
-                                                                .fromSerializer(valueSerializer))
-                                                .entryTtl(Duration.ofHours(1)));
-
-                cacheConfigs.put("refreshTokenBlacklist",
-                                RedisCacheConfiguration.defaultCacheConfig()
-                                                .serializeKeysWith(RedisSerializationContext.SerializationPair
-                                                                .fromSerializer(new StringRedisSerializer()))
-                                                .serializeValuesWith(RedisSerializationContext.SerializationPair
-                                                                .fromSerializer(valueSerializer))
-                                                .entryTtl(Duration.ofDays(7)));
-
-                cacheConfigs.put("users",
-                                RedisCacheConfiguration.defaultCacheConfig()
-                                                .serializeKeysWith(RedisSerializationContext.SerializationPair
-                                                                .fromSerializer(new StringRedisSerializer()))
-                                                .serializeValuesWith(RedisSerializationContext.SerializationPair
-                                                                .fromSerializer(valueSerializer))
-                                                .entryTtl(Duration.ofMinutes(5)));
-                cacheConfigs.put("cartCheckoutCache", RedisCacheConfiguration.defaultCacheConfig()
+                // Define DEFAULT configuration for ALL caches
+                RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
                                 .serializeKeysWith(RedisSerializationContext.SerializationPair
                                                 .fromSerializer(new StringRedisSerializer()))
                                 .serializeValuesWith(RedisSerializationContext.SerializationPair
                                                 .fromSerializer(valueSerializer))
-                                .entryTtl(Duration.ofMinutes(15)));
+                                .entryTtl(Duration.ofHours(1));
+
+                Map<String, RedisCacheConfiguration> cacheConfigs = new HashMap<>();
+
+                cacheConfigs.put("accessTokenBlacklist", defaultCacheConfig.entryTtl(Duration.ofHours(1)));
+                cacheConfigs.put("refreshTokenBlacklist", defaultCacheConfig.entryTtl(Duration.ofDays(7)));
+                cacheConfigs.put("users", defaultCacheConfig.entryTtl(Duration.ofMinutes(5)));
+                cacheConfigs.put("activeCart", defaultCacheConfig.entryTtl(Duration.ofMinutes(30)));
+                cacheConfigs.put("cartCheckoutCache", defaultCacheConfig.entryTtl(Duration.ofMinutes(15)));
 
                 return RedisCacheManager.builder(redisConnectionFactory)
+                                .cacheDefaults(defaultCacheConfig) // Set the default here
                                 .withInitialCacheConfigurations(cacheConfigs)
                                 .build();
         }

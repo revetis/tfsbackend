@@ -47,4 +47,6 @@ public class UserDTOUpdate {
     private String avatarUrl;
 
     private java.util.List<Long> roleIds;
+
+    private Boolean isSubscribedToNewsletter = false;
 }

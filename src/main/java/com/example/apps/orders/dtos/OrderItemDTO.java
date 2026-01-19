@@ -24,5 +24,7 @@ public class OrderItemDTO {
     private com.example.apps.products.enums.ProductSize size;
     private String color;
     private String gender;
+    private String sku;
+    private BigDecimal taxAmount;
 
 }

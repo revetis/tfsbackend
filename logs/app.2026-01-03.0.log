@@ -1,0 +1,676 @@
+2026-01-03 04:28:12.015 [restartedMain] INFO  com.example.starter.Starter - Starting Starter using Java 25.0.1 with PID 36968 (F:\Yazilim\tfsbackend\tfsbackend\target\classes started by samtt in F:\Yazilim\tfsbackend\tfsbackend)
+2026-01-03 04:28:12.018 [restartedMain] INFO  com.example.starter.Starter - No active profile set, falling back to 1 default profile: "default"
+2026-01-03 04:28:12.072 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-01-03 04:28:12.073 [restartedMain] INFO  o.s.b.d.e.DevToolsPropertyDefaultsPostProcessor - For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-01-03 04:28:12.125 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 9.0.1.Final
+2026-01-03 04:28:13.004 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:28:13.005 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-03 04:28:13.242 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.example.apps.products.repositories.search.ProductDocumentRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2026-01-03 04:28:13.337 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 322 ms. Found 36 JPA repository interfaces.
+2026-01-03 04:28:13.344 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:28:13.344 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:28:13.348 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 1 Elasticsearch repository interface.
+2026-01-03 04:28:13.690 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:28:13.690 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Reactive Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:28:13.698 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 6 ms. Found 0 Reactive Elasticsearch repository interfaces.
+2026-01-03 04:28:13.712 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:28:13.713 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-03 04:28:13.723 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2026-01-03 04:28:14.577 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-03 04:28:14.589 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-01-03 04:28:14.591 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-03 04:28:14.592 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-03 04:28:14.647 [restartedMain] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 2573 ms
+2026-01-03 04:28:14.907 [restartedMain] DEBUG c.e.apps.auths.securities.JWTFilter - Filter 'JWTFilter' configured for use
+2026-01-03 04:28:15.109 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-03 04:28:15.159 [restartedMain] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 7.1.8.Final
+2026-01-03 04:28:15.542 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-03 04:28:15.573 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-01-03 04:28:15.752 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@52f5a31c
+2026-01-03 04:28:15.754 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-01-03 04:28:15.807 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-03 04:28:15.835 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/tfs?currentSchema=tfsdb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.20
+	Default catalog/schema: tfs/tfsdb
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-03 04:28:17.259 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-03 04:28:17.618 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:28:17.764 [restartedMain] INFO  o.s.d.j.r.q.QueryEnhancerFactories - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-01-03 04:28:20.246 [restartedMain] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-03 04:28:20.604 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/uploads/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:28:20.604 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/img/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:28:20.605 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/favicon.ico]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:28:20.605 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/error]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:28:20.606 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/payments/callback/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:28:20.606 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/webhook/geliver/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:28:20.728 [restartedMain] WARN  i.m.p.PrometheusMeterRegistry - The meter (MeterId{name='tfs.orders.total', tags=[tag(type=order)]}) registration has failed: Prometheus requires that all meters with the same name have the same type. There is already an existing meter named 'tfs_orders' that is a COUNTER. The meter you are attempting to register is a GAUGE. Note that subsequent logs will be logged at debug level.
+2026-01-03 04:28:21.329 [restartedMain] INFO  c.e.apps.auths.securities.WebConfig - Mapping /img/** and /uploads/** to: file:///F:/Yazilim/tfsbackend/tfsbackend/src/main/resources/static/uploads/
+2026-01-03 04:28:22.463 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-01-03 04:28:22.530 [restartedMain] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-01-03 04:28:22.539 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-03 04:28:22.547 [restartedMain] INFO  com.example.starter.Starter - Started Starter in 10.933 seconds (process running for 11.428)
+2026-01-03 04:28:22.626 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-01-03 04:28:22.627 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-01-03 04:28:35.869 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-03 04:28:35.870 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-03 04:28:35.873 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-01-03 04:28:37.107 [http-nio-8080-exec-3] WARN  c.e.a.o.services.impl.OrderService - Failed to fetch shipment for order TFS20251230-286862: Query did not return a unique result: 3 results were returned
+2026-01-03 04:28:37.140 [http-nio-8080-exec-3] WARN  c.e.a.o.services.impl.OrderService - Failed to fetch shipment for order TFS20251230-7471: Query did not return a unique result: 3 results were returned
+2026-01-03 04:28:37.147 [http-nio-8080-exec-3] WARN  c.e.a.o.services.impl.OrderService - Failed to fetch shipment for order TFS20251230-3157: Query did not return a unique result: 3 results were returned
+2026-01-03 04:28:37.594 [http-nio-8080-exec-2] WARN  c.e.a.o.services.impl.OrderService - Failed to fetch shipment for order TFS20260102-729797: Query did not return a unique result: 2 results were returned
+2026-01-03 04:28:37.946 [http-nio-8080-exec-2] WARN  c.e.a.o.services.impl.OrderService - Failed to fetch shipment for order TFS20251230-286862: Query did not return a unique result: 3 results were returned
+2026-01-03 04:28:37.969 [http-nio-8080-exec-2] WARN  c.e.a.o.services.impl.OrderService - Failed to fetch shipment for order TFS20251230-7471: Query did not return a unique result: 3 results were returned
+2026-01-03 04:28:37.975 [http-nio-8080-exec-2] WARN  c.e.a.o.services.impl.OrderService - Failed to fetch shipment for order TFS20251230-3157: Query did not return a unique result: 3 results were returned
+2026-01-03 04:28:39.459 [http-nio-8080-exec-9] INFO  c.e.a.p.s.s.ProductSearchService - === ELASTICSEARCH SEARCH DEBUG ===
+2026-01-03 04:28:39.459 [http-nio-8080-exec-9] INFO  c.e.a.p.s.s.ProductSearchService - Search params - term: null, subCategoryId: null, minPrice: null, maxPrice: null, material: null, genders: null, colors: null, sizes: null
+2026-01-03 04:28:45.537 [http-nio-8080-exec-7] INFO  c.e.a.p.s.s.ProductSearchService - === ELASTICSEARCH SEARCH DEBUG ===
+2026-01-03 04:28:45.538 [http-nio-8080-exec-7] INFO  c.e.a.p.s.s.ProductSearchService - Search params - term: null, subCategoryId: null, minPrice: null, maxPrice: null, material: null, genders: null, colors: null, sizes: null
+2026-01-03 04:29:50.046 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 448 class path changes (0 additions, 448 deletions, 0 modifications)
+2026-01-03 04:29:50.052 [Thread-1] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-03 04:29:50.054 [tomcat-shutdown] INFO  o.a.coyote.http11.Http11NioProtocol - Pausing ProtocolHandler ["http-nio-8080"]
+2026-01-03 04:29:50.059 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-03 04:29:50.059 [Thread-1] INFO  o.a.coyote.http11.Http11NioProtocol - Stopping ProtocolHandler ["http-nio-8080"]
+2026-01-03 04:29:50.092 [Thread-1] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:29:50.096 [Thread-1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-01-03 04:29:50.101 [Thread-1] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-01-03 04:29:55.477 [restartedMain] INFO  com.example.starter.Starter - Starting Starter using Java 25.0.1 with PID 36968 (F:\Yazilim\tfsbackend\tfsbackend\target\classes started by samtt in F:\Yazilim\tfsbackend\tfsbackend)
+2026-01-03 04:29:55.477 [restartedMain] INFO  com.example.starter.Starter - No active profile set, falling back to 1 default profile: "default"
+2026-01-03 04:29:56.159 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:29:56.159 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-03 04:29:56.247 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.example.apps.products.repositories.search.ProductDocumentRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2026-01-03 04:29:56.321 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 159 ms. Found 36 JPA repository interfaces.
+2026-01-03 04:29:56.323 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:29:56.323 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:29:56.327 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 1 Elasticsearch repository interface.
+2026-01-03 04:29:56.464 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:29:56.464 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Reactive Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:29:56.466 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 0 Reactive Elasticsearch repository interfaces.
+2026-01-03 04:29:56.475 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:29:56.475 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-03 04:29:56.477 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2026-01-03 04:29:56.786 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-03 04:29:56.787 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-03 04:29:56.787 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-03 04:29:56.822 [restartedMain] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1337 ms
+2026-01-03 04:29:56.971 [restartedMain] DEBUG c.e.apps.auths.securities.JWTFilter - Filter 'JWTFilter' configured for use
+2026-01-03 04:29:57.131 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-03 04:29:57.161 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-03 04:29:57.162 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Starting...
+2026-01-03 04:29:57.216 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@526c6dfc
+2026-01-03 04:29:57.216 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Start completed.
+2026-01-03 04:29:57.224 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-03 04:29:57.231 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/tfs?currentSchema=tfsdb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.20
+	Default catalog/schema: tfs/tfsdb
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-03 04:29:57.770 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-03 04:29:58.005 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:29:59.811 [restartedMain] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-03 04:30:00.072 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/uploads/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:00.072 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/img/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:00.073 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/favicon.ico]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:00.073 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/error]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:00.073 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/payments/callback/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:00.074 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/webhook/geliver/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:00.444 [restartedMain] INFO  c.e.apps.auths.securities.WebConfig - Mapping /img/** and /uploads/** to: file:///F:/Yazilim/tfsbackend/tfsbackend/src/main/resources/static/uploads/
+2026-01-03 04:30:01.342 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-01-03 04:30:01.386 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-03 04:30:01.393 [restartedMain] INFO  com.example.starter.Starter - Started Starter in 5.974 seconds (process running for 110.272)
+2026-01-03 04:30:01.395 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-01-03 04:30:01.395 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-01-03 04:30:01.395 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-01-03 04:30:08.275 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 2 class path changes (0 additions, 0 deletions, 2 modifications)
+2026-01-03 04:30:08.279 [Thread-6] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-03 04:30:08.284 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-03 04:30:08.301 [Thread-6] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:30:08.304 [Thread-6] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Shutdown initiated...
+2026-01-03 04:30:08.314 [Thread-6] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-2 - Shutdown completed.
+2026-01-03 04:30:08.429 [restartedMain] INFO  com.example.starter.Starter - Starting Starter using Java 25.0.1 with PID 36968 (F:\Yazilim\tfsbackend\tfsbackend\target\classes started by samtt in F:\Yazilim\tfsbackend\tfsbackend)
+2026-01-03 04:30:08.430 [restartedMain] INFO  com.example.starter.Starter - No active profile set, falling back to 1 default profile: "default"
+2026-01-03 04:30:08.835 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:30:08.837 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-03 04:30:08.947 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.example.apps.products.repositories.search.ProductDocumentRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2026-01-03 04:30:09.067 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 226 ms. Found 36 JPA repository interfaces.
+2026-01-03 04:30:09.068 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:30:09.068 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:30:09.073 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 1 Elasticsearch repository interface.
+2026-01-03 04:30:09.265 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:30:09.265 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Reactive Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:30:09.270 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 0 Reactive Elasticsearch repository interfaces.
+2026-01-03 04:30:09.277 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:30:09.277 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-03 04:30:09.281 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2026-01-03 04:30:09.562 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-03 04:30:09.563 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-03 04:30:09.564 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-03 04:30:09.598 [restartedMain] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1166 ms
+2026-01-03 04:30:09.775 [restartedMain] DEBUG c.e.apps.auths.securities.JWTFilter - Filter 'JWTFilter' configured for use
+2026-01-03 04:30:09.925 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-03 04:30:09.944 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-03 04:30:09.945 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-3 - Starting...
+2026-01-03 04:30:09.997 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-3 - Added connection org.postgresql.jdbc.PgConnection@70062a97
+2026-01-03 04:30:09.997 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-3 - Start completed.
+2026-01-03 04:30:10.005 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-03 04:30:10.010 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/tfs?currentSchema=tfsdb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.20
+	Default catalog/schema: tfs/tfsdb
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-03 04:30:10.346 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-03 04:30:10.602 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:30:12.299 [restartedMain] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-03 04:30:12.578 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/uploads/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:12.578 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/img/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:12.580 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/favicon.ico]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:12.580 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/error]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:12.581 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/payments/callback/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:12.581 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/webhook/geliver/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:30:12.989 [restartedMain] INFO  c.e.apps.auths.securities.WebConfig - Mapping /img/** and /uploads/** to: file:///F:/Yazilim/tfsbackend/tfsbackend/src/main/resources/static/uploads/
+2026-01-03 04:30:13.864 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-01-03 04:30:13.906 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-03 04:30:13.912 [restartedMain] INFO  com.example.starter.Starter - Started Starter in 5.508 seconds (process running for 122.792)
+2026-01-03 04:30:13.914 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-01-03 04:30:13.914 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-01-03 04:30:13.914 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-01-03 04:31:28.771 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 3 class path changes (0 additions, 0 deletions, 3 modifications)
+2026-01-03 04:31:28.774 [Thread-12] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-03 04:31:28.779 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-03 04:31:28.788 [Thread-12] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:31:28.788 [Thread-12] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-3 - Shutdown initiated...
+2026-01-03 04:31:28.790 [Thread-12] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-3 - Shutdown completed.
+2026-01-03 04:31:28.883 [restartedMain] INFO  com.example.starter.Starter - Starting Starter using Java 25.0.1 with PID 36968 (F:\Yazilim\tfsbackend\tfsbackend\target\classes started by samtt in F:\Yazilim\tfsbackend\tfsbackend)
+2026-01-03 04:31:28.884 [restartedMain] INFO  com.example.starter.Starter - No active profile set, falling back to 1 default profile: "default"
+2026-01-03 04:31:29.224 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:31:29.224 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-03 04:31:29.308 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.example.apps.products.repositories.search.ProductDocumentRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2026-01-03 04:31:29.386 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 160 ms. Found 36 JPA repository interfaces.
+2026-01-03 04:31:29.387 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:31:29.387 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:31:29.391 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 1 Elasticsearch repository interface.
+2026-01-03 04:31:29.500 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:31:29.501 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Reactive Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:31:29.503 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Reactive Elasticsearch repository interfaces.
+2026-01-03 04:31:29.509 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:31:29.509 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-03 04:31:29.512 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2026-01-03 04:31:29.733 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-03 04:31:29.733 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-03 04:31:29.734 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-03 04:31:29.768 [restartedMain] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 881 ms
+2026-01-03 04:31:29.898 [restartedMain] DEBUG c.e.apps.auths.securities.JWTFilter - Filter 'JWTFilter' configured for use
+2026-01-03 04:31:30.058 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-03 04:31:30.074 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-03 04:31:30.076 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-4 - Starting...
+2026-01-03 04:31:30.117 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-4 - Added connection org.postgresql.jdbc.PgConnection@2ab3c46d
+2026-01-03 04:31:30.118 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-4 - Start completed.
+2026-01-03 04:31:30.126 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-03 04:31:30.129 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/tfs?currentSchema=tfsdb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.20
+	Default catalog/schema: tfs/tfsdb
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-03 04:31:30.419 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-03 04:31:30.619 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:31:31.989 [restartedMain] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-03 04:31:32.216 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/uploads/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:31:32.216 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/img/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:31:32.216 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/favicon.ico]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:31:32.218 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/error]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:31:32.218 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/payments/callback/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:31:32.218 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/webhook/geliver/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:31:32.529 [restartedMain] INFO  c.e.apps.auths.securities.WebConfig - Mapping /img/** and /uploads/** to: file:///F:/Yazilim/tfsbackend/tfsbackend/src/main/resources/static/uploads/
+2026-01-03 04:31:33.307 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-01-03 04:31:33.362 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-03 04:31:33.368 [restartedMain] INFO  com.example.starter.Starter - Started Starter in 4.511 seconds (process running for 202.248)
+2026-01-03 04:31:33.370 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-01-03 04:31:33.370 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-01-03 04:31:33.371 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-01-03 04:31:37.462 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-03 04:31:37.463 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-03 04:31:37.467 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-01-03 04:31:49.023 [http-nio-8080-exec-5] INFO  c.e.a.p.s.s.ProductSearchService - === ELASTICSEARCH SEARCH DEBUG ===
+2026-01-03 04:31:49.023 [http-nio-8080-exec-5] INFO  c.e.a.p.s.s.ProductSearchService - Search params - term: null, subCategoryId: null, minPrice: 0.0, maxPrice: 10000.0, material: null, genders: null, colors: null, sizes: null
+2026-01-03 04:31:49.070 [http-nio-8080-exec-5] WARN  c.e.c.t.r.low_level.Rest5Client - request [POST http://localhost:9200/products/_search?search_type=query_then_fetch&typed_keys=true] returned 1 warnings: [299 Elasticsearch-7.17.10-fecd68e3150eda0c307ab9a9d7557f5d5fd71349 "Loading the fielddata on the _id field is deprecated and will be removed in future versions. If you require sorting or aggregating on this field you should also include the id in the body of your documents, and map this field as a keyword field that has [doc_values] enabled"]
+2026-01-03 04:32:02.490 [http-nio-8080-exec-3] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Fetching cities for country: TR
+2026-01-03 04:32:03.051 [http-nio-8080-exec-10] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Creating shipment request for order: TFS20260103-TEMP-5009
+2026-01-03 04:32:03.247 [http-nio-8080-exec-2] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Fetching cities for country: TR
+2026-01-03 04:32:03.259 [http-nio-8080-exec-4] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Fetching districts for city code: 55 in country: TR
+2026-01-03 04:32:03.605 [http-nio-8080-exec-5] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Creating shipment request for order: TFS20260103-TEMP-8239
+2026-01-03 04:32:03.654 [ForkJoinPool.commonPool-worker-1] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment created successfully. Shipment ID: d700f6c0-baea-4f17-873f-99f085d5cd60
+2026-01-03 04:32:04.065 [ForkJoinPool.commonPool-worker-1] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment created successfully. Shipment ID: 071eddc9-d424-42d6-afb5-3a8648b0c012
+2026-01-03 04:32:08.627 [http-nio-8080-exec-9] INFO  c.e.a.o.services.impl.OrderService - Starting order creation for user ID: null
+2026-01-03 04:32:08.638 [http-nio-8080-exec-9] INFO  c.e.a.o.services.impl.OrderService - Soft-linked guest order to existing user ID: 5
+2026-01-03 04:32:08.657 [http-nio-8080-exec-9] INFO  c.e.a.o.services.impl.OrderService - Campaign 'Gemini Customer' selected.
+2026-01-03 04:32:08.770 [http-nio-8080-exec-9] INFO  c.e.a.p.s.impl.ProductServiceImpl - Product synced to Elasticsearch: ID 3
+2026-01-03 04:32:08.797 [http-nio-8080-exec-9] INFO  c.e.a.o.services.impl.OrderService - Order created successfully with order number: TFS20260103-963218
+2026-01-03 04:32:08.859 [http-nio-8080-exec-1] INFO  c.e.a.p.c.PaymentPublicController - Payment initialization requested for order: TFS20260103-963218
+2026-01-03 04:32:08.867 [http-nio-8080-exec-1] INFO  c.e.a.p.s.impl.PaymentServiceImpl - Creating payment for order: TFS20260103-963218 | Total: 4297.32 (Subtotal: 6228.00, Discount: 1930.68, Shipping: 0.00)
+2026-01-03 04:32:24.384 [http-nio-8080-exec-3] INFO  c.e.a.p.c.PaymentPublicController - Callback received for token: be4e8169-50e3-4e2a-84d8-bb5e53e17333
+2026-01-03 04:32:24.475 [http-nio-8080-exec-3] INFO  c.e.a.p.s.impl.PaymentServiceImpl - Cart cleared for user ID: 5
+2026-01-03 04:32:24.475 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N Config - baseUrl: http://localhost:5678/, apiKey present: true
+2026-01-03 04:32:24.475 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - Triggering N8N workflow at URL: /webhook/payment-success
+2026-01-03 04:32:24.475 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - Payload keys: [amount, orderNumber, name, transactionId, email]
+2026-01-03 04:32:24.476 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N webhook request sent (async) to: /webhook/payment-success
+2026-01-03 04:32:24.476 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N Config - baseUrl: http://localhost:5678/, apiKey present: true
+2026-01-03 04:32:24.476 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - Triggering N8N workflow at URL: /webhook/order-confirmation
+2026-01-03 04:32:24.476 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - Payload keys: [firstName, totalAmount, faviconURL, orderNumber, preHeader, subject, name, shippingAddress, orderDate, orderDetailUrl, email]
+2026-01-03 04:32:24.477 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N webhook request sent (async) to: /webhook/order-confirmation
+2026-01-03 04:32:24.517 [http-nio-8080-exec-3] INFO  c.e.a.i.s.impl.InvoiceServiceImpl - Generated internal invoice ref: INV-2026-00018 for order: TFS20260103-963218
+2026-01-03 04:32:24.526 [http-nio-8080-exec-3] INFO  c.e.a.p.s.impl.PaymentServiceImpl - Receipt/Invoice data created for order: TFS20260103-963218
+2026-01-03 04:32:24.526 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N Config - baseUrl: http://localhost:5678/, apiKey present: true
+2026-01-03 04:32:24.526 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - Triggering N8N workflow at URL: /webhook/receipt
+2026-01-03 04:32:24.526 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - Payload keys: [totalAmount, orderNumber, customerEmail, receiptUrl, orderDate, customerName]
+2026-01-03 04:32:24.527 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N webhook request sent (async) to: /webhook/receipt
+2026-01-03 04:32:24.527 [http-nio-8080-exec-3] INFO  c.e.a.p.s.impl.PaymentServiceImpl - N8N Receipt Workflow triggered for order: TFS20260103-963218
+2026-01-03 04:32:24.577 [ForkJoinPool.commonPool-worker-1] ERROR c.e.a.n.services.impl.N8NServiceImpl - Error triggering N8N workflow at /webhook/payment-success: 401 Unauthorized on POST request for "http://localhost:5678/webhook/payment-success": [no body]
+org.springframework.web.client.HttpClientErrorException$Unauthorized: 401 Unauthorized on POST request for "http://localhost:5678/webhook/payment-success": [no body]
+	at org.springframework.web.client.HttpClientErrorException.create(HttpClientErrorException.java:109)
+	at org.springframework.web.client.DefaultResponseErrorHandler.handleError(DefaultResponseErrorHandler.java:145)
+	at org.springframework.web.client.DefaultResponseErrorHandler.handleError(DefaultResponseErrorHandler.java:120)
+	at org.springframework.web.client.RestTemplate.handleResponse(RestTemplate.java:807)
+	at org.springframework.web.client.RestTemplate.doExecute(RestTemplate.java:756)
+	at org.springframework.web.client.RestTemplate.execute(RestTemplate.java:677)
+	at org.springframework.web.client.RestTemplate.postForEntity(RestTemplate.java:430)
+	at com.example.apps.notifications.services.impl.N8NServiceImpl.lambda$0(N8NServiceImpl.java:75)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.run(CompletableFuture.java:1825)
+	at java.base/java.util.concurrent.CompletableFuture$AsyncRun.exec(CompletableFuture.java:1817)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:511)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1450)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:2019)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:187)
+2026-01-03 04:32:24.605 [ForkJoinPool.commonPool-worker-2] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N workflow triggered successfully. Status: 200 OK, Response: {"message":"Workflow was started"}
+2026-01-03 04:32:24.615 [ForkJoinPool.commonPool-worker-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N workflow triggered successfully. Status: 200 OK, Response: {"message":"Workflow was started"}
+2026-01-03 04:32:24.877 [http-nio-8080-exec-2] INFO  c.e.a.p.c.PaymentPublicController - Manual shipment purchase requested for order: TFS20260103-963218
+2026-01-03 04:32:24.880 [task-1] INFO  c.e.a.p.s.impl.PaymentServiceImpl - Manual shipment purchase requested for order: TFS20260103-963218
+2026-01-03 04:32:24.902 [task-1] INFO  c.e.a.p.s.impl.PaymentServiceImpl - Using existing Geliver Shipment ID: 071eddc9-d424-42d6-afb5-3a8648b0c012 for auto-purchase
+2026-01-03 04:32:24.921 [task-1] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Purchasing offer for provider service: GELIVER_STANDART
+2026-01-03 04:32:25.641 [ForkJoinPool.commonPool-worker-3] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Transaction completed. Barcode: 53141514004
+2026-01-03 04:32:25.648 [task-1] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment record saved for order: TFS20260103-963218 with barcode: 53141514004
+2026-01-03 04:32:25.650 [task-1] INFO  c.e.a.p.s.impl.PaymentServiceImpl - Shipment metadata saved for order TFS20260103-963218. Barcode: 53141514004, Tracking: https://app.geliver.io/tracking/49b8126b-d636-4a62-8f0f-09ed7ed9c50d, Provider: Geliver Kargo
+2026-01-03 04:32:25.650 [task-1] INFO  c.e.a.p.s.impl.PaymentServiceImpl - Shipment created successfully for order TFS20260103-963218: GeliverTransactionMainResponse(result=true, message=Success, data=GeliverTransactionDataResponse(id=1b0619cf-1440-4e34-850a-a4ebebb1ad9e, createdAt=2026-01-03T01:32:25.602034Z, updatedAt=2026-01-03T01:32:25.695376733Z, amount=0, totalAmount=0, currency=TL, offerID=79a5a7cb-0cdc-42e2-8e0f-3fdde6ab2505, shipment=GeliverTransactionShipmentResponse(id=49b8126b-d636-4a62-8f0f-09ed7ed9c50d, createdAt=2026-01-03T01:32:25.451715Z, updatedAt=2026-01-03T01:32:25.692734Z, test=true, barcode=53141514004, labelUrl=https://labels3.geliver.io/labels/49b8126b-d636-4a62-8f0f-09ed7ed9c50d.pdf, trackingUrl=null, trackingNumber=null, responsiveLabelUrl=https://api.geliver.io/api/v1/responsivelabels/49b8126b-d636-4a62-8f0f-09ed7ed9c50d/eefb, statusCode=TRACKING_CODE_CREATED, providerCode=GELIVER, providerServiceCode=GELIVER_STANDART, organizationShipmentID=1197, hasError=false, lastErrorMessage=null, senderAddressID=ff5c5842-4839-41a0-990c-56d8fe066700, recipientAddressID=ee0d3c26-56ea-45e3-80af-9431998430bf), description=Yeni gönderi ücretlendirilmesi, isPayed=false, payedVia=BALANCE, transactionType=CREATE_SHIPMENT, invoiceID=81a817ed-4665-4793-84fb-32d2da40b851, newBalance=500))
+2026-01-03 04:32:26.003 [http-nio-8080-exec-1] INFO  c.e.a.s.c.GeliverWebhookController - Received Geliver webhook: type=null, tokenPresence=Present
+2026-01-03 04:32:26.003 [http-nio-8080-exec-1] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Processing Geliver tracking webhook for order: null, shipmentId: 49b8126b-d636-4a62-8f0f-09ed7ed9c50d, trackingStatusCode: PRE_TRANSIT, subStatus: information_received, rawStatusCode: TRACKING_CODE_CREATED
+2026-01-03 04:32:26.015 [http-nio-8080-exec-1] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment event saved for order: TFS20260103-963218, status: TRACKING_CODE_CREATED
+2026-01-03 04:32:26.024 [http-nio-8080-exec-1] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment status changed from PENDING to CREATED for order: TFS20260103-963218
+2026-01-03 04:32:26.024 [http-nio-8080-exec-1] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment created for order: TFS20260103-963218, no email sent (waiting for SHIPPED)
+2026-01-03 04:33:01.609 [http-nio-8080-exec-6] INFO  c.e.a.s.c.GeliverWebhookController - Received Geliver webhook: type=null, tokenPresence=Present
+2026-01-03 04:33:01.609 [http-nio-8080-exec-6] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Processing Geliver tracking webhook for order: null, shipmentId: 49b8126b-d636-4a62-8f0f-09ed7ed9c50d, trackingStatusCode: TRANSIT, subStatus: package_accepted, rawStatusCode: SHIPPED
+2026-01-03 04:33:01.615 [http-nio-8080-exec-6] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment event saved for order: TFS20260103-963218, status: SHIPPED
+2026-01-03 04:33:01.620 [http-nio-8080-exec-6] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment status changed from CREATED to SHIPPED for order: TFS20260103-963218
+2026-01-03 04:33:01.622 [http-nio-8080-exec-6] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Triggering n8n email for status: SHIPPED to /webhook/shipment-shipped
+2026-01-03 04:33:01.622 [http-nio-8080-exec-6] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N Config - baseUrl: http://localhost:5678/, apiKey present: true
+2026-01-03 04:33:01.622 [http-nio-8080-exec-6] INFO  c.e.a.n.services.impl.N8NServiceImpl - Triggering N8N workflow at URL: /webhook/shipment-shipped
+2026-01-03 04:33:01.622 [http-nio-8080-exec-6] INFO  c.e.a.n.services.impl.N8NServiceImpl - Payload keys: [carrier, orderNumber, trackingUrl, name, labelUrl, trackingNumber, email]
+2026-01-03 04:33:01.622 [http-nio-8080-exec-6] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N webhook request sent (async) to: /webhook/shipment-shipped
+2026-01-03 04:33:01.645 [ForkJoinPool.commonPool-worker-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N workflow triggered successfully. Status: 200 OK, Response: {"message":"Workflow was started"}
+2026-01-03 04:33:03.594 [http-nio-8080-exec-10] INFO  c.e.a.s.c.GeliverWebhookController - Received Geliver webhook: type=null, tokenPresence=Present
+2026-01-03 04:33:03.597 [http-nio-8080-exec-10] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Processing Geliver tracking webhook for order: null, shipmentId: 49b8126b-d636-4a62-8f0f-09ed7ed9c50d, trackingStatusCode: TRANSIT, subStatus: delivery_scheduled, rawStatusCode: SHIPPED
+2026-01-03 04:33:03.602 [http-nio-8080-exec-10] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment event saved for order: TFS20260103-963218, status: SHIPPED
+2026-01-03 04:33:03.605 [http-nio-8080-exec-10] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment status unchanged (SHIPPED) for order: TFS20260103-963218, skipping email
+2026-01-03 04:33:13.708 [http-nio-8080-exec-9] INFO  c.e.a.s.c.GeliverWebhookController - Received Geliver webhook: type=null, tokenPresence=Present
+2026-01-03 04:33:13.709 [http-nio-8080-exec-9] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Processing Geliver tracking webhook for order: null, shipmentId: 49b8126b-d636-4a62-8f0f-09ed7ed9c50d, trackingStatusCode: TRANSIT, subStatus: out_for_delivery, rawStatusCode: SHIPPED
+2026-01-03 04:33:13.711 [http-nio-8080-exec-9] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment event saved for order: TFS20260103-963218, status: SHIPPED
+2026-01-03 04:33:13.715 [http-nio-8080-exec-9] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment status unchanged (SHIPPED) for order: TFS20260103-963218, skipping email
+2026-01-03 04:33:14.588 [http-nio-8080-exec-7] INFO  c.e.a.s.c.GeliverWebhookController - Received Geliver webhook: type=null, tokenPresence=Present
+2026-01-03 04:33:14.589 [http-nio-8080-exec-7] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Processing Geliver tracking webhook for order: null, shipmentId: 49b8126b-d636-4a62-8f0f-09ed7ed9c50d, trackingStatusCode: DELIVERED, subStatus: delivered, rawStatusCode: DELIVERED
+2026-01-03 04:33:14.592 [http-nio-8080-exec-7] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment event saved for order: TFS20260103-963218, status: DELIVERED
+2026-01-03 04:33:14.594 [http-nio-8080-exec-7] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Shipment status changed from SHIPPED to DELIVERED for order: TFS20260103-963218
+2026-01-03 04:33:14.598 [http-nio-8080-exec-7] INFO  c.e.a.s.s.impl.GeliverServiceImpl - Triggering n8n email for status: DELIVERED to /webhook/shipment-delivered
+2026-01-03 04:33:14.598 [http-nio-8080-exec-7] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N Config - baseUrl: http://localhost:5678/, apiKey present: true
+2026-01-03 04:33:14.598 [http-nio-8080-exec-7] INFO  c.e.a.n.services.impl.N8NServiceImpl - Triggering N8N workflow at URL: /webhook/shipment-delivered
+2026-01-03 04:33:14.598 [http-nio-8080-exec-7] INFO  c.e.a.n.services.impl.N8NServiceImpl - Payload keys: [carrier, orderNumber, trackingUrl, name, labelUrl, deliveryDate, trackingNumber, email]
+2026-01-03 04:33:14.599 [http-nio-8080-exec-7] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N webhook request sent (async) to: /webhook/shipment-delivered
+2026-01-03 04:33:14.622 [ForkJoinPool.commonPool-worker-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N workflow triggered successfully. Status: 200 OK, Response: {"message":"Workflow was started"}
+2026-01-03 04:35:52.276 [http-nio-8080-exec-2] INFO  c.e.a.p.s.s.ProductSearchService - === ELASTICSEARCH SEARCH DEBUG ===
+2026-01-03 04:35:52.276 [http-nio-8080-exec-2] INFO  c.e.a.p.s.s.ProductSearchService - Search params - term: null, subCategoryId: null, minPrice: null, maxPrice: null, material: null, genders: null, colors: null, sizes: null
+2026-01-03 04:39:12.685 [http-nio-8080-exec-9] WARN  o.s.w.s.m.m.a.ExceptionHandlerExceptionResolver - Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in public org.springframework.http.ResponseEntity<com.example.tfs.maindto.ApiTemplate<java.lang.Void, com.example.apps.auths.dtos.UserRegisterDTO>> com.example.apps.auths.controllers.UserController.registerUser(com.example.apps.auths.dtos.UserRegisterDTOIU,jakarta.servlet.http.HttpServletRequest): [Field error in object 'userRegisterDTOIU' on field 'phoneNumber': rejected value [gfjhgjfjfjf]; codes [Pattern.userRegisterDTOIU.phoneNumber,Pattern.phoneNumber,Pattern.java.lang.String,Pattern]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [userRegisterDTOIU.phoneNumber,phoneNumber]; arguments []; default message [phoneNumber],[Ljakarta.validation.constraints.Pattern$Flag;@15db5895,^\d+$]; default message [Phone number must contain only digits]] ]
+2026-01-03 04:41:11.622 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-01-03 04:41:11.625 [Thread-16] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-03 04:41:11.629 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-03 04:41:11.649 [Thread-16] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:41:11.651 [Thread-16] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-4 - Shutdown initiated...
+2026-01-03 04:41:11.655 [Thread-16] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-4 - Shutdown completed.
+2026-01-03 04:41:11.758 [restartedMain] INFO  com.example.starter.Starter - Starting Starter using Java 25.0.1 with PID 36968 (F:\Yazilim\tfsbackend\tfsbackend\target\classes started by samtt in F:\Yazilim\tfsbackend\tfsbackend)
+2026-01-03 04:41:11.758 [restartedMain] INFO  com.example.starter.Starter - No active profile set, falling back to 1 default profile: "default"
+2026-01-03 04:41:12.225 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:41:12.225 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-03 04:41:12.333 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.example.apps.products.repositories.search.ProductDocumentRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2026-01-03 04:41:12.439 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 209 ms. Found 36 JPA repository interfaces.
+2026-01-03 04:41:12.441 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:41:12.441 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:41:12.445 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 1 Elasticsearch repository interface.
+2026-01-03 04:41:12.583 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:41:12.583 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Reactive Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:41:12.586 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Reactive Elasticsearch repository interfaces.
+2026-01-03 04:41:12.592 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:41:12.592 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-03 04:41:12.594 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2026-01-03 04:41:12.866 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-03 04:41:12.867 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-03 04:41:12.868 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-03 04:41:12.901 [restartedMain] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1140 ms
+2026-01-03 04:41:13.051 [restartedMain] DEBUG c.e.apps.auths.securities.JWTFilter - Filter 'JWTFilter' configured for use
+2026-01-03 04:41:13.191 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-03 04:41:13.210 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-03 04:41:13.211 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-5 - Starting...
+2026-01-03 04:41:13.255 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-5 - Added connection org.postgresql.jdbc.PgConnection@5709dad8
+2026-01-03 04:41:13.255 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-5 - Start completed.
+2026-01-03 04:41:13.263 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-03 04:41:13.268 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/tfs?currentSchema=tfsdb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.20
+	Default catalog/schema: tfs/tfsdb
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-03 04:41:13.592 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-03 04:41:13.808 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:41:15.281 [restartedMain] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-03 04:41:15.560 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/uploads/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:41:15.560 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/img/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:41:15.561 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/favicon.ico]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:41:15.561 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/error]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:41:15.561 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/payments/callback/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:41:15.562 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/webhook/geliver/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:41:15.935 [restartedMain] INFO  c.e.apps.auths.securities.WebConfig - Mapping /img/** and /uploads/** to: file:///F:/Yazilim/tfsbackend/tfsbackend/src/main/resources/static/uploads/
+2026-01-03 04:41:16.785 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-01-03 04:41:16.831 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-03 04:41:16.838 [restartedMain] INFO  com.example.starter.Starter - Started Starter in 5.106 seconds (process running for 785.718)
+2026-01-03 04:41:16.841 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-01-03 04:41:16.841 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-01-03 04:41:16.842 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-01-03 04:41:43.585 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-03 04:41:43.585 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-03 04:41:43.588 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 2 ms
+2026-01-03 04:41:43.699 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N Config - baseUrl: http://localhost:5678/, apiKey present: true
+2026-01-03 04:41:43.699 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - Triggering N8N workflow at URL: http://localhost:5678/webhook/sign-up
+2026-01-03 04:41:43.700 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - Payload keys: [firstName, lastName, emailVerified, createdAt, phoneNumber, gender, avatarUrl, email, enabled, username, updatedAt]
+2026-01-03 04:41:43.700 [http-nio-8080-exec-3] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N webhook request sent (async) to: http://localhost:5678/webhook/sign-up
+2026-01-03 04:41:43.725 [ForkJoinPool.commonPool-worker-4] INFO  c.e.a.n.services.impl.N8NServiceImpl - N8N workflow triggered successfully. Status: 200 OK, Response: {"message":"Workflow was started"}
+2026-01-03 04:42:25.005 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 1 class path change (0 additions, 0 deletions, 1 modification)
+2026-01-03 04:42:25.007 [Thread-20] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-03 04:42:25.023 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-03 04:42:25.039 [Thread-20] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:42:25.040 [Thread-20] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-5 - Shutdown initiated...
+2026-01-03 04:42:25.042 [Thread-20] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-5 - Shutdown completed.
+2026-01-03 04:42:25.160 [restartedMain] INFO  com.example.starter.Starter - Starting Starter using Java 25.0.1 with PID 36968 (F:\Yazilim\tfsbackend\tfsbackend\target\classes started by samtt in F:\Yazilim\tfsbackend\tfsbackend)
+2026-01-03 04:42:25.160 [restartedMain] INFO  com.example.starter.Starter - No active profile set, falling back to 1 default profile: "default"
+2026-01-03 04:42:25.599 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:42:25.599 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-03 04:42:25.699 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.example.apps.products.repositories.search.ProductDocumentRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2026-01-03 04:42:25.789 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 185 ms. Found 36 JPA repository interfaces.
+2026-01-03 04:42:25.790 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:42:25.792 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:42:25.795 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 1 Elasticsearch repository interface.
+2026-01-03 04:42:25.911 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:42:25.911 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Reactive Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:42:25.915 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Reactive Elasticsearch repository interfaces.
+2026-01-03 04:42:25.921 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:42:25.921 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-03 04:42:25.923 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2026-01-03 04:42:26.192 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-03 04:42:26.192 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-03 04:42:26.192 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-03 04:42:26.224 [restartedMain] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1061 ms
+2026-01-03 04:42:26.394 [restartedMain] DEBUG c.e.apps.auths.securities.JWTFilter - Filter 'JWTFilter' configured for use
+2026-01-03 04:42:26.546 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-03 04:42:26.569 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-03 04:42:26.570 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-6 - Starting...
+2026-01-03 04:42:26.614 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-6 - Added connection org.postgresql.jdbc.PgConnection@74290fe1
+2026-01-03 04:42:26.615 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-6 - Start completed.
+2026-01-03 04:42:26.622 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-03 04:42:26.626 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/tfs?currentSchema=tfsdb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.20
+	Default catalog/schema: tfs/tfsdb
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-03 04:42:26.891 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-03 04:42:27.122 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:42:28.485 [restartedMain] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-03 04:42:28.744 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/uploads/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:42:28.744 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/img/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:42:28.746 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/favicon.ico]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:42:28.746 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/error]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:42:28.746 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/payments/callback/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:42:28.746 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/webhook/geliver/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:42:29.040 [restartedMain] INFO  c.e.apps.auths.securities.WebConfig - Mapping /img/** and /uploads/** to: file:///F:/Yazilim/tfsbackend/tfsbackend/src/main/resources/static/uploads/
+2026-01-03 04:42:29.850 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-01-03 04:42:29.894 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-03 04:42:29.899 [restartedMain] INFO  com.example.starter.Starter - Started Starter in 4.776 seconds (process running for 858.779)
+2026-01-03 04:42:29.901 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-01-03 04:42:29.901 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-01-03 04:42:29.901 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-01-03 04:59:18.677 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-03 04:59:18.677 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-03 04:59:18.682 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 3 ms
+2026-01-03 04:59:29.038 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 2 class path changes (2 additions, 0 deletions, 0 modifications)
+2026-01-03 04:59:29.041 [Thread-24] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-03 04:59:29.045 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-03 04:59:29.058 [Thread-24] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:59:29.060 [Thread-24] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-6 - Shutdown initiated...
+2026-01-03 04:59:29.062 [Thread-24] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-6 - Shutdown completed.
+2026-01-03 04:59:29.174 [restartedMain] INFO  com.example.starter.Starter - Starting Starter using Java 25.0.1 with PID 36968 (F:\Yazilim\tfsbackend\tfsbackend\target\classes started by samtt in F:\Yazilim\tfsbackend\tfsbackend)
+2026-01-03 04:59:29.174 [restartedMain] INFO  com.example.starter.Starter - No active profile set, falling back to 1 default profile: "default"
+2026-01-03 04:59:29.711 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:59:29.711 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-03 04:59:29.820 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.example.apps.products.repositories.search.ProductDocumentRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2026-01-03 04:59:29.896 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 182 ms. Found 37 JPA repository interfaces.
+2026-01-03 04:59:29.897 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:59:29.897 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:59:29.902 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 1 Elasticsearch repository interface.
+2026-01-03 04:59:30.040 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:59:30.040 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Reactive Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:59:30.043 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Reactive Elasticsearch repository interfaces.
+2026-01-03 04:59:30.048 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:59:30.049 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-03 04:59:30.051 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2026-01-03 04:59:30.383 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-03 04:59:30.385 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-03 04:59:30.387 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-03 04:59:30.421 [restartedMain] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 1243 ms
+2026-01-03 04:59:30.579 [restartedMain] DEBUG c.e.apps.auths.securities.JWTFilter - Filter 'JWTFilter' configured for use
+2026-01-03 04:59:30.725 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-03 04:59:30.758 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-03 04:59:30.759 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-7 - Starting...
+2026-01-03 04:59:30.806 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-7 - Added connection org.postgresql.jdbc.PgConnection@18fecbd2
+2026-01-03 04:59:30.807 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-7 - Start completed.
+2026-01-03 04:59:30.815 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-03 04:59:30.820 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/tfs?currentSchema=tfsdb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.20
+	Default catalog/schema: tfs/tfsdb
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-03 04:59:31.336 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-03 04:59:31.610 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:59:33.049 [restartedMain] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-03 04:59:33.336 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/uploads/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:33.336 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/img/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:33.338 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/favicon.ico]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:33.339 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/error]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:33.339 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/payments/callback/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:33.339 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/webhook/geliver/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:33.699 [restartedMain] INFO  c.e.apps.auths.securities.WebConfig - Mapping /img/** and /uploads/** to: file:///F:/Yazilim/tfsbackend/tfsbackend/src/main/resources/static/uploads/
+2026-01-03 04:59:34.574 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-01-03 04:59:34.623 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-03 04:59:34.627 [restartedMain] INFO  com.example.starter.Starter - Started Starter in 5.486 seconds (process running for 1883.508)
+2026-01-03 04:59:34.630 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-01-03 04:59:34.630 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-01-03 04:59:34.630 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-01-03 04:59:38.123 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 2 class path changes (2 additions, 0 deletions, 0 modifications)
+2026-01-03 04:59:38.125 [Thread-28] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-03 04:59:38.131 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-03 04:59:38.141 [Thread-28] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:59:38.143 [Thread-28] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-7 - Shutdown initiated...
+2026-01-03 04:59:38.145 [Thread-28] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-7 - Shutdown completed.
+2026-01-03 04:59:38.247 [restartedMain] INFO  com.example.starter.Starter - Starting Starter using Java 25.0.1 with PID 36968 (F:\Yazilim\tfsbackend\tfsbackend\target\classes started by samtt in F:\Yazilim\tfsbackend\tfsbackend)
+2026-01-03 04:59:38.247 [restartedMain] INFO  com.example.starter.Starter - No active profile set, falling back to 1 default profile: "default"
+2026-01-03 04:59:38.612 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:59:38.612 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-03 04:59:38.706 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.example.apps.products.repositories.search.ProductDocumentRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2026-01-03 04:59:38.797 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 182 ms. Found 37 JPA repository interfaces.
+2026-01-03 04:59:38.799 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:59:38.799 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:59:38.802 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 1 ms. Found 1 Elasticsearch repository interface.
+2026-01-03 04:59:38.912 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:59:38.913 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Reactive Elasticsearch repositories in DEFAULT mode.
+2026-01-03 04:59:38.915 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Reactive Elasticsearch repository interfaces.
+2026-01-03 04:59:38.922 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 04:59:38.922 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-03 04:59:38.924 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2026-01-03 04:59:39.170 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-03 04:59:39.171 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-03 04:59:39.171 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-03 04:59:39.219 [restartedMain] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 969 ms
+2026-01-03 04:59:39.370 [restartedMain] DEBUG c.e.apps.auths.securities.JWTFilter - Filter 'JWTFilter' configured for use
+2026-01-03 04:59:39.556 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-03 04:59:39.584 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-03 04:59:39.585 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-8 - Starting...
+2026-01-03 04:59:39.685 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-8 - Added connection org.postgresql.jdbc.PgConnection@7bfde61a
+2026-01-03 04:59:39.686 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-8 - Start completed.
+2026-01-03 04:59:39.699 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-03 04:59:39.705 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/tfs?currentSchema=tfsdb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.20
+	Default catalog/schema: tfs/tfsdb
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-03 04:59:40.269 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-03 04:59:40.490 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 04:59:42.127 [restartedMain] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-03 04:59:42.382 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/uploads/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:42.382 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/img/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:42.384 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/favicon.ico]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:42.384 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/error]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:42.384 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/payments/callback/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:42.385 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/webhook/geliver/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 04:59:42.734 [restartedMain] INFO  c.e.apps.auths.securities.WebConfig - Mapping /img/** and /uploads/** to: file:///F:/Yazilim/tfsbackend/tfsbackend/src/main/resources/static/uploads/
+2026-01-03 04:59:43.588 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-01-03 04:59:43.630 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-03 04:59:43.637 [restartedMain] INFO  com.example.starter.Starter - Started Starter in 5.416 seconds (process running for 1892.517)
+2026-01-03 04:59:43.640 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-01-03 04:59:43.640 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-01-03 04:59:43.640 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-01-03 05:00:15.643 [File Watcher] INFO  o.s.b.d.a.LocalDevToolsAutoConfiguration$RestartingClassPathChangeChangedEventListener - Restarting due to 7 class path changes (0 additions, 7 deletions, 0 modifications)
+2026-01-03 05:00:15.646 [Thread-32] INFO  o.s.boot.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-01-03 05:00:15.650 [tomcat-shutdown] INFO  o.s.boot.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-01-03 05:00:15.659 [Thread-32] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 05:00:15.661 [Thread-32] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-8 - Shutdown initiated...
+2026-01-03 05:00:15.662 [Thread-32] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-8 - Shutdown completed.
+2026-01-03 05:00:15.743 [restartedMain] INFO  com.example.starter.Starter - Starting Starter using Java 25.0.1 with PID 36968 (F:\Yazilim\tfsbackend\tfsbackend\target\classes started by samtt in F:\Yazilim\tfsbackend\tfsbackend)
+2026-01-03 05:00:15.744 [restartedMain] INFO  com.example.starter.Starter - No active profile set, falling back to 1 default profile: "default"
+2026-01-03 05:00:16.115 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 05:00:16.115 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-01-03 05:00:16.193 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data JPA - Could not safely identify store assignment for repository candidate interface com.example.apps.products.repositories.search.ProductDocumentRepository; If you want this repository to be a JPA repository, consider annotating your entities with one of these annotations: jakarta.persistence.Entity, jakarta.persistence.MappedSuperclass (preferred), or consider extending one of the following types with your repository: org.springframework.data.jpa.repository.JpaRepository
+2026-01-03 05:00:16.262 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 144 ms. Found 36 JPA repository interfaces.
+2026-01-03 05:00:16.264 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 05:00:16.264 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Elasticsearch repositories in DEFAULT mode.
+2026-01-03 05:00:16.268 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 2 ms. Found 1 Elasticsearch repository interface.
+2026-01-03 05:00:16.378 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 05:00:16.378 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Reactive Elasticsearch repositories in DEFAULT mode.
+2026-01-03 05:00:16.380 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Reactive Elasticsearch repository interfaces.
+2026-01-03 05:00:16.385 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2026-01-03 05:00:16.385 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-01-03 05:00:16.388 [restartedMain] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 0 ms. Found 0 Redis repository interfaces.
+2026-01-03 05:00:16.605 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-01-03 05:00:16.606 [restartedMain] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-01-03 05:00:16.607 [restartedMain] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-01-03 05:00:16.637 [restartedMain] INFO  o.s.b.w.c.s.WebApplicationContextInitializer - Root WebApplicationContext: initialization completed in 891 ms
+2026-01-03 05:00:16.781 [restartedMain] DEBUG c.e.apps.auths.securities.JWTFilter - Filter 'JWTFilter' configured for use
+2026-01-03 05:00:16.950 [restartedMain] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-01-03 05:00:16.968 [restartedMain] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-01-03 05:00:16.968 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-9 - Starting...
+2026-01-03 05:00:17.013 [restartedMain] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-9 - Added connection org.postgresql.jdbc.PgConnection@de467e8
+2026-01-03 05:00:17.013 [restartedMain] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-9 - Start completed.
+2026-01-03 05:00:17.020 [restartedMain] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-01-03 05:00:17.024 [restartedMain] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/tfs?currentSchema=tfsdb]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 14.20
+	Default catalog/schema: tfs/tfsdb
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DatasourceConnectionProviderImpl
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-01-03 05:00:17.333 [restartedMain] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-01-03 05:00:17.552 [restartedMain] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-01-03 05:00:18.974 [restartedMain] WARN  o.s.b.j.a.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-01-03 05:00:19.290 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/uploads/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 05:00:19.291 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/img/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 05:00:19.292 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/favicon.ico]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 05:00:19.293 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/error]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 05:00:19.293 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/payments/callback/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 05:00:19.293 [restartedMain] WARN  o.s.s.c.a.web.builders.WebSecurity - You are asking Spring Security to ignore PathPattern [/rest/api/public/webhook/geliver/**]. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2026-01-03 05:00:19.667 [restartedMain] INFO  c.e.apps.auths.securities.WebConfig - Mapping /img/** and /uploads/** to: file:///F:/Yazilim/tfsbackend/tfsbackend/src/main/resources/static/uploads/
+2026-01-03 05:00:20.477 [restartedMain] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 3 endpoints beneath base path '/actuator'
+2026-01-03 05:00:20.518 [restartedMain] INFO  o.s.boot.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-01-03 05:00:20.522 [restartedMain] INFO  com.example.starter.Starter - Started Starter in 4.8 seconds (process running for 1929.402)
+2026-01-03 05:00:20.523 [restartedMain] INFO  o.s.b.d.a.ConditionEvaluationDeltaLoggingListener - Condition evaluation unchanged
+2026-01-03 05:00:20.523 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /v3/api-docs endpoint is enabled by default. To disable it in production, set the property 'springdoc.api-docs.enabled=false'
+2026-01-03 05:00:20.523 [restartedMain] WARN  o.s.c.events.SpringDocAppInitializer - SpringDoc /swagger-ui.html endpoint is enabled by default. To disable it in production, set the property 'springdoc.swagger-ui.enabled=false'
+2026-01-03 05:03:53.429 [http-nio-8080-exec-1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-01-03 05:03:53.429 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-01-03 05:03:53.434 [http-nio-8080-exec-1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 4 ms
+2026-01-03 14:17:17.253 [HikariPool-9:housekeeper] WARN  com.zaxxer.hikari.pool.HikariPool - HikariPool-9 - Thread starvation or clock leap detected (housekeeper delta=5h7m56s243ms894µs).
+2026-01-03 14:18:52.555 [http-nio-8080-exec-8] INFO  c.e.a.p.s.s.ProductSearchService - === ELASTICSEARCH SEARCH DEBUG ===
+2026-01-03 14:18:52.555 [http-nio-8080-exec-8] INFO  c.e.a.p.s.s.ProductSearchService - Search params - term: null, subCategoryId: null, minPrice: 0.0, maxPrice: 10000.0, material: null, genders: null, colors: null, sizes: null
+2026-01-03 14:18:57.383 [http-nio-8080-exec-7] INFO  c.e.a.p.s.s.ProductSearchService - === ELASTICSEARCH SEARCH DEBUG ===
+2026-01-03 14:18:57.384 [http-nio-8080-exec-7] INFO  c.e.a.p.s.s.ProductSearchService - Search params - term: null, subCategoryId: null, minPrice: 0.0, maxPrice: 10000.0, material: null, genders: [MAN, UNISEX], colors: null, sizes: null
+2026-01-03 14:18:57.432 [http-nio-8080-exec-7] WARN  c.e.c.t.r.low_level.Rest5Client - request [POST http://localhost:9200/products/_search?search_type=query_then_fetch&typed_keys=true] returned 1 warnings: [299 Elasticsearch-7.17.10-fecd68e3150eda0c307ab9a9d7557f5d5fd71349 "Loading the fielddata on the _id field is deprecated and will be removed in future versions. If you require sorting or aggregating on this field you should also include the id in the body of your documents, and map this field as a keyword field that has [doc_values] enabled"]

@@ -1,3 +1,4 @@
+// Re-indexing trigger
 package com.example.apps.campaigns.dtos;
 
 import com.example.apps.campaigns.entities.Campaign;
@@ -31,6 +32,7 @@ public class CampaignDTO {
     private BigDecimal discountValue;
 
     private BigDecimal minOrderAmount;
+    private Integer minQuantity; // New field for Buy X Get Y
     private BigDecimal maxDiscountAmount;
 
     @NotNull(message = "Start date is required")

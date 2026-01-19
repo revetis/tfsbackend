@@ -19,6 +19,7 @@ public class OrderDTO {
 
     private Long id;
     private String orderNumber;
+    private String paymentId;
     private String paymentConversationId;
     private String paymentStatus;
     private String paymentOption;
@@ -28,6 +29,7 @@ public class OrderDTO {
     private Long weight;
     private Long userId;
     private BigDecimal totalAmount;
+    private BigDecimal totalTaxAmount;
     private OrderStatus status;
     private List<OrderItemDTO> items;
     private OrderAddressDTO shippingAddress;
@@ -61,4 +63,10 @@ public class OrderDTO {
 
     // Return status flag
     private Boolean hasActiveReturn;
+
+    // Invoice fields
+    private String invoiceNumber;
+    private String invoiceUrl;
+    private String invoicePdfUrl;
+    private LocalDateTime invoiceGeneratedAt;
 }

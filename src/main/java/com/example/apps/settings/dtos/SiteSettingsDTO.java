@@ -24,4 +24,10 @@ public class SiteSettingsDTO {
     private String metaKeywords;
     private String googleAnalyticsId;
     private String facebookPixelId;
+
+    // Announcement Bar
+    private Boolean announcementEnabled;
+    private String announcementText;
+    private String announcementBgColor;
+    private String announcementTextColor;
 }

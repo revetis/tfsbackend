@@ -76,6 +76,9 @@ public class PaymentServiceTest {
     @Mock
     private ICartService cartService;
 
+    @Mock
+    private com.example.apps.invoices.services.IInvoiceService invoiceService;
+
     @BeforeEach
     void setUp() {
         when(mockGateway.getGatewayName()).thenReturn("iyzico");
@@ -91,7 +94,8 @@ public class PaymentServiceTest {
                 n8NProperties,
                 productService,
                 shipmentService,
-                cartService);
+                cartService,
+                invoiceService);
     }
 
     @Test

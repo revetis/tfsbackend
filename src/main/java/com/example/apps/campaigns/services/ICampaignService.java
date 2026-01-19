@@ -7,41 +7,60 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface ICampaignService {
-    // Coupon operations
-    List<CouponDTO> getAllCoupons();
+        // Coupon operations
+        List<CouponDTO> getAllCoupons();
 
-    List<CouponDTO> getActiveCoupons();
+        List<CouponDTO> getActiveCoupons();
 
-    CouponDTO getCouponById(Long id);
+        CouponDTO getCouponById(Long id);
 
-    CouponDTO getCouponByCode(String code);
+        CouponDTO getCouponByCode(String code);
 
-    CouponDTO createCoupon(CouponDTO dto);
+        CouponDTO createCoupon(CouponDTO dto);
 
-    CouponDTO updateCoupon(Long id, CouponDTO dto);
+        CouponDTO updateCoupon(Long id, CouponDTO dto);
 
-    void deleteCoupon(Long id);
+        void deleteCoupon(Long id);
 
-    // Coupon validation
-    CouponDTO validateCoupon(String code, Long userId, BigDecimal orderAmount);
+        // Coupon validation
+        CouponDTO validateCoupon(String code, Long userId, BigDecimal orderAmount);
 
-    BigDecimal calculateCouponDiscount(CouponDTO coupon, BigDecimal orderAmount);
+        BigDecimal calculateCouponDiscount(CouponDTO coupon, BigDecimal orderAmount);
 
-    // Campaign operations
-    List<CampaignDTO> getAllCampaigns();
+        // Campaign operations
+        List<CampaignDTO> getAllCampaigns();
 
-    List<CampaignDTO> getActiveCampaigns();
+        List<CampaignDTO> getActiveCampaigns();
 
-    CampaignDTO getCampaignById(Long id);
+        CampaignDTO getCampaignById(Long id);
 
-    CampaignDTO createCampaign(CampaignDTO dto);
+        CampaignDTO createCampaign(CampaignDTO dto);
 
-    CampaignDTO updateCampaign(Long id, CampaignDTO dto);
+        CampaignDTO updateCampaign(Long id, CampaignDTO dto);
 
-    void deleteCampaign(Long id);
+        void deleteCampaign(Long id);
 
-    // Campaign application
-    CampaignDTO findBestCampaign(BigDecimal orderAmount, List<Long> productIds);
+        // Campaign application
+        CampaignDTO findBestCampaign(BigDecimal orderAmount, List<Long> productIds, List<Long> categoryIds);
 
-    BigDecimal calculateCampaignDiscount(CampaignDTO campaign, BigDecimal orderAmount);
+        CampaignDTO findBestCampaign(BigDecimal orderAmount,
+                        List<com.example.apps.campaigns.dtos.CampaignRequestItem> items);
+
+        BigDecimal calculateCampaignDiscount(CampaignDTO campaign, BigDecimal orderAmount);
+
+        BigDecimal calculateCampaignDiscount(CampaignDTO campaign,
+                        List<com.example.apps.campaigns.dtos.CampaignRequestItem> items);
+
+        List<CampaignDTO> getCampaignsByProduct(Long productId, Long categoryId);
+
+        // Paginated operations
+        CampaignPageResult getAllCampaigns(int start, int end, String sortField, String sortOrder, String search);
+
+        CouponPageResult getAllCoupons(int start, int end, String sortField, String sortOrder, String search);
+
+        record CampaignPageResult(List<CampaignDTO> data, long totalCount) {
+        }
+
+        record CouponPageResult(List<CouponDTO> data, long totalCount) {
+        }
 }

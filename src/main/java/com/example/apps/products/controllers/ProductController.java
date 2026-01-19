@@ -356,7 +356,11 @@ public class ProductController {
         @GetMapping
         public ResponseEntity<?> getAllProducts(
                         @RequestParam int page,
-                        @RequestParam int size) {
+                        @RequestParam int size,
+                        @RequestParam(defaultValue = "id") String sort,
+                        @RequestParam(defaultValue = "DESC") String direction,
+                        @RequestParam(required = false) String q,
+                        @RequestParam(required = false) Boolean enable) {
 
                 return ResponseEntity.ok(
                                 ApiTemplate.apiTemplateGenerator(
@@ -364,13 +368,16 @@ public class ProductController {
                                                 HttpStatus.OK.value(),
                                                 "/rest/api/admin/products",
                                                 null,
-                                                productService.getAllProducts(page, size)));
+                                                productService.getAllProducts(page, size, sort, direction, q, enable)));
         }
 
         @GetMapping("/variants")
         public ResponseEntity<?> getAllVariants(
                         @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "10") int size) {
+                        @RequestParam(defaultValue = "10") int size,
+                        @RequestParam(defaultValue = "id") String sort,
+                        @RequestParam(defaultValue = "DESC") String direction,
+                        @RequestParam(required = false) String q) {
 
                 return ResponseEntity.ok(
                                 ApiTemplate.apiTemplateGenerator(
@@ -378,7 +385,7 @@ public class ProductController {
                                                 HttpStatus.OK.value(),
                                                 "/rest/api/admin/products/variants",
                                                 null,
-                                                productService.getAllVariants(page, size)));
+                                                productService.getAllVariants(page, size, sort, direction, q)));
         }
 
         @PostMapping("/variants")
@@ -467,7 +474,10 @@ public class ProductController {
         @GetMapping("/materials")
         public ResponseEntity<?> getAllProductMaterials(
                         @RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "10") int size) {
+                        @RequestParam(defaultValue = "10") int size,
+                        @RequestParam(defaultValue = "id") String sort,
+                        @RequestParam(defaultValue = "DESC") String direction,
+                        @RequestParam(required = false) String q) {
 
                 return ResponseEntity.ok(
                                 ApiTemplate.apiTemplateGenerator(
@@ -475,6 +485,6 @@ public class ProductController {
                                                 HttpStatus.OK.value(),
                                                 "/rest/api/admin/products/materials",
                                                 null,
-                                                productService.getAllProductMaterials(page, size)));
+                                                productService.getAllProductMaterials(page, size, sort, direction, q)));
         }
 }

@@ -56,6 +56,50 @@ public class CampaignPublicController {
                 campaigns));
     }
 
+    @GetMapping("/product/{productId}")
+    public ResponseEntity<?> getProductCampaigns(
+            @PathVariable Long productId,
+            @RequestParam(required = false) Long categoryId) {
+        List<CampaignDTO> campaigns = campaignService.getCampaignsByProduct(productId, categoryId);
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
+                true,
+                HttpStatus.SC_OK,
+                "/campaigns/product/" + productId,
+                null,
+                campaigns));
+    }
+
+    @PostMapping("/best")
+    public ResponseEntity<?> findBestCampaign(
+            @RequestBody com.example.apps.campaigns.dtos.BestCampaignRequest request) {
+
+        CampaignDTO bestCampaign = campaignService.findBestCampaign(request.getOrderAmount(), request.getProductIds(),
+                request.getCategoryIds());
+        BigDecimal discount = BigDecimal.ZERO;
+
+        if (bestCampaign != null) {
+            discount = campaignService.calculateCampaignDiscount(bestCampaign, request.getOrderAmount());
+        }
+
+        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
+                true,
+                HttpStatus.SC_OK,
+                "/campaigns/best",
+                null,
+                bestCampaign != null ? new CampaignSelectionResponse(bestCampaign, discount) : null));
+    }
+
+    // Helper class for campaign response
+    public static class CampaignSelectionResponse {
+        public CampaignDTO campaign;
+        public BigDecimal discountAmount;
+
+        public CampaignSelectionResponse(CampaignDTO campaign, BigDecimal discountAmount) {
+            this.campaign = campaign;
+            this.discountAmount = discountAmount;
+        }
+    }
+
     // Helper class for coupon validation response
     public static class CouponValidationResponse {
         public CouponDTO coupon;

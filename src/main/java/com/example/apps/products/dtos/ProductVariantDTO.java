@@ -17,6 +17,12 @@ public class ProductVariantDTO {
     private java.math.BigDecimal price;
     private Long discountRatio;
     private java.math.BigDecimal discountPrice;
+
+    // Campaign pricing - calculated by backend
+    private java.math.BigDecimal campaignDiscountPrice;
+    private String campaignName;
+    private java.math.BigDecimal finalPrice; // Min of discountPrice and campaignDiscountPrice
+
     private List<ProductVariantStockDTO> stocks;
     private ProductVariantColorDTO color;
     private Boolean enable;

@@ -1,5 +1,7 @@
 package com.example.apps.orders.services.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -49,17 +51,38 @@ public class OrderItemService implements IOrderItemService {
 
         OrderItem newOrderItem = new OrderItem();
         newOrderItem.setProductVariantId(productVariant.getId());
+
+        // Fix: Save Variant Name clearly for history
         newOrderItem.setProductVariantName(productVariant.getName());
+
         newOrderItem.setQuantity(orderItemDTOIU.getQuantity());
-        newOrderItem.setPrice(productVariant.getPrice());
+        newOrderItem.setQuantity(orderItemDTOIU.getQuantity());
+        // Set SKU from the selected stock
+        newOrderItem.setSku(stock.getSku());
+
+        // Determine effective price (Campaign/Discount logic)
+        BigDecimal effectivePrice = productVariant.getPrice();
+        if (productVariant.getDiscountPrice() != null
+                && productVariant.getDiscountPrice().compareTo(BigDecimal.ZERO) > 0) {
+            effectivePrice = productVariant.getDiscountPrice();
+        }
+        newOrderItem.setPrice(effectivePrice);
         newOrderItem.setSize(orderItemDTOIU.getSize());
 
         // Populate missing fields for DB constraints
-        if (productVariant.getProduct() != null && productVariant.getProduct().getSubCategory() != null) {
-            newOrderItem.setSubCategory(productVariant.getProduct().getSubCategory().getName());
-            if (productVariant.getProduct().getSubCategory().getMainCategory() != null) {
-                newOrderItem.setMainCategory(productVariant.getProduct().getSubCategory().getMainCategory().getName());
+        if (productVariant.getProduct() != null) {
+            newOrderItem.setProductId(productVariant.getProduct().getId());
+            if (productVariant.getProduct().getSubCategory() != null) {
+                newOrderItem.setCategoryId(productVariant.getProduct().getSubCategory().getId());
+                newOrderItem.setSubCategory(productVariant.getProduct().getSubCategory().getName());
+                if (productVariant.getProduct().getSubCategory().getMainCategory() != null) {
+                    newOrderItem.setMainCategory(
+                            productVariant.getProduct().getSubCategory().getMainCategory().getName());
+                } else {
+                    newOrderItem.setMainCategory("Genel");
+                }
             } else {
+                newOrderItem.setSubCategory("Genel");
                 newOrderItem.setMainCategory("Genel");
             }
         } else {
@@ -75,8 +98,26 @@ public class OrderItemService implements IOrderItemService {
             newOrderItem.setGender(productVariant.getProduct().getGender().name());
         }
 
+        // Calculate Tax fields
+        Double taxRatio = 10.0; // Default
+        if (productVariant.getProduct() != null && productVariant.getProduct().getTaxRatio() != null) {
+            taxRatio = productVariant.getProduct().getTaxRatio();
+        }
+        newOrderItem.setTaxRatio(taxRatio);
+
+        // Price calculations
+        BigDecimal unitPriceWithTax = effectivePrice;
+        BigDecimal divisor = BigDecimal.valueOf(1 + (taxRatio / 100.0));
+        BigDecimal unitPriceWithoutTax = unitPriceWithTax.divide(divisor, 2, RoundingMode.HALF_UP);
+        BigDecimal taxAmountPerUnit = unitPriceWithTax.subtract(unitPriceWithoutTax);
+        BigDecimal totalTaxAmount = taxAmountPerUnit.multiply(BigDecimal.valueOf(orderItemDTOIU.getQuantity()));
+
+        newOrderItem.setUnitPriceWithTax(unitPriceWithTax);
+        newOrderItem.setUnitPriceWithoutTax(unitPriceWithoutTax);
+        newOrderItem.setTaxAmount(totalTaxAmount);
+
         newOrderItem.setItemType("PHYSICAL"); // Default item type
-        newOrderItem.setPaidPrice(productVariant.getPrice()); // Default to unit price for now
+        newOrderItem.setPaidPrice(effectivePrice); // Default to unit price for now
 
         newOrderItem.setOrder(order);
 
@@ -128,6 +169,16 @@ public class OrderItemService implements IOrderItemService {
                         // Get first image URL if available
                         if (variant.getImages() != null && !variant.getImages().isEmpty()) {
                             orderItemDTO.setImageUrl(variant.getImages().get(0).getUrl());
+                        }
+                        // Fix: Display Variant Name instead of Product Name
+                        orderItemDTO.setProductVariantName(variant.getName());
+
+                        // Fix: Populate SKU if missing (for existing orders)
+                        if (orderItemDTO.getSku() == null) {
+                            variant.getStocks().stream()
+                                    .filter(s -> s.getSize() == orderItemDTO.getSize())
+                                    .findFirst()
+                                    .ifPresent(s -> orderItemDTO.setSku(s.getSku()));
                         }
                     });
 

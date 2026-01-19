@@ -20,26 +20,35 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
-        final String CLIENT_KEY = request.getRemoteAddr();
+        String requestURI = request.getRequestURI();
+        String method = request.getMethod();
 
-        Bucket bucket = rateLimiterService.resolveBucket(CLIENT_KEY);
+        // Identify sensitive paths: Auth POSTs and Coupon Validation
+        boolean isSensitive = (requestURI.startsWith("/rest/api/public/auth/") && "POST".equalsIgnoreCase(method))
+                || requestURI.equals("/rest/api/public/campaigns/coupons/validate");
+
+        String clientIp = request.getHeader("X-Forwarded-For");
+        if (clientIp == null || clientIp.isEmpty()) {
+            clientIp = request.getRemoteAddr();
+        } else {
+            clientIp = clientIp.split(",")[0].trim();
+        }
+        final String CLIENT_KEY = clientIp;
+
+        Bucket bucket = rateLimiterService.resolveBucket(CLIENT_KEY, isSensitive);
 
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
         if (probe.isConsumed()) {
-
             response.addHeader("X-Rate-Limit-Remaining", String.valueOf(probe.getRemainingTokens()));
             return true;
-
         } else {
-
             response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-
             long secondsToWait = probe.getNanosToWaitForRefill() / 1_000_000_000;
             response.addHeader("Retry-After", String.valueOf(secondsToWait));
-
+            response.setContentType("application/json");
             response.getWriter()
-                    .write("Rate limit exceeded. Please try again in" + secondsToWait + " seconds.");
+                    .write("{\"message\": \"Too many requests. Please try again in " + secondsToWait + " seconds.\"}");
             return false;
         }
     }

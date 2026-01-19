@@ -27,6 +27,7 @@ public class SettingsService implements ISettingsService {
     // ==================== Site Settings ====================
 
     @Override
+    @Transactional
     public SiteSettingsDTO getSiteSettings() {
         SiteSettings settings = siteSettingsRepository.findFirstByOrderByIdAsc()
                 .orElseGet(() -> {
@@ -314,6 +315,9 @@ public class SettingsService implements ISettingsService {
     private PageDTO convertToDTO(Page entity) {
         PageDTO dto = new PageDTO();
         BeanUtils.copyProperties(entity, dto);
+        // Explicit mapping to ensure boolean fields are carried over
+        dto.setActive(entity.getActive());
+        dto.setShowInFooter(entity.getShowInFooter());
         return dto;
     }
 }

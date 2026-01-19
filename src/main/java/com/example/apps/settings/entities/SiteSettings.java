@@ -60,4 +60,17 @@ public class SiteSettings extends BaseEntity {
 
     @Column(name = "facebook_pixel_id")
     private String facebookPixelId;
+
+    // Announcement Bar Settings
+    @Column(name = "announcement_enabled")
+    private Boolean announcementEnabled;
+
+    @Column(name = "announcement_text")
+    private String announcementText;
+
+    @Column(name = "announcement_bg_color")
+    private String announcementBgColor;
+
+    @Column(name = "announcement_text_color")
+    private String announcementTextColor;
 }

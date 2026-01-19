@@ -13,14 +13,24 @@ public class RateLimiterService {
 
     private final Map<String, Bucket> cache = new ConcurrentHashMap<>();
 
-    public Bucket resolveBucket(String key) {
-
-        return cache.computeIfAbsent(key, k -> createNewBucket());
+    public Bucket resolveBucket(String key, boolean isSensitive) {
+        String cacheKey = isSensitive ? key + "_SENSITIVE" : key;
+        return cache.computeIfAbsent(cacheKey, k -> createNewBucket(isSensitive));
     }
 
-    private Bucket createNewBucket() {
-        return Bucket.builder()
+    public Bucket resolveBucket(String key) {
+        return resolveBucket(key, false);
+    }
 
+    private Bucket createNewBucket(boolean isSensitive) {
+        if (isSensitive) {
+            // Strict limit for sensitive endpoints: 10 requests per minute
+            return Bucket.builder()
+                    .addLimit(limit -> limit.capacity(10).refillGreedy(10, Duration.ofMinutes(1)))
+                    .build();
+        }
+        // General limit for other requests: 1000 requests per minute
+        return Bucket.builder()
                 .addLimit(limit -> limit.capacity(1000).refillGreedy(1000, Duration.ofMinutes(1)))
                 .build();
     }

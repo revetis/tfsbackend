@@ -69,4 +69,35 @@ public class RoleService implements IRoleService {
 
     }
 
+    @Override
+    public RolePageResult getAllRoles(int start, int end, String sortField, String sortOrder, String search) {
+        org.springframework.data.jpa.domain.Specification<Role> spec = (root, query, cb) -> cb.conjunction();
+
+        if (search != null && !search.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("name")), "%" + search.toLowerCase() + "%"));
+        }
+
+        org.springframework.data.domain.Sort sort = org.springframework.data.domain.Sort.by(
+                sortOrder.equalsIgnoreCase("ASC") ? org.springframework.data.domain.Sort.Direction.ASC
+                        : org.springframework.data.domain.Sort.Direction.DESC,
+                sortField);
+
+        int pageSize = end - start;
+        if (pageSize <= 0)
+            pageSize = 10;
+        int pageNumber = start / pageSize;
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(pageNumber,
+                pageSize, sort);
+
+        org.springframework.data.domain.Page<Role> page = roleRepository.findAll(spec, pageable);
+
+        List<RoleDTO> dtos = page.getContent().stream().map(role -> {
+            RoleDTO roleDTO = new RoleDTO();
+            org.springframework.beans.BeanUtils.copyProperties(role, roleDTO);
+            return roleDTO;
+        }).toList();
+
+        return new RolePageResult(dtos, page.getTotalElements());
+    }
+
 }

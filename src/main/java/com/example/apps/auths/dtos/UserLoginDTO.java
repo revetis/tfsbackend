@@ -11,5 +11,8 @@ public class UserLoginDTO {
 
     private String refreshToken;
     private String accessToken;
+    private boolean require2fa;
+    private String verificationId;
+    private String maskedEmail;
 
 }

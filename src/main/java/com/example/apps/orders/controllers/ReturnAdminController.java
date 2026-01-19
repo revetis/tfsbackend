@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.tfs.maindto.ApiTemplate;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -25,18 +27,27 @@ public class ReturnAdminController {
 
     @GetMapping
     @Operation(summary = "List all return requests")
-    public ResponseEntity<List<ReturnRequestResponseDTO>> getAllReturns(
-            @RequestParam(required = false) ReturnRequestStatus status) {
-        if (status != null) {
-            return ResponseEntity.ok(returnService.getReturnRequestsByStatus(status));
-        }
-        return ResponseEntity.ok(returnService.getAllReturnRequests());
+    public ResponseEntity<ApiTemplate<Void, List<ReturnRequestResponseDTO>>> getAllReturns(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "createdAt") String sortField,
+            @RequestParam(name = "direction", defaultValue = "DESC") String sortOrder,
+            @RequestParam(name = "userId", required = false) Long userId,
+            @RequestParam(name = "status", required = false) ReturnRequestStatus status,
+            HttpServletRequest request) {
+
+        var result = returnService.getAllReturns(page, size, sortField, sortOrder, userId, status);
+
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(result.totalCount()))
+                .header("Access-Control-Expose-Headers", "X-Total-Count")
+                .body(ApiTemplate.apiTemplateGenerator(true, 200, request.getRequestURI(), null, result.data()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get return request details")
     public ResponseEntity<ReturnRequestResponseDTO> getReturnRequest(@PathVariable Long id) {
-        return ResponseEntity.ok(returnService.getReturnRequestById(id));
+        return ResponseEntity.ok(returnService.getReturnRequestById(id, null));
     }
 
     @PutMapping("/{id}/received")

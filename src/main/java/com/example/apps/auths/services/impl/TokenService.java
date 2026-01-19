@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import com.example.apps.auths.securities.JWTGenerator;
 import com.example.apps.auths.services.ITokenService;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class TokenService implements ITokenService {
 
@@ -22,7 +25,8 @@ public class TokenService implements ITokenService {
     private ApplicationProperties applicationProperties;
 
     @Override
-    public Map<String, String> refreshAccessToken(String refreshToken, String ipAddress) {
+    @Transactional
+    public Map<String, String> refreshAccessToken(String refreshToken, String accessToken, String ipAddress) {
         Claims refreshTokenBody = Jwts.parserBuilder()
                 .setSigningKey(applicationProperties.getJwtSigningKey())
                 .build()
@@ -40,8 +44,34 @@ public class TokenService implements ITokenService {
             throw new AccessDeniedException("Invalid token type");
         }
 
+        // Token Linkage Check: Ensure the user being refreshed is the same as the one
+        // who owns the current session
+        if (accessToken != null && !accessToken.isBlank()) {
+            try {
+                String refreshSubject = refreshTokenBody.getSubject();
+                String accessSubject = null;
+                try {
+                    Claims accessClaims = Jwts.parserBuilder()
+                            .setSigningKey(applicationProperties.getJwtSigningKey())
+                            .build()
+                            .parseClaimsJws(accessToken)
+                            .getBody();
+                    accessSubject = accessClaims.getSubject();
+                } catch (ExpiredJwtException e) {
+                    accessSubject = e.getClaims().getSubject();
+                } catch (Exception e) {
+                    // Ignore malformed access tokens to allow recovery through refresh if possible
+                }
+
+                if (accessSubject != null && !accessSubject.equals(refreshSubject)) {
+                    throw new AccessDeniedException("Account mismatch during refresh. Please log in again.");
+                }
+            } catch (Exception e) {
+                if (e instanceof AccessDeniedException)
+                    throw e;
+            }
+        }
+
         return jwtGenerator.generateAccessToken(refreshToken, ipAddress);
     }
-
-
 }

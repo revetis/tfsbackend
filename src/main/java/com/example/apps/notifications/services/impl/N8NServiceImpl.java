@@ -28,6 +28,25 @@ public class N8NServiceImpl implements IN8NService {
     }
 
     @Override
+    public void sendGuestReturnRequest(String orderNumber, String customerName, String email, String magicLink,
+            String logoUrl) {
+        String webhookUrl = n8NProperties.getWebhook().getGuestReturnRequest();
+        if (webhookUrl == null || webhookUrl.isBlank()) {
+            log.warn("Guest Return Request webhook URL is not configured in N8N properties");
+            return;
+        }
+
+        Map<String, Object> payload = Map.of(
+                "orderNumber", orderNumber,
+                "customerName", customerName,
+                "email", email,
+                "magicLink", magicLink,
+                "logoUrl", logoUrl);
+
+        triggerWorkflow(webhookUrl, payload);
+    }
+
+    @Override
     public void triggerWorkflow(String webhookUrl, Map<String, Object> payload) {
         log.info("N8N Config - baseUrl: {}, apiKey present: {}",
                 n8NProperties.getBaseUrl(),

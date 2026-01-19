@@ -9,4 +9,5 @@ public class OrderReturnRequestDTO {
     private List<Long> orderItemIds;
     private String returnReason;
     private boolean restoreStock = true; // Default to true for backward compatibility logic if instantiated manually
+    private java.math.BigDecimal refundAmount;
 }

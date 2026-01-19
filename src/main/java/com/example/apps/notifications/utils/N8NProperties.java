@@ -18,6 +18,7 @@ public class N8NProperties {
     public static class Webhook {
         private String orderConfirmation;
         private String paymentSuccess;
+        private String invoice;
         private String shipmentCreated;
         private String shipmentDelivered;
         private String shipmentShipped;
@@ -26,5 +27,14 @@ public class N8NProperties {
         private String orderCancelled;
         private String refundProcessed;
         private String contactReply;
+        private String guestReturnRequest;
+        private String receipt;
+        private String twoFaLogin;
+        private String twoFaCode;
+        private String newsletterSubscription;
+        private String newsletterCampaign;
+        private String signUp;
+        private String forgotPassword;
+        private String verifyEmail;
     }
 }

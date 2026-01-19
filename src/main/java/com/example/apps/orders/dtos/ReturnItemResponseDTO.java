@@ -9,5 +9,7 @@ public class ReturnItemResponseDTO {
     private Long orderItemId;
     private String productName;
     private String variantName;
+    private String size;
     private int quantity;
+    private java.math.BigDecimal price;
 }

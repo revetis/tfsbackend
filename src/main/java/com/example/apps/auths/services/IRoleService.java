@@ -6,14 +6,18 @@ import com.example.apps.auths.dtos.RoleDTO;
 import com.example.apps.auths.dtos.RoleDTOIU;
 
 public interface IRoleService {
-    public RoleDTO createRole(RoleDTOIU request);
+    RoleDTO createRole(RoleDTOIU request);
 
-    public RoleDTO updateRole(Long roleId, RoleDTOIU request);
+    RoleDTO updateRole(Long roleId, RoleDTOIU request);
 
-    public void deleteRole(Long roleId);
+    void deleteRole(Long roleId);
 
-    public RoleDTO getRoleById(Long roleId);
+    RoleDTO getRoleById(Long roleId);
 
-    public List<RoleDTO> getAllRoles();
+    List<RoleDTO> getAllRoles();
 
+    RolePageResult getAllRoles(int start, int end, String sortField, String sortOrder, String search);
+
+    record RolePageResult(List<RoleDTO> data, long totalCount) {
+    }
 }

@@ -10,13 +10,17 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartCheckoutDTO {
+public class CartCheckoutDTO implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
+
     private List<CartItemDTO> validatedItems;
     private Double subTotal;
     private Double totalDiscount;
     private Double shippingFee;
     private Double taxAmount;
     private Double finalAmount;
-    private boolean isStockAvailable;
+    private Boolean isStockAvailable;
     private String checkoutToken;
+    private com.example.apps.orders.enums.AppliedDiscountType appliedDiscountType;
+    private String appliedDiscountName;
 }

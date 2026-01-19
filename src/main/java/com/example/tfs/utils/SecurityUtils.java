@@ -34,4 +34,17 @@ public class SecurityUtils {
 
         throw new IllegalStateException("User not authenticated or invalid principal type");
     }
+
+    public static Long getCurrentUserIdOrNull() {
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            return null;
+        }
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof CustomUserDetails) {
+            return ((CustomUserDetails) principal).getId();
+        }
+
+        return null;
+    }
 }

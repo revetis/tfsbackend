@@ -130,4 +130,21 @@ public class GlobalExceptionHandler {
                 }
                 return ex.getMessage();
         }
+
+        @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+        public ResponseEntity<?> handleResponseStatusException(
+                        org.springframework.web.server.ResponseStatusException ex,
+                        WebRequest request) {
+
+                log.error("ResponseStatusException: {} - Reason: {}", ex.getStatusCode(), ex.getReason());
+                String path = request.getDescription(false).replace("uri=", "");
+
+                return ResponseEntity
+                                .status(ex.getStatusCode())
+                                .body(ApiErrorTemplate.apiErrorTemplateGenerator(
+                                                false,
+                                                ex.getStatusCode().value(),
+                                                path,
+                                                ex.getReason() != null ? ex.getReason() : ex.getMessage()));
+        }
 }

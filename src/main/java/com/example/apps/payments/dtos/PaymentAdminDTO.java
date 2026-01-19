@@ -33,4 +33,22 @@ public class PaymentAdminDTO {
     private String cardAssociation;
     private String cardFamily;
     private String cardType;
+
+    // Missing fields - added
+    private String conversationId;
+    private String basketId;
+    private String ipAddress;
+    private java.util.List<TransactionDTO> transactions;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class TransactionDTO {
+        private Long id;
+        private String transactionId;
+        private String status;
+        private BigDecimal paidPrice;
+        private LocalDateTime createdAt;
+    }
 }

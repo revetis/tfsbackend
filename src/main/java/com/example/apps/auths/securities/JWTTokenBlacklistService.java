@@ -7,23 +7,31 @@ import org.springframework.stereotype.Service;
 @Service
 public class JWTTokenBlacklistService {
 
-    @CachePut(value = "v2_accessTokenBlacklist", key = "#accessToken")
-    public Boolean accessTokenBlacklist(String accessToken) {
-        return true;
+    @CachePut(value = "accessTokenBlacklist", key = "#accessToken")
+    public Long accessTokenBlacklist(String accessToken) {
+        return System.currentTimeMillis();
     }
 
-    @CachePut(value = "v2_refreshTokenBlacklist", key = "#refreshToken")
-    public Boolean refreshTokenBlacklist(String refreshToken) {
-        return true;
+    @CachePut(value = "refreshTokenBlacklist", key = "#refreshToken")
+    public Long refreshTokenBlacklist(String refreshToken) {
+        return System.currentTimeMillis();
     }
 
-    @Cacheable(value = "v2_accessTokenBlacklist", key = "#accessToken")
-    public Boolean isAccessTokenBlacklisted(String accessToken) {
-        return false;
+    @Cacheable(value = "accessTokenBlacklist", key = "#accessToken")
+    public Long getAccessTokenBlacklistedTime(String accessToken) {
+        return null;
     }
 
-    @Cacheable(value = "v2_refreshTokenBlacklist", key = "#refreshToken")
-    public Boolean isRefreshTokenBlacklisted(String refreshToken) {
-        return false;
+    @Cacheable(value = "refreshTokenBlacklist", key = "#refreshToken")
+    public Long getRefreshTokenBlacklistedTime(String refreshToken) {
+        return null;
+    }
+
+    public boolean isAccessTokenBlacklisted(String accessToken) {
+        return getAccessTokenBlacklistedTime(accessToken) != null;
+    }
+
+    public boolean isRefreshTokenBlacklisted(String refreshToken) {
+        return getRefreshTokenBlacklistedTime(refreshToken) != null;
     }
 }

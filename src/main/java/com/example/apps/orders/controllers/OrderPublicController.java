@@ -31,6 +31,11 @@ public class OrderPublicController {
 
     @PostMapping("/create")
     public ResponseEntity<?> createOrder(@Valid @RequestBody OrderDTOIU orderDTOIU) {
+        // Security Fix: Prevent IDOR by ignoring userId in body and enforcing context's
+        // userId
+        Long userId = SecurityUtils.getCurrentUserIdOrNull();
+        orderDTOIU.setUserId(userId);
+
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
                 HttpStatus.SC_CREATED,
@@ -41,13 +46,16 @@ public class OrderPublicController {
 
     @GetMapping("/user/{userId}")
     @PreAuthorize("#userId == authentication.principal.id")
-    public ResponseEntity<?> getOrdersByUserId(@PathVariable Long userId) {
+    public ResponseEntity<?> getOrdersByUserId(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
                 true,
                 HttpStatus.SC_OK,
                 "/rest/api/private/orders/user/" + userId,
                 null,
-                orderService.getByUserId(userId)));
+                orderService.getByUserId(userId, page, size)));
     }
 
     @GetMapping("/{orderId}")

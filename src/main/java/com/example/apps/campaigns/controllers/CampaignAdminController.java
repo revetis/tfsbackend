@@ -24,14 +24,23 @@ public class CampaignAdminController {
     // ==================== Coupons ====================
 
     @GetMapping("/coupons")
-    public ResponseEntity<?> getAllCoupons() {
-        List<CouponDTO> coupons = campaignService.getAllCoupons();
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                true,
-                HttpStatus.SC_OK,
-                "/admin/campaigns/coupons",
-                null,
-                coupons));
+    public ResponseEntity<?> getAllCoupons(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "createdAt") String sortField,
+            @RequestParam(name = "direction", defaultValue = "DESC") String sortOrder,
+            @RequestParam(name = "q", required = false) String search,
+            jakarta.servlet.http.HttpServletRequest servletRequest) {
+        var result = campaignService.getAllCoupons(page * size, (page + 1) * size, sortField, sortOrder, search);
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(result.totalCount()))
+                .header("Access-Control-Expose-Headers", "X-Total-Count")
+                .body(ApiTemplate.apiTemplateGenerator(
+                        true,
+                        HttpStatus.SC_OK,
+                        servletRequest.getRequestURI(),
+                        null,
+                        result.data()));
     }
 
     @GetMapping("/coupons/{id}")
@@ -81,14 +90,23 @@ public class CampaignAdminController {
     // ==================== Campaigns ====================
 
     @GetMapping
-    public ResponseEntity<?> getAllCampaigns() {
-        List<CampaignDTO> campaigns = campaignService.getAllCampaigns();
-        return ResponseEntity.ok(ApiTemplate.apiTemplateGenerator(
-                true,
-                HttpStatus.SC_OK,
-                "/admin/campaigns",
-                null,
-                campaigns));
+    public ResponseEntity<?> getAllCampaigns(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "priority") String sortField,
+            @RequestParam(name = "direction", defaultValue = "DESC") String sortOrder,
+            @RequestParam(name = "q", required = false) String search,
+            jakarta.servlet.http.HttpServletRequest servletRequest) {
+        var result = campaignService.getAllCampaigns(page * size, (page + 1) * size, sortField, sortOrder, search);
+        return ResponseEntity.ok()
+                .header("X-Total-Count", String.valueOf(result.totalCount()))
+                .header("Access-Control-Expose-Headers", "X-Total-Count")
+                .body(ApiTemplate.apiTemplateGenerator(
+                        true,
+                        HttpStatus.SC_OK,
+                        servletRequest.getRequestURI(),
+                        null,
+                        result.data()));
     }
 
     @GetMapping("/{id}")
